@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Ticket {
-  UUID String @id @default(uuid())
+  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   ownerName String 
   ownerContacts String[]
   ownerAffiliation Organisation @relation(fields: [ownerAffiliationId], references: [UUID])
@@ -23,7 +23,7 @@ model Ticket {
 }
 
 model Quota {
-  UUID String @id @default(uuid())
+  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   quotaType QuotaType @relation(fields: [quotaTypeId], references: [UUID])
   quotaTypeId String
   usageLeft Int @default(1)
@@ -32,21 +32,21 @@ model Quota {
 }
 
 model QuotaType {
-  UUID String @id @default(uuid())
+  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   name String @unique
   description String
   quotas Quota[]
 }
 
 model Organisation {
-  UUID String @id @default(uuid())
+  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   managers User[]
   publishedInvitations Invitation[]
   createdTickets Ticket[]
 }
 
 model Invitation {
-  UUID String @id @default(uuid())
+  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   publisher Organisation @relation(fields: [organisationId], references: [UUID])
   organisationId String
   usageLeft Int @default(1)
@@ -55,7 +55,7 @@ model Invitation {
 }
 
 model User {
-  UUID String @id @default(uuid())
+  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   username String @unique
   role Int
   passwordHash String 
