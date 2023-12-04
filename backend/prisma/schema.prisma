@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Ticket {
+  UUID String @id @default(uuid())
+  ownerName String 
+  ownerContacts String[]
+  ownerAffiliation Organisation @relation(fields: [ownerAffiliationId], references: [UUID])
+  ownerAffiliationId String
+  quotas Quota[]
+  createdTime DateTime @default(now())
+  invitation Invitation @relation(fields: [invitationId], references: [UUID])
+  invitationId String
+}
+
+model Quota {
+  UUID String @id @default(uuid())
+  quotaType QuotaType @relation(fields: [quotaTypeId], references: [UUID])
+  quotaTypeId String
+  usageLeft Int @default(1)
+  ticket Ticket @relation(fields: [ticketId], references: [UUID])
+  ticketId String
+}
+
+model QuotaType {
+  UUID String @id @default(uuid())
+  name String @unique
+  description String
+  quotas Quota[]
+}
+
+model Organisation {
+  UUID String @id @default(uuid())
+  managers User[]
+  publishedInvitations Invitation[]
+  createdTickets Ticket[]
+}
+
+model Invitation {
+  UUID String @id @default(uuid())
+  publisher Organisation @relation(fields: [organisationId], references: [UUID])
+  organisationId String
+  usageLeft Int @default(1)
+  createdTickets Ticket[]
+  createdTime DateTime @default(now())
+}
+
+model User {
+  UUID String @id @default(uuid())
+  username String @unique
+  role Int
+  passwordHash String 
+  organisationManaged Organisation @relation(fields: [organisationId], references: [UUID])
+  organisationId String
+}
+
+// Will be implemented in ts instead
+// enum UserRole {
+//   SUPER_ADMIN
+//   ADMIN
+//   AFFILIATE_MANAGER
+//   OBSERVER
+// }
+
+
+
+model Statistics {
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String
+  value BigInt @default(0)
+}
+
+model Log {
+  id Int @id @default(autoincrement())
+  summary String 
+  description String
+  logType LogType @relation(fields: [logTypeId], references: [id])
+  logTypeId Int
+}
+
+model LogType {
+  id Int @id @default(autoincrement())
+  name String
+  logs Log[]
+}
