@@ -34,7 +34,7 @@ model Quota {
 model QuotaType {
   UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   name String @unique
-  description String
+  description String @default("")
   quotas Quota[]
 }
 
@@ -63,15 +63,6 @@ model User {
   organisationManaged Organisation @relation(fields: [organisationId], references: [UUID])
   organisationId String
 }
-
-// Will be implemented in ts instead
-// enum UserRole {
-//   SUPER_ADMIN
-//   ADMIN
-//   AFFILIATE_MANAGER
-//   OBSERVER
-// }
-
 
 
 model Statistics {
