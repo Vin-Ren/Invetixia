@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Ticket {
-  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
+  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
   ownerName String @unique
   ownerContacts String[]
   ownerAffiliation Organisation @relation(fields: [ownerAffiliationId], references: [UUID])
@@ -24,7 +24,7 @@ model Ticket {
 }
 
 model Quota {
-  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
+  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
   quotaType QuotaType @relation(fields: [quotaTypeId], references: [UUID])
   quotaTypeId String
   usageLeft Int @default(1)
@@ -33,14 +33,14 @@ model Quota {
 }
 
 model QuotaType {
-  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
+  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
   name String @unique
   description String @default("")
   quotas Quota[]
 }
 
 model Organisation {
-  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
+  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
   name String @unique
   managers User[]
   publishedInvitations Invitation[]
@@ -48,7 +48,7 @@ model Organisation {
 }
 
 model Invitation {
-  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
+  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
   publisher Organisation @relation(fields: [organisationId], references: [UUID])
   organisationId String
   usageLeft Int @default(1)
@@ -57,7 +57,7 @@ model Invitation {
 }
 
 model User {
-  UUID String @id @default(dbgenerated("uuid_generate_v1()"))
+  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
   username String @unique
   role Int
   passwordHash String // impose max real password length=50 to be safe.
@@ -78,12 +78,12 @@ model Log {
   id Int @id @default(autoincrement())
   summary String 
   description String
-  logType LogType @relation(fields: [logTypeId], references: [id])
-  logTypeId Int
+  logAction LogAction @relation(fields: [logActionId], references: [id])
+  logActionId Int
   createdTime DateTime @default(now())
 }
 
-model LogType {
+model LogAction {
   id Int @id @default(autoincrement())
   name String @unique
   logs Log[]
