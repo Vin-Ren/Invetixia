@@ -7,6 +7,7 @@ import corsConfig from './config/cors';
 
 const app = express()
 app.use(cors(corsConfig))
+app.use(express.json({ limit: "64mb" })) 
 app.use(compression())
 
 app.use('/event', eventRouter)
