@@ -78,12 +78,12 @@ model Log {
   id Int @id @default(autoincrement())
   summary String 
   description String
-  logType LogType @relation(fields: [logTypeId], references: [id])
-  logTypeId Int
+  logAction LogAction @relation(fields: [logActionId], references: [id])
+  logActionId Int
   createdTime DateTime @default(now())
 }
 
-model LogType {
+model LogAction {
   id Int @id @default(autoincrement())
   name String @unique
   logs Log[]
