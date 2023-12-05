@@ -4,16 +4,16 @@ import { randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client'
 import { prismaClient, userRole } from "./database";
 
-const { LOG_ACTIONS, QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD} = env;
+const { LOG_TYPES, QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD} = env;
 
 function initialize() {
     const logTypes = (
-        LOG_ACTIONS!==undefined ? 
-        LOG_ACTIONS : "CREATE,PATCH,DELETE").split(",")
-    logTypes.forEach(act => {
-        prismaClient.logAction.create( { data: {name: act} } ).catch( (err) => {
+        LOG_TYPES!==undefined ? 
+        LOG_TYPES : "CREATE,PATCH,DELETE").split(",")
+    logTypes.forEach(tp => {
+        prismaClient.logType.create( { data: {name: tp} } ).catch( (err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
-                if (err.code == 'P2002') return
+                if (err.code=='P2002') return
             } else {
                 console.log(err)
             }
@@ -26,7 +26,7 @@ function initialize() {
     quotaTypes.forEach(tp => {
         prismaClient.quotaType.create( { data: {name: tp} } ).catch( (err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
-                if (err.code == 'P2002') return
+                if (err.code=='P2002') return
             } else {
                 console.log(err)
             }
@@ -34,7 +34,7 @@ function initialize() {
     });
     
 
-    let erred = 0
+    let erred=0
     let password = SUPERUSER_INITIAL_PASSWORD
     if (password===undefined) {
         password=randomBytes(16).toString('hex');
@@ -56,7 +56,7 @@ function initialize() {
         } 
     }).catch( (err) => {
         if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            if (err.code == 'P2002') {erred=1;return}
+            if (err.code=='P2002') {erred=1;return}
         } else {
             console.log(err)
         }
