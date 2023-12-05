@@ -1,13 +1,15 @@
+import { env } from 'process';
 import bcrypt from 'bcrypt'
+import { randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client'
 import { prismaClient, userRole } from "./database";
-import { randomBytes } from 'crypto';
 
+const { LOG_TYPES, QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD} = env;
 
 function initialize() {
     const logTypes = (
-        process.env.LOG_TYPES!==undefined ? 
-        process.env.LOG_TYPES : "CREATE,PATCH,DELETE").split(",")
+        LOG_TYPES!==undefined ? 
+        LOG_TYPES : "CREATE,PATCH,DELETE").split(",")
     logTypes.forEach(tp => {
         prismaClient.logType.create( { data: {name: tp} } ).catch( (err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -19,8 +21,8 @@ function initialize() {
     });
     
     
-    const quotaTypes = (process.env.QUOTA_TYPES!==undefined ? 
-                        process.env.QUOTA_TYPES : "ENTRY").split(",")
+    const quotaTypes = (QUOTA_TYPES!==undefined ? 
+                        QUOTA_TYPES : "ENTRY").split(",")
     quotaTypes.forEach(tp => {
         prismaClient.quotaType.create( { data: {name: tp} } ).catch( (err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -33,7 +35,7 @@ function initialize() {
     
 
     let erred=0
-    let password = process.env.SUPERUSER_INITIAL_PASSWORD
+    let password = SUPERUSER_INITIAL_PASSWORD
     if (password===undefined) {
         password=randomBytes(16).toString('hex');
     } else if (password.length>50) {
