@@ -18,6 +18,7 @@ model Ticket {
   ownerAffiliationId String
   quotas Quota[]
   createdTime DateTime @default(now())
+  lastUpdated DateTime @updatedAt
   invitation Invitation @relation(fields: [invitationId], references: [UUID])
   invitationId String
 }
@@ -70,6 +71,7 @@ model Statistics {
   name String @unique
   description String
   value BigInt @default(0)
+  lastUpdated DateTime @updatedAt
 }
 
 model Log {
@@ -78,6 +80,7 @@ model Log {
   description String
   logType LogType @relation(fields: [logTypeId], references: [id])
   logTypeId Int
+  createdTime DateTime @default(now())
 }
 
 model LogType {
