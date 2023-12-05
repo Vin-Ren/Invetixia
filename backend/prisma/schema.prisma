@@ -59,7 +59,7 @@ model User {
   UUID String @id @default(dbgenerated("uuid_generate_v1()"))
   username String @unique
   role Int
-  passwordHash String 
+  passwordHash String // impose max real password length=50 to be safe.
   organisationManaged Organisation @relation(fields: [organisationId], references: [UUID])
   organisationId String
 }

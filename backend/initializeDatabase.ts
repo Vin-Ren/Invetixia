@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt'
 import { Prisma } from '@prisma/client'
 import { prismaClient, userRole } from "./database";
-import { randomBytes, randomUUID } from 'crypto';
+import { randomBytes } from 'crypto';
 
 
-async function initialize() {
+function initialize() {
     const logTypes = (
         process.env.LOG_TYPES!==undefined ? 
         process.env.LOG_TYPES : "CREATE,PATCH,DELETE").split(",")
@@ -36,6 +36,8 @@ async function initialize() {
     let password = process.env.SUPERUSER_INITIAL_PASSWORD
     if (password===undefined) {
         password=randomBytes(16).toString('hex');
+    } else if (password.length>50) {
+        console.log("provided password is too long, maximum password length is 50 characters. Terminating suepruser account initialization.")
     }
     const hashedPassword = bcrypt.hashSync(password, 10);
     prismaClient.user.create( { 
