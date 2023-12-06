@@ -14,7 +14,7 @@ export const getRoles = async (req: Request, res: Response) => {
 }
 
 // Get
-export const getUsers = async (req: Request, res: Response) => {
+export const getAll = async (req: Request, res: Response) => {
     if (!req.user) return res.sendStatus(403)
 
     try {
@@ -40,7 +40,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 
 // Get
-export const getUser = async (req: Request, res: Response) => {
+export const getOne = async (req: Request, res: Response) => {
     if (!req.user) return res.sendStatus(403)
 
     const { UUID } = req.query;
@@ -277,7 +277,7 @@ export const logout = async (req: Request, res: Response) => {
 
 
 // Delete
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteOne = async (req: Request, res: Response) => {
     if (!req.user) return res.sendStatus(403)
 
     const { UUID } = req.params;
