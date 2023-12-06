@@ -12,7 +12,7 @@ organisationRouter.get('/info/:UUID/invitations', verifyToken, getInvitations)
 organisationRouter.get('/info/:UUID/tickets', verifyToken, getTickets)
 organisationRouter.post('/create', verifyToken, create)
 organisationRouter.patch('/update', verifyToken, update)
-organisationRouter.patch('/delete', verifyToken, deleteOne)
+organisationRouter.delete('/delete', verifyToken, deleteOne)
 
 
 export default organisationRouter

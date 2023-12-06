@@ -24,7 +24,7 @@ export const getAll = async (req: Request, res: Response) => {
         })
 
         const users = await prismaClient.user.findMany({
-            where: { role: { lt: role } }, 
+            where: { role: { lt: role } },
             select: {
                 UUID: true,
                 username: true,
@@ -52,7 +52,7 @@ export const getOne = async (req: Request, res: Response) => {
         })
 
         const user = await prismaClient.user.findFirstOrThrow({
-            where: { UUID: UUID as string }, 
+            where: { UUID: UUID as string },
             select: {
                 UUID: true,
                 username: true,
@@ -100,7 +100,7 @@ export const create = async (req: Request, res: Response) => {
             },
             select: { UUID: true }
         })
-        return res.json({ user: {UUID, username, role} })
+        return res.json({ user: { UUID, username, role } })
     } catch (e) {
         console.log(e)
     }
@@ -139,11 +139,11 @@ export const login = async (req: Request, res: Response) => {
                 tokens: {
                     upsert: {
                         update: {
-                            access: accessToken, 
+                            access: accessToken,
                             refresh: refreshToken
                         },
                         create: {
-                            access: accessToken, 
+                            access: accessToken,
                             refresh: refreshToken
                         }
                     }
@@ -168,7 +168,7 @@ export const changePassword = async (req: Request, res: Response) => {
 
     const { password, newPassword } = req.body
 
-    if ((!password && (req.user.role<userRole.ADMIN)) || !newPassword || (newPassword as string).length < 8) {
+    if ((!password && (req.user.role < userRole.ADMIN)) || !newPassword || (newPassword as string).length < 8) {
         return res.sendStatus(400)
     }
 
@@ -181,7 +181,7 @@ export const changePassword = async (req: Request, res: Response) => {
         })
 
         const isMatch = await bcrypt.compare(password, passwordHash);
-        if (!isMatch && req.user.role<userRole.ADMIN) return res.sendStatus(400);
+        if (!isMatch && req.user.role < userRole.ADMIN) return res.sendStatus(400);
 
         const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
@@ -201,11 +201,11 @@ export const changePassword = async (req: Request, res: Response) => {
                 tokens: {
                     upsert: {
                         update: {
-                            access: accessToken, 
+                            access: accessToken,
                             refresh: refreshToken
                         },
                         create: {
-                            access: accessToken, 
+                            access: accessToken,
                             refresh: refreshToken
                         }
                     }
@@ -245,7 +245,7 @@ export const update = async (req: Request, res: Response) => {
                     }
                 },
                 tokens: { delete: true }
-            }, 
+            },
             select: {
                 UUID: true,
                 username: true,
@@ -253,7 +253,7 @@ export const update = async (req: Request, res: Response) => {
                 organisationManaged: true
             }
         })
-        return res.json({user})
+        return res.json({ user })
     } catch (e) {
         console.log(e)
     }
@@ -295,7 +295,7 @@ export const deleteOne = async (req: Request, res: Response) => {
         })
 
         const user = await prismaClient.user.findFirstOrThrow({
-            where: { UUID: UUID as string }, 
+            where: { UUID: UUID as string },
             select: {
                 UUID: true,
                 username: true,

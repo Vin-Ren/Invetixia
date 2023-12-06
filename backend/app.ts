@@ -10,7 +10,7 @@ import organisationRouter from "./routes/organisation";
 const app = express()
 
 app.use(cors(corsConfig))
-app.use(express.json({ limit: "64mb" })) 
+app.use(express.json({ limit: "64mb" }))
 app.use(compression())
 
 app.use('/event', eventRouter)

@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { Request, Response } from "../types";
 import { prismaClient, userRole } from "../database";
 
@@ -93,7 +92,7 @@ export const getInvitations = async (req: Request, res: Response) => {
     if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
 
     const { UUID } = req.params
-    const { usable } = req.query
+    const { onlyUsables } = req.query
 
     try {
         const { publishedInvitations } = await prismaClient.organisation.findFirstOrThrow({
@@ -109,7 +108,7 @@ export const getInvitations = async (req: Request, res: Response) => {
                 }
             }
         });
-        if (usable) {
+        if (onlyUsables) {
             return res.json({invitations: publishedInvitations.filter((invitation)=> (invitation.usageLeft>0))})
         }
         return res.json({ invitations: publishedInvitations })
