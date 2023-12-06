@@ -15,7 +15,7 @@ export const getRoles = async (req: Request, res: Response) => {
 
 // Get
 export const getUsers = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role === userRole.OBSERVER) return res.sendStatus(403)
+    if (!req.user) return res.sendStatus(403)
 
     try {
         const { role } = await prismaClient.user.findFirstOrThrow({
@@ -41,7 +41,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 // Get
 export const getUser = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role === userRole.OBSERVER) return res.sendStatus(403)
+    if (!req.user) return res.sendStatus(403)
 
     const { UUID } = req.query;
 
@@ -66,7 +66,6 @@ export const getUser = async (req: Request, res: Response) => {
         console.log(e)
     }
 }
-
 
 
 // Post
@@ -188,7 +187,7 @@ export const changePassword = async (req: Request, res: Response) => {
             expiresIn: "1d"
         })
         const accessToken = jwt.sign({ UUID, username, role }, ACCESS_TOKEN_SECRET as string, {
-            expiresIn: "15m"
+            expiresIn: "5m"
         })
 
         const token = await prismaClient.user.update({
@@ -269,6 +268,39 @@ export const logout = async (req: Request, res: Response) => {
         })
         res.clearCookie('refreshToken')
         return res.sendStatus(200)
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+// Delete
+export const deleteUser = async (req: Request, res: Response) => {
+    if (!req.user) return res.sendStatus(403)
+
+    const { UUID } = req.params;
+
+    try {
+        const { role } = await prismaClient.user.findFirstOrThrow({
+            where: { UUID: req.user.UUID },
+            select: { role: true }
+        })
+
+        const user = await prismaClient.user.findFirstOrThrow({
+            where: { UUID: UUID as string }, 
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationManaged: true
+            }
+        });
+        if (user.role > role) return res.sendStatus(403)
+
+        const deletedUser = await prismaClient.user.delete({
+            where: { UUID: UUID }
+        })
+        return res.sendStatus(201)
     } catch (e) {
         console.log(e)
     }
