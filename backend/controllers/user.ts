@@ -1,5 +1,5 @@
 import { env } from "process";
-import { Request, Response, User } from "../types";
+import { Request, Response } from "../types";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { prismaClient, userRole } from "../database";
@@ -60,7 +60,7 @@ export const getUser = async (req: Request, res: Response) => {
                 organisationManaged: true
             }
         });
-        if (user.role > role) return res.sendStatus(403)
+        if (user.role < userRole.ADMIN) return res.sendStatus(403)
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -168,7 +168,9 @@ export const changePassword = async (req: Request, res: Response) => {
 
     const { password, newPassword } = req.body
 
-    if (!password || !newPassword || (newPassword as string).length < 8) return res.sendStatus(400)
+    if ((!password && (req.user.role<userRole.ADMIN)) || !newPassword || (newPassword as string).length < 8) {
+        return res.sendStatus(400)
+    }
 
     try {
         const { UUID, username, role } = req.user;
@@ -179,7 +181,7 @@ export const changePassword = async (req: Request, res: Response) => {
         })
 
         const isMatch = await bcrypt.compare(password, passwordHash);
-        if (!isMatch) return res.sendStatus(400);
+        if (!isMatch && req.user.role<userRole.ADMIN) return res.sendStatus(400);
 
         const newPasswordHash = await bcrypt.hash(newPassword, 10);
 
@@ -295,7 +297,7 @@ export const deleteUser = async (req: Request, res: Response) => {
                 organisationManaged: true
             }
         });
-        if (user.role > role) return res.sendStatus(403)
+        if (user.role < userRole.ADMIN) return res.sendStatus(403)
 
         const deletedUser = await prismaClient.user.delete({
             where: { UUID: UUID }
