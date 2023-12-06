@@ -39,12 +39,10 @@ export const getOne = async (req: Request, res: Response) => {
                     take: parseInt(limitManagers as string) || 1
                 },
                 publishedInvitations: { // by default get 5 most recent invitations
-                    orderBy: { createdTime: 'desc' },
-                    take: parseInt(limitInvitations as string) || 5
+                    take: -(parseInt(limitInvitations as string) || 5)
                 },
                 createdTickets: { // by default get 10 most recent tickets
-                    orderBy: { createdTime: 'desc' },
-                    take: parseInt(limitTickets as string) || 10
+                    take: -(parseInt(limitTickets as string) || 10)
                 }
             }
         });
