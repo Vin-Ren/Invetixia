@@ -100,7 +100,7 @@ export const create = async (req: Request, res: Response) => {
             },
             select: { UUID: true }
         })
-        return res.json({ UUID, username, role })
+        return res.json({ user: {UUID, username, role} })
     } catch (e) {
         console.log(e)
     }
@@ -245,6 +245,12 @@ export const update = async (req: Request, res: Response) => {
                     }
                 },
                 tokens: { delete: true }
+            }, 
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationManaged: true
             }
         })
         return res.json({user})

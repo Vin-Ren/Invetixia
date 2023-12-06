@@ -9,10 +9,16 @@ export const getAll = async (req: Request, res: Response) => {
     try {
         const organisations = await prismaClient.organisation.findMany({
             select: {
+                UUID: true,
                 name: true,
                 managers: { // get highest roled manager
                     orderBy: { role: 'desc' },
-                    take: 1
+                    take: 1,
+                    select: {
+                        UUID: true,
+                        username: true,
+                        role: true
+                    }
                 }
             }
         });
@@ -28,15 +34,19 @@ export const getOne = async (req: Request, res: Response) => {
     if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
 
     const { UUID } = req.params
-    const { limitManagers, limitInvitations, limitTickets } = req.query
+    const { limitInvitations, limitTickets } = req.query
 
     try {
         const organisation = await prismaClient.organisation.findFirstOrThrow({
             where: { UUID: UUID as string },
             include: {
-                managers: { // by default get the highest roled manager
+                managers: {
                     orderBy: { role: 'desc' },
-                    take: parseInt(limitManagers as string) || 1
+                    select: {
+                        UUID: true,
+                        username: true,
+                        role: true
+                    }
                 },
                 publishedInvitations: { // by default get 5 most recent invitations
                     take: -(parseInt(limitInvitations as string) || 5)
@@ -81,7 +91,18 @@ export const update = async (req: Request, res: Response) => {
     try {
         const organisation = await prismaClient.organisation.update({
             where: { UUID: UUID },
-            data: { name: newName }
+            data: { name: newName },
+            select: {
+                UUID: true,
+                name: true,
+                managers: {
+                    select: {
+                        UUID: true,
+                        username: true,
+                        role: true
+                    }
+                }
+            }
         });
         return res.json({ organisation })
     } catch (e) {
