@@ -2,97 +2,98 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
 }
 
 model Ticket {
-  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
-  ownerName String @unique
-  ownerContacts String[]
-  ownerAffiliation Organisation @relation(fields: [ownerAffiliationId], references: [UUID])
+  UUID               String       @id @default(dbgenerated("uuid_generate_v1mc()"))
+  ownerName          String       @unique
+  ownerContacts      String[]
+  ownerAffiliation   Organisation @relation(fields: [ownerAffiliationId], references: [UUID])
   ownerAffiliationId String
-  quotas Quota[]
-  createdTime DateTime @default(now())
-  lastUpdated DateTime @updatedAt
-  invitation Invitation @relation(fields: [invitationId], references: [UUID])
-  invitationId String
+  quotas             Quota[]
+  createdTime        DateTime     @default(now())
+  lastUpdated        DateTime     @updatedAt
+  invitation         Invitation   @relation(fields: [invitationId], references: [UUID])
+  invitationId       String
 }
 
 model Quota {
-  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
-  quotaType QuotaType @relation(fields: [quotaTypeId], references: [UUID])
+  UUID        String    @id @default(dbgenerated("uuid_generate_v1mc()"))
+  quotaType   QuotaType @relation(fields: [quotaTypeId], references: [UUID])
   quotaTypeId String
-  usageLeft Int @default(1)
-  ticket Ticket @relation(fields: [ticketId], references: [UUID])
-  ticketId String
+  usageLeft   Int       @default(1)
+  ticket      Ticket    @relation(fields: [ticketId], references: [UUID])
+  ticketId    String
 }
 
 model QuotaType {
-  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
-  name String @unique
-  description String @default("")
-  quotas Quota[]
+  UUID        String  @id @default(dbgenerated("uuid_generate_v1mc()"))
+  name        String  @unique
+  description String  @default("")
+  quotas      Quota[]
 }
 
 model Organisation {
-  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
-  name String @unique
-  managers User[]
+  UUID                 String       @id @default(dbgenerated("uuid_generate_v1mc()"))
+  name                 String       @unique
+  managers             User[]
   publishedInvitations Invitation[]
-  createdTickets Ticket[]
+  createdTickets       Ticket[]
 }
 
 model Invitation {
-  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
-  publisher Organisation @relation(fields: [organisationId], references: [UUID])
+  UUID           String       @id @default(dbgenerated("uuid_generate_v1mc()"))
+  publisher      Organisation @relation(fields: [organisationId], references: [UUID])
   organisationId String
-  usageLeft Int @default(1)
+  usageLeft      Int          @default(1)
   createdTickets Ticket[]
-  createdTime DateTime @default(now())
+  createdTime    DateTime     @default(now())
 }
 
 model User {
-  UUID String @id @default(dbgenerated("uuid_generate_v1mc()"))
-  username String @unique
-  role Int
-  passwordHash String // impose max real password length=50 to be safe.
+  UUID                String       @id @default(dbgenerated("uuid_generate_v1mc()"))
+  username            String       @unique
+  role                Int
+  passwordHash        String // impose max real password length=50 to be safe.
   organisationManaged Organisation @relation(fields: [organisationId], references: [UUID])
-  organisationId String
-  tokens Tokens?
+  organisationId      String
+  tokens              Tokens?
 }
 
 model Tokens {
-  user User @relation(references: [UUID], fields: [userId])
-  userId String @id
+  user    User   @relation(references: [UUID], fields: [userId])
+  userId  String @id
   refresh String
-  access String
+  access  String
 }
 
-
 model Statistics {
-  id Int @id @default(autoincrement())
-  name String @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String
-  value BigInt @default(0)
+  value       BigInt   @default(0)
   lastUpdated DateTime @updatedAt
 }
 
 model Log {
-  id Int @id @default(autoincrement())
-  summary String 
+  id          Int       @id @default(autoincrement())
+  summary     String
   description String
-  logAction LogAction @relation(fields: [logActionId], references: [id])
+  logAction   LogAction @relation(fields: [logActionId], references: [id])
   logActionId Int
-  createdTime DateTime @default(now())
+  createdTime DateTime  @default(now())
 }
 
 model LogAction {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String @unique
   logs Log[]
 }
