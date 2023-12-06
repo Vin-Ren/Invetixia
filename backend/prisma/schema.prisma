@@ -63,6 +63,14 @@ model User {
   passwordHash String // impose max real password length=50 to be safe.
   organisationManaged Organisation @relation(fields: [organisationId], references: [UUID])
   organisationId String
+  tokens Tokens?
+}
+
+model Tokens {
+  user User @relation(references: [UUID], fields: [userId])
+  userId String @id
+  refresh String
+  access String
 }
 
 
