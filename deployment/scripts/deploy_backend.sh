@@ -1,3 +1,4 @@
 cd ../../backend
 yarn install
-yarn ts-node initializeDatabase.ts
+yarn prisma db push
+yarn ts-node databaseSeed.ts
