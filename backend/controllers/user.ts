@@ -74,7 +74,7 @@ export const create = async (req: Request, res: Response) => {
 
     const { username, password, role, organisationName } = req.body
 
-    if (!req.user || req.user.role !== userRole.SUPER_ADMIN) return res.sendStatus(403)
+    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
 
     if (!username || !password || (password as string).length < 8 || !role || !organisationName) return res.sendStatus(400)
 

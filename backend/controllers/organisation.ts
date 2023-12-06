@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { Request, Response } from "../types";
 import { prismaClient, userRole } from "../database";
 
@@ -34,7 +35,7 @@ export const getOne = async (req: Request, res: Response) => {
     if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
 
     const { UUID } = req.params
-    const { limitInvitations, limitTickets } = req.query
+    const { limitTickets } = req.query
 
     try {
         const organisation = await prismaClient.organisation.findFirstOrThrow({
@@ -48,15 +49,107 @@ export const getOne = async (req: Request, res: Response) => {
                         role: true
                     }
                 },
-                publishedInvitations: { // by default get 5 most recent invitations
-                    take: -(parseInt(limitInvitations as string) || 5)
-                },
+                publishedInvitations: true,
                 createdTickets: { // by default get 10 most recent tickets
                     take: -(parseInt(limitTickets as string) || 10)
                 }
             }
         });
         return res.json({ organisation })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+// Get
+export const getManagers = async (req: Request, res: Response) => {
+    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
+
+    const { UUID } = req.params
+
+    try {
+        const { managers } = await prismaClient.organisation.findFirstOrThrow({
+            where: { UUID: UUID as string },
+            select: { 
+                managers: {
+                    select: {
+                        UUID: true,
+                        username: true,
+                        role: true
+                    }
+                }
+            }
+        });
+        return res.json({ managers })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+// Get
+export const getInvitations = async (req: Request, res: Response) => {
+    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
+
+    const { UUID } = req.params
+    const { usable } = req.query
+
+    try {
+        const { publishedInvitations } = await prismaClient.organisation.findFirstOrThrow({
+            where: { UUID: UUID as string},
+            select: { 
+                publishedInvitations: {
+                    select: {
+                        UUID: true,
+                        usageLeft: true, 
+                        createdTickets: true,
+                        createdTime: true
+                    }
+                }
+            }
+        });
+        if (usable) {
+            return res.json({invitations: publishedInvitations.filter((invitation)=> (invitation.usageLeft>0))})
+        }
+        return res.json({ invitations: publishedInvitations })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+// Get
+export const getTickets = async (req: Request, res: Response) => {
+    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
+
+    const { UUID } = req.params
+
+    try {
+        const { createdTickets } = await prismaClient.organisation.findFirstOrThrow({
+            where: { UUID: UUID as string },
+            select: { 
+                createdTickets: {
+                    select: {
+                        UUID: true,
+                        ownerName: true,
+                        ownerContacts: true,
+                        quotas: {
+                            include: {
+                                quotaType: {
+                                    select: {
+                                        name: true,
+                                        description: true
+                                    }
+                                }
+                            }
+                        },
+                        createdTime: true
+                    }
+                }
+            }
+        });
+        return res.json({ tickets: createdTickets })
     } catch (e) {
         console.log(e)
     }
