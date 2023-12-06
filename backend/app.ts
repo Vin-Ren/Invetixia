@@ -13,6 +13,6 @@ app.use(express.json({ limit: "64mb" }))
 app.use(compression())
 
 app.use('/event', eventRouter)
-app.use('user', userRouter)
+app.use('/user', userRouter)
 
 export default app
