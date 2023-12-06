@@ -1,5 +1,5 @@
 import { env } from "process";
-import { Request, Response, User } from "../types";
+import { Request, Response } from "../types";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "../database";
 
@@ -8,7 +8,7 @@ const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = env;
 export const refreshToken = async (req: Request, res: Response) => {
     try {
         const refreshToken = req.cookies.refreshToken;
-        if(!refreshToken) return res.sendStatus(401);
+        if (!refreshToken) return res.sendStatus(401);
 
         const user = await prismaClient.user.findFirst({
             where: {
@@ -17,17 +17,17 @@ export const refreshToken = async (req: Request, res: Response) => {
                 }
             }
         });
-        
+
         if (user === null) return res.sendStatus(403);
 
         jwt.verify(refreshToken as string, REFRESH_TOKEN_SECRET as string, (err, decoded) => {
             if (err) return res.sendStatus(403);
-            
+
             const { UUID, username, role } = user;
             const accessToken = jwt.sign({ UUID, username, role }, ACCESS_TOKEN_SECRET as string, {
-                expiresIn: '15m'
+                expiresIn: '5m'
             });
-            
+
             res.json({ accessToken });
         });
     } catch (error) {

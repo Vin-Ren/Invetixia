@@ -7,7 +7,7 @@ if (env.ROOT_DOMAIN !== undefined) {
 }
 
 const corsConfig = { // ref: https://expressjs.com/en/resources/middleware/cors.html
-    origin: originList, 
+    origin: originList,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
