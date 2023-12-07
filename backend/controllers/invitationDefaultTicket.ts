@@ -1,6 +1,6 @@
-import { DefaultTicketInput, Request, Response } from "../types";
+import { Request, Response } from "../types";
 import { prismaClient } from "../database";
-import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
+import { isOrganisationManager } from "../utils/permissionCheckers";
 
 
 // Get

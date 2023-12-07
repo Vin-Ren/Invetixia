@@ -1,5 +1,5 @@
 import { Request, Response } from "../types";
-import { prismaClient, userRole } from "../database";
+import { prismaClient } from "../database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 
 
