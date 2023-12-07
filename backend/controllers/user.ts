@@ -116,20 +116,21 @@ export const login = async (req: Request, res: Response) => {
     if (!username || !password) return res.sendStatus(400)
 
     try {
-        const { UUID, passwordHash, role } = await prismaClient.user.findUniqueOrThrow({
+        const { UUID, passwordHash, role, organisationId } = await prismaClient.user.findUniqueOrThrow({
             where: { username: username },
             select: {
                 UUID: true,
                 passwordHash: true,
-                role: true
+                role: true,
+                organisationId: true
             }
         })
         const isMatch = await bcrypt.compare(password, passwordHash);
         if (!isMatch) return res.sendStatus(400);
-        const refreshToken = jwt.sign({ UUID, username, role }, REFRESH_TOKEN_SECRET as string, {
+        const refreshToken = jwt.sign({ UUID, username, role, organisationId }, REFRESH_TOKEN_SECRET as string, {
             expiresIn: "1d"
         })
-        const accessToken = jwt.sign({ UUID, username, role }, ACCESS_TOKEN_SECRET as string, {
+        const accessToken = jwt.sign({ UUID, username, role, organisationId }, ACCESS_TOKEN_SECRET as string, {
             expiresIn: "15m"
         })
 

@@ -23,8 +23,8 @@ export const refreshToken = async (req: Request, res: Response) => {
         jwt.verify(refreshToken as string, REFRESH_TOKEN_SECRET as string, (err, decoded) => {
             if (err) return res.sendStatus(403);
 
-            const { UUID, username, role } = user;
-            const accessToken = jwt.sign({ UUID, username, role }, ACCESS_TOKEN_SECRET as string, {
+            const { UUID, username, role, organisationId } = user;
+            const accessToken = jwt.sign({ UUID, username, role, organisationId }, ACCESS_TOKEN_SECRET as string, {
                 expiresIn: '5m'
             });
 

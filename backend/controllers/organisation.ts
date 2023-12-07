@@ -1,10 +1,11 @@
 import { Request, Response } from "../types";
 import { prismaClient, userRole } from "../database";
+import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 
 
 // Get
 export const getAll = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     try {
         const organisations = await prismaClient.organisation.findMany({
@@ -31,14 +32,16 @@ export const getAll = async (req: Request, res: Response) => {
 
 // Get
 export const getOne = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
     const { limitTickets } = req.query
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const organisation = await prismaClient.organisation.findFirstOrThrow({
-            where: { UUID: UUID as string },
+            where: {
+                UUID: UUID as string,
+                managers: 
+            },
             include: {
                 managers: {
                     orderBy: { role: 'desc' },
@@ -63,14 +66,13 @@ export const getOne = async (req: Request, res: Response) => {
 
 // Get
 export const getManagers = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { managers } = await prismaClient.organisation.findFirstOrThrow({
             where: { UUID: UUID as string },
-            select: { 
+            select: {
                 managers: {
                     select: {
                         UUID: true,
@@ -89,19 +91,18 @@ export const getManagers = async (req: Request, res: Response) => {
 
 // Get
 export const getInvitations = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
     const { onlyUsables } = req.query
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { publishedInvitations } = await prismaClient.organisation.findFirstOrThrow({
-            where: { UUID: UUID as string},
-            select: { 
+            where: { UUID: UUID as string },
+            select: {
                 publishedInvitations: {
                     select: {
                         UUID: true,
-                        usageLeft: true, 
+                        usageLeft: true,
                         createdTickets: true,
                         createdTime: true
                     }
@@ -109,7 +110,7 @@ export const getInvitations = async (req: Request, res: Response) => {
             }
         });
         if (onlyUsables) {
-            return res.json({invitations: publishedInvitations.filter((invitation)=> (invitation.usageLeft>0))})
+            return res.json({ invitations: publishedInvitations.filter((invitation) => (invitation.usageLeft > 0)) })
         }
         return res.json({ invitations: publishedInvitations })
     } catch (e) {
@@ -120,14 +121,13 @@ export const getInvitations = async (req: Request, res: Response) => {
 
 // Get
 export const getTickets = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { createdTickets } = await prismaClient.organisation.findFirstOrThrow({
             where: { UUID: UUID as string },
-            select: { 
+            select: {
                 createdTickets: {
                     select: {
                         UUID: true,
@@ -136,10 +136,7 @@ export const getTickets = async (req: Request, res: Response) => {
                         quotas: {
                             include: {
                                 quotaType: {
-                                    select: {
-                                        name: true,
-                                        description: true
-                                    }
+                                    select: { name: true }
                                 }
                             }
                         },
@@ -155,9 +152,9 @@ export const getTickets = async (req: Request, res: Response) => {
 }
 
 
-// Patch
+// Post
 export const create = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     const { name } = req.body
     if (!name) return res.sendStatus(400)
@@ -175,7 +172,7 @@ export const create = async (req: Request, res: Response) => {
 
 // Patch
 export const update = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     const { UUID, newName } = req.body
     if (!newName) return res.sendStatus(400)
@@ -205,7 +202,7 @@ export const update = async (req: Request, res: Response) => {
 
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     const { UUID } = req.body;
 
