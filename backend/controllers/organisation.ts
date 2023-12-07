@@ -152,7 +152,7 @@ export const getTickets = async (req: Request, res: Response) => {
 }
 
 
-// Patch
+// Post
 export const create = async (req: Request, res: Response) => {
     if (!isAdmin(req.user)) return res.sendStatus(403)
 

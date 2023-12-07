@@ -4,3 +4,8 @@ export type User = {UUID: string, username: string, role: number, organisationId
 export type Request = ExpressRequest & {user?:User}
 export type Response = Response
 export type NextFunction = NextFunction
+
+export type InvitationDefaultInput = {
+    quotaTypeId: string, 
+    value: number
+}
