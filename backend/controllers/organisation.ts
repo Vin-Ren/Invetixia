@@ -39,7 +39,6 @@ const isManagerOfOrganisation = (user: User|undefined, organisationId: string) =
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { limitTickets } = req.query
-
     if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
 
     try {
@@ -73,7 +72,6 @@ export const getOne = async (req: Request, res: Response) => {
 // Get
 export const getManagers = async (req: Request, res: Response) => {
     const { UUID } = req.params
-
     if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
 
     try {
@@ -98,11 +96,8 @@ export const getManagers = async (req: Request, res: Response) => {
 
 // Get
 export const getInvitations = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
     const { onlyUsables } = req.query
-
     if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
 
     try {
@@ -131,10 +126,7 @@ export const getInvitations = async (req: Request, res: Response) => {
 
 // Get
 export const getTickets = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
-
     if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
 
     try {
