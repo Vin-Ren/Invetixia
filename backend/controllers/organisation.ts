@@ -1,10 +1,11 @@
-import { Request, Response, User } from "../types";
+import { Request, Response } from "../types";
 import { prismaClient, userRole } from "../database";
+import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 
 
 // Get
 export const getAll = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     try {
         const organisations = await prismaClient.organisation.findMany({
@@ -29,17 +30,11 @@ export const getAll = async (req: Request, res: Response) => {
 }
 
 
-const isManagerOfOrganisation = (user: User|undefined, organisationId: string) => {
-    return user && (!(user.role < userRole.ORGANISATION_MANAGER))
-        && ((user.role >= userRole.ADMIN) || user.organisationId === organisationId);
-}
-
-
 // Get
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { limitTickets } = req.query
-    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const organisation = await prismaClient.organisation.findFirstOrThrow({
@@ -72,7 +67,7 @@ export const getOne = async (req: Request, res: Response) => {
 // Get
 export const getManagers = async (req: Request, res: Response) => {
     const { UUID } = req.params
-    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { managers } = await prismaClient.organisation.findFirstOrThrow({
@@ -98,7 +93,7 @@ export const getManagers = async (req: Request, res: Response) => {
 export const getInvitations = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { onlyUsables } = req.query
-    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { publishedInvitations } = await prismaClient.organisation.findFirstOrThrow({
@@ -127,7 +122,7 @@ export const getInvitations = async (req: Request, res: Response) => {
 // Get
 export const getTickets = async (req: Request, res: Response) => {
     const { UUID } = req.params
-    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { createdTickets } = await prismaClient.organisation.findFirstOrThrow({
@@ -159,7 +154,7 @@ export const getTickets = async (req: Request, res: Response) => {
 
 // Patch
 export const create = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     const { name } = req.body
     if (!name) return res.sendStatus(400)
@@ -177,7 +172,7 @@ export const create = async (req: Request, res: Response) => {
 
 // Patch
 export const update = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     const { UUID, newName } = req.body
     if (!newName) return res.sendStatus(400)
@@ -207,7 +202,7 @@ export const update = async (req: Request, res: Response) => {
 
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
 
     const { UUID } = req.body;
 
