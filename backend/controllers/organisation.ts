@@ -37,11 +37,8 @@ export const getOne = async (req: Request, res: Response) => {
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
-        const organisation = await prismaClient.organisation.findFirstOrThrow({
-            where: {
-                UUID: UUID as string,
-                managers: 
-            },
+        const organisation = await prismaClient.organisation.findUniqueOrThrow({
+            where: { UUID: UUID as string },
             include: {
                 managers: {
                     orderBy: { role: 'desc' },
@@ -70,7 +67,7 @@ export const getManagers = async (req: Request, res: Response) => {
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
-        const { managers } = await prismaClient.organisation.findFirstOrThrow({
+        const { managers } = await prismaClient.organisation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 managers: {
@@ -96,7 +93,7 @@ export const getInvitations = async (req: Request, res: Response) => {
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
-        const { publishedInvitations } = await prismaClient.organisation.findFirstOrThrow({
+        const { publishedInvitations } = await prismaClient.organisation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 publishedInvitations: {
@@ -125,7 +122,7 @@ export const getTickets = async (req: Request, res: Response) => {
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
 
     try {
-        const { createdTickets } = await prismaClient.organisation.findFirstOrThrow({
+        const { createdTickets } = await prismaClient.organisation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 createdTickets: {

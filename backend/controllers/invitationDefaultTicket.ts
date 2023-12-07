@@ -8,7 +8,7 @@ export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
     
     try {
-        const { invitation } = await prismaClient.defaultTicket.findFirstOrThrow({
+        const { invitation } = await prismaClient.defaultTicket.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {
@@ -20,7 +20,7 @@ export const getOne = async (req: Request, res: Response) => {
         })
         if (!isOrganisationManager(req.user, invitation.organisationId)) return res.sendStatus(403)
 
-        const defaultTicket = await prismaClient.defaultTicket.findFirstOrThrow({
+        const defaultTicket = await prismaClient.defaultTicket.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {
@@ -48,7 +48,7 @@ export const create = async (req: Request, res: Response) => {
     if (!invitationId || !quotaTypeId || typeof value!== "number") return res.sendStatus(400)
     
     try {
-        const { organisationId } = await prismaClient.invitation.findFirstOrThrow({
+        const { organisationId } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: invitationId as string },
             select: { organisationId: true }
         })
@@ -75,7 +75,7 @@ export const update = async (req: Request, res: Response) => {
     if (!UUID || !quotaTypeId || typeof value!== "number") return res.sendStatus(400)
     
     try {
-        const { invitation } = await prismaClient.defaultTicket.findFirstOrThrow({
+        const { invitation } = await prismaClient.defaultTicket.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {
@@ -104,7 +104,7 @@ export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
 
     try {
-        const { invitation } = await prismaClient.defaultTicket.findFirstOrThrow({
+        const { invitation } = await prismaClient.defaultTicket.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {

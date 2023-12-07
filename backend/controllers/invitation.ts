@@ -24,7 +24,7 @@ export const getOne = async (req: Request, res: Response) => {
     const { limitTickets } = req.query
     
     try {
-        const invitation = await prismaClient.invitation.findFirstOrThrow({
+        const invitation = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             include: {
                 publisher: {
@@ -58,12 +58,15 @@ export const getOnePublic = async (req: Request, res: Response) => {
     const { UUID } = req.params
 
     try {
-        const invitation = await prismaClient.invitation.findFirstOrThrow({
+        const invitation = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 name: true,
                 publisher: {
-                    select: { name: true }
+                    select: { 
+                        UUID: true,
+                        name: true
+                    }
                 },
                 usageLeft: true
             }
@@ -81,7 +84,7 @@ export const getTickets = async (req: Request, res: Response) => {
     const { UUID } = req.params
     
     try {
-        const { organisationId, createdTickets } = await prismaClient.invitation.findFirstOrThrow({
+        const { organisationId, createdTickets } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 organisationId: true,
@@ -118,7 +121,7 @@ export const getDefaults = async (req: Request, res: Response) => {
     const { UUID } = req.params
     
     try {
-        const { organisationId, defaults } = await prismaClient.invitation.findFirstOrThrow({
+        const { organisationId, defaults } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             include: {
                 defaults: {
@@ -189,7 +192,7 @@ export const update = async (req: Request, res: Response) => {
 
     try {
         if (typeof newUsageQuota !== "number") return res.sendStatus(400)
-        const { organisationId: originalOrganisationId, usageQuota: originalUsageQuota } = await prismaClient.invitation.findFirstOrThrow({
+        const { organisationId: originalOrganisationId, usageQuota: originalUsageQuota } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID },
             select: { organisationId: true, usageQuota: true }
         })
@@ -232,7 +235,7 @@ export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
 
     try {
-        const { organisationId } = await prismaClient.invitation.findFirstOrThrow({
+        const { organisationId } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID },
             select: { organisationId: true }
         })

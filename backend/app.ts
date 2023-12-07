@@ -8,6 +8,7 @@ import userRouter from "./routes/user";
 import organisationRouter from "./routes/organisation";
 import invitationRouter from "./routes/invitation";
 import invitationDefaultRouter from "./routes/invitationDefaultTicket";
+import ticketRouter from "./routes/ticket";
 
 const app = express()
 
@@ -20,5 +21,6 @@ app.use('/user', userRouter)
 app.use('/organisation', organisationRouter)
 app.use('/invitation', invitationRouter)
 app.use('/invitationDefaultTicket', invitationDefaultRouter)
+app.use('/ticket', ticketRouter)
 
 export default app

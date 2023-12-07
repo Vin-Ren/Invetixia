@@ -15,6 +15,7 @@ function verifyToken(req: Request, res: Response, next: NextFunction) {
     jwt.verify(token, ACCESS_TOKEN_SECRET as string, (err, decoded) => {
         if (err) return res.sendStatus(403)
         req.user = (decoded as User)
+        req.user.recentlyLoggedIn||=false;
         next()
     })
 };
