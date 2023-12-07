@@ -22,8 +22,7 @@ export const getAll = async (req: Request, res: Response) => {
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { limitTickets } = req.query
-    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
-
+    
     try {
         const invitation = await prismaClient.invitation.findFirstOrThrow({
             where: { UUID: UUID as string },
@@ -46,6 +45,7 @@ export const getOne = async (req: Request, res: Response) => {
                 defaults: true
             }
         });
+        if (!isOrganisationManager(req.user, invitation.publisher.UUID)) return res.sendStatus(403)
         return res.json({ invitation })
     } catch (e) {
         console.log(e)
@@ -79,12 +79,12 @@ export const getOnePublic = async (req: Request, res: Response) => {
 // Get
 export const getTickets = async (req: Request, res: Response) => {
     const { UUID } = req.params
-    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
-
+    
     try {
-        const { createdTickets } = await prismaClient.organisation.findFirstOrThrow({
+        const { organisationId, createdTickets } = await prismaClient.invitation.findFirstOrThrow({
             where: { UUID: UUID as string },
             select: {
+                organisationId: true,
                 createdTickets: {
                     select: {
                         UUID: true,
@@ -105,6 +105,7 @@ export const getTickets = async (req: Request, res: Response) => {
                 }
             }
         });
+        if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
         return res.json({ tickets: createdTickets })
     } catch (e) {
         console.log(e)
@@ -115,10 +116,9 @@ export const getTickets = async (req: Request, res: Response) => {
 // Get
 export const getDefaults = async (req: Request, res: Response) => {
     const { UUID } = req.params
-    if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
-
+    
     try {
-        const { defaults } = await prismaClient.invitation.findFirstOrThrow({
+        const { organisationId, defaults } = await prismaClient.invitation.findFirstOrThrow({
             where: { UUID: UUID as string },
             include: {
                 defaults: {
@@ -126,6 +126,7 @@ export const getDefaults = async (req: Request, res: Response) => {
                 }
             }
         });
+        if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
         return res.json({ defaults })
     } catch (e) {
         console.log(e)
@@ -178,7 +179,6 @@ export const create = async (req: Request, res: Response) => {
 
 // Patch
 export const update = async (req: Request, res: Response) => {
-
     const {
         UUID, name, organisationId, newUsageQuota, newDefaults
     }: {
