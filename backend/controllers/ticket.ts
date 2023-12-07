@@ -117,7 +117,7 @@ export const update = async (req: Request, res: Response) => {
         });
 
         const updatedTicket = await prismaClient.ticket.update({
-            where: { UUID:UUID },
+            where: { UUID: UUID },
             data: {
                 ownerName: ownerName,
                 ownerContacts: ownerContacts
@@ -136,15 +136,30 @@ export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
 
     try {
-        const { ownerAffiliationId } = await prismaClient.ticket.findUniqueOrThrow({
+        const { ownerAffiliationId, invitationId } = await prismaClient.ticket.findUniqueOrThrow({
             where: { UUID: UUID },
-            select: { ownerAffiliationId: true }
+            select: {
+                ownerAffiliationId: true,
+                invitationId: true
+            }
         })
         if (!isOrganisationManager(req.user, ownerAffiliationId)) return res.sendStatus(403)
 
-        const deletedTicket = await prismaClient.ticket.delete({
+
+        const deleteTicket = prismaClient.ticket.delete({
             where: { UUID: UUID }
         })
+        const restoreInvitationUsage = prismaClient.invitation.update({
+            where: { UUID: invitationId },
+            data: {
+                usageLeft: { increment: 1 }
+            }
+        })
+        
+        const [_, __] = await prismaClient.$transaction([
+            deleteTicket, 
+            restoreInvitationUsage
+        ])
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)
