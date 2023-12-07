@@ -44,13 +44,14 @@ function initialize() {
     const hashedPassword = bcrypt.hashSync(password, 10);
     prismaClient.user.create({
         data: {
+            UUID: "superuser",
             username: "superuser",
             role: userRole.SUPER_ADMIN,
             passwordHash: hashedPassword,
             organisationManaged: {
                 connectOrCreate: {
-                    where: { name: "default" },
-                    create: { name: "default" }
+                    where: { UUID: "default", name: "default" },
+                    create: { UUID: "default", name: "default" }
                 }
             }
         }

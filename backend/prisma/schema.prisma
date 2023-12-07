@@ -16,29 +16,30 @@ model Ticket {
   UUID               String       @id @default(dbgenerated("uuid_generate_v1mc()"))
   ownerName          String       @unique
   ownerContacts      String[]
-  ownerAffiliation   Organisation @relation(fields: [ownerAffiliationId], references: [UUID])
+  ownerAffiliation   Organisation @relation(fields: [ownerAffiliationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   ownerAffiliationId String
   quotas             Quota[]
   createdTime        DateTime     @default(now())
   lastUpdated        DateTime     @updatedAt
-  invitation         Invitation   @relation(fields: [invitationId], references: [UUID])
+  invitation         Invitation   @relation(fields: [invitationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   invitationId       String
 }
 
 model Quota {
   UUID        String    @id @default(dbgenerated("uuid_generate_v1mc()"))
-  quotaType   QuotaType @relation(fields: [quotaTypeId], references: [UUID])
+  quotaType   QuotaType @relation(fields: [quotaTypeId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   quotaTypeId String
   usageLeft   Int       @default(1)
-  ticket      Ticket    @relation(fields: [ticketId], references: [UUID])
+  ticket      Ticket    @relation(fields: [ticketId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   ticketId    String
 }
 
 model QuotaType {
-  UUID        String  @id @default(dbgenerated("uuid_generate_v1mc()"))
-  name        String  @unique
-  description String  @default("")
-  quotas      Quota[]
+  UUID               String              @id @default(dbgenerated("uuid_generate_v1mc()"))
+  name               String              @unique
+  description        String              @default("")
+  quotas             Quota[]
+  invitationDefaults InvitationDefault[]
 }
 
 model Organisation {
@@ -50,12 +51,22 @@ model Organisation {
 }
 
 model Invitation {
-  UUID           String       @id @default(dbgenerated("uuid_generate_v1mc()"))
-  publisher      Organisation @relation(fields: [organisationId], references: [UUID])
+  UUID           String              @id @default(dbgenerated("uuid_generate_v1mc()"))
+  publisher      Organisation        @relation(fields: [organisationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   organisationId String
-  usageLeft      Int          @default(1)
+  usageLeft      Int                 @default(1)
   createdTickets Ticket[]
-  createdTime    DateTime     @default(now())
+  createdTime    DateTime            @default(now())
+  defaults       InvitationDefault[]
+}
+
+model InvitationDefault {
+  UUID          String     @id @default(dbgenerated("uuid_generate_v1mc()"))
+  invitation    Invitation @relation(references: [UUID], fields: [invitationId], onUpdate: Cascade, onDelete: Cascade)
+  invitationId  String
+  quotaType     QuotaType  @relation(fields: [quotaTypeUUID], references: [UUID])
+  value         Int        @default(1)
+  quotaTypeUUID String
 }
 
 model User {
@@ -63,8 +74,8 @@ model User {
   username            String       @unique
   role                Int
   passwordHash        String // impose max real password length=50 to be safe.
-  organisationManaged Organisation @relation(fields: [organisationId], references: [UUID])
-  organisationId      String
+  organisationManaged Organisation @relation(fields: [organisationId], references: [UUID], onUpdate: Cascade, onDelete: SetDefault)
+  organisationId      String       @default("default")
   tokens              Tokens?
 }
 
@@ -84,12 +95,12 @@ model Statistics {
 }
 
 model Log {
-  id          Int       @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   summary     String
   description String
-  logAction   LogAction @relation(fields: [logActionId], references: [id])
-  logActionId Int
-  createdTime DateTime  @default(now())
+  logAction   LogAction? @relation(fields: [logActionId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  logActionId Int?
+  createdTime DateTime   @default(now())
 }
 
 model LogAction {
