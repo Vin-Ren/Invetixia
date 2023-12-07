@@ -1,5 +1,5 @@
 import { User } from "../types";
-import { userRole } from "../database";
+import { userRole } from "../services/database";
 
 export const isAdmin = (user: User | undefined) => {
     return user && user.role>=userRole.ADMIN

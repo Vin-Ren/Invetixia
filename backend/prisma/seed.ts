@@ -2,7 +2,7 @@ import { env } from 'process';
 import bcrypt from 'bcrypt'
 import { randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client'
-import { prismaClient, userRole } from "../database";
+import { prismaClient, userRole } from "../services/database";
 
 const { LOG_ACTIONS, QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD } = env;
 

@@ -2,7 +2,7 @@ import { env } from "process";
 import { Request, Response } from "../types";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { prismaClient, userRole } from "../database";
+import { prismaClient, userRole } from "../services/database";
 
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = env;
 
