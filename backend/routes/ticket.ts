@@ -8,8 +8,8 @@ const ticketRouter = Router({ mergeParams: true })
 ticketRouter.get('/', verifyToken, getAll)
 ticketRouter.get('/public/:UUID', getOne)
 ticketRouter.get('/info/:UUID', getOne)
-ticketRouter.post('/create', verifyToken, create)
-ticketRouter.patch('/update', verifyToken, update)
+ticketRouter.post('/create', create)
+ticketRouter.patch('/update', update)
 ticketRouter.delete('/delete', verifyToken, deleteOne)
 
 
