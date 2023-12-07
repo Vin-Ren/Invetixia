@@ -130,8 +130,8 @@ export const login = async (req: Request, res: Response) => {
         const refreshToken = jwt.sign({ UUID, username, role, organisationId }, REFRESH_TOKEN_SECRET as string, {
             expiresIn: "1d"
         })
-        const accessToken = jwt.sign({ UUID, username, role, organisationId }, ACCESS_TOKEN_SECRET as string, {
-            expiresIn: "15m"
+        const accessToken = jwt.sign({ UUID, username, role, organisationId, recentlyLoggedIn: true }, ACCESS_TOKEN_SECRET as string, {
+            expiresIn: "5m"
         })
 
         const token = await prismaClient.user.update({

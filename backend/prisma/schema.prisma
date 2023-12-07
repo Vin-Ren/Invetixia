@@ -84,8 +84,8 @@ model User {
 model Tokens {
   user    User   @relation(references: [UUID], fields: [userId])
   userId  String @id
-  refresh String
-  access  String
+  refresh String @unique
+  access  String @unique
 }
 
 model Statistics {
