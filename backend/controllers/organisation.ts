@@ -1,4 +1,4 @@
-import { Request, Response } from "../types";
+import { Request, Response, User } from "../types";
 import { prismaClient, userRole } from "../database";
 
 
@@ -29,16 +29,25 @@ export const getAll = async (req: Request, res: Response) => {
 }
 
 
+const isManagerOfOrganisation = (user: User|undefined, organisationId: string) => {
+    return user && (!(user.role < userRole.ORGANISATION_MANAGER))
+        && ((user.role >= userRole.ADMIN) || user.organisationId === organisationId);
+}
+
+
 // Get
 export const getOne = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
     const { limitTickets } = req.query
 
+    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+
     try {
         const organisation = await prismaClient.organisation.findFirstOrThrow({
-            where: { UUID: UUID as string },
+            where: {
+                UUID: UUID as string,
+                managers: 
+            },
             include: {
                 managers: {
                     orderBy: { role: 'desc' },
@@ -63,14 +72,14 @@ export const getOne = async (req: Request, res: Response) => {
 
 // Get
 export const getManagers = async (req: Request, res: Response) => {
-    if (!req.user || req.user.role < userRole.ORGANISATION_MANAGER) return res.sendStatus(403)
-
     const { UUID } = req.params
+
+    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
 
     try {
         const { managers } = await prismaClient.organisation.findFirstOrThrow({
             where: { UUID: UUID as string },
-            select: { 
+            select: {
                 managers: {
                     select: {
                         UUID: true,
@@ -94,14 +103,16 @@ export const getInvitations = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { onlyUsables } = req.query
 
+    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+
     try {
         const { publishedInvitations } = await prismaClient.organisation.findFirstOrThrow({
-            where: { UUID: UUID as string},
-            select: { 
+            where: { UUID: UUID as string },
+            select: {
                 publishedInvitations: {
                     select: {
                         UUID: true,
-                        usageLeft: true, 
+                        usageLeft: true,
                         createdTickets: true,
                         createdTime: true
                     }
@@ -109,7 +120,7 @@ export const getInvitations = async (req: Request, res: Response) => {
             }
         });
         if (onlyUsables) {
-            return res.json({invitations: publishedInvitations.filter((invitation)=> (invitation.usageLeft>0))})
+            return res.json({ invitations: publishedInvitations.filter((invitation) => (invitation.usageLeft > 0)) })
         }
         return res.json({ invitations: publishedInvitations })
     } catch (e) {
@@ -124,10 +135,12 @@ export const getTickets = async (req: Request, res: Response) => {
 
     const { UUID } = req.params
 
+    if (!isManagerOfOrganisation(req.user, UUID)) return res.sendStatus(403)
+
     try {
         const { createdTickets } = await prismaClient.organisation.findFirstOrThrow({
             where: { UUID: UUID as string },
-            select: { 
+            select: {
                 createdTickets: {
                     select: {
                         UUID: true,
@@ -136,10 +149,7 @@ export const getTickets = async (req: Request, res: Response) => {
                         quotas: {
                             include: {
                                 quotaType: {
-                                    select: {
-                                        name: true,
-                                        description: true
-                                    }
+                                    select: { name: true }
                                 }
                             }
                         },
