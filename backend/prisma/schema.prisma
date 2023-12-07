@@ -102,7 +102,7 @@ model Log {
   description String
   logAction   LogAction? @relation(fields: [logActionId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   logActionId Int?
-  createdTime DateTime   @default(now())
+  at DateTime   @default(now())
 }
 
 model LogAction {

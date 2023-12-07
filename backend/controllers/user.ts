@@ -3,6 +3,8 @@ import { Request, Response } from "../types";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { prismaClient, userRole } from "../services/database";
+import { logEvent } from "../utils/databaseLogging";
+import { isAdmin } from "../utils/permissionCheckers";
 
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = env;
 
@@ -32,6 +34,7 @@ export const getAll = async (req: Request, res: Response) => {
                 organisationManaged: true
             }
         });
+
         return res.json({ users })
     } catch (e) {
         console.log(e)
@@ -41,16 +44,11 @@ export const getAll = async (req: Request, res: Response) => {
 
 // Get
 export const getOne = async (req: Request, res: Response) => {
-    if (!req.user) return res.sendStatus(403)
-
     const { UUID } = req.query;
+    if (!req.user) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
-        const { role } = await prismaClient.user.findUniqueOrThrow({
-            where: { UUID: req.user.UUID },
-            select: { role: true }
-        })
-
         const user = await prismaClient.user.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
@@ -61,6 +59,7 @@ export const getOne = async (req: Request, res: Response) => {
             }
         });
         if (user.role < userRole.ADMIN) return res.sendStatus(403)
+
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -71,11 +70,8 @@ export const getOne = async (req: Request, res: Response) => {
 // Post
 // accounts are created by a super user.
 export const create = async (req: Request, res: Response) => {
-
     const { username, password, role, organisationName } = req.body
-
-    if (!req.user || req.user.role < userRole.ADMIN) return res.sendStatus(403)
-
+    if (!isAdmin(req.user)) return res.sendStatus(403)
     if (!username || !password || (password as string).length < 8 || !role || !organisationName) return res.sendStatus(400)
 
     try {
@@ -100,6 +96,8 @@ export const create = async (req: Request, res: Response) => {
             },
             select: { UUID: true }
         })
+
+        await logEvent({ event: "CREATE", summary: `Create User`, description: JSON.stringify({ user: { UUID, username, role } }) })
         return res.json({ user: { UUID, username, role } })
     } catch (e) {
         console.log(e)
@@ -109,10 +107,8 @@ export const create = async (req: Request, res: Response) => {
 
 // Post
 export const login = async (req: Request, res: Response) => {
-    if (req.user) return res.sendStatus(403)
-
     const { username, password } = req.body
-
+    if (req.user) return res.sendStatus(403)
     if (!username || !password) return res.sendStatus(400)
 
     try {
@@ -134,7 +130,7 @@ export const login = async (req: Request, res: Response) => {
             expiresIn: "5m"
         })
 
-        const token = await prismaClient.user.update({
+        const _ = await prismaClient.user.update({
             where: { UUID: UUID },
             data: {
                 tokens: {
@@ -151,6 +147,7 @@ export const login = async (req: Request, res: Response) => {
                 }
             }
         })
+
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
@@ -165,10 +162,8 @@ export const login = async (req: Request, res: Response) => {
 
 // Post
 export const changePassword = async (req: Request, res: Response) => {
-    if (!req.user) return res.sendStatus(403)
-
     const { password, newPassword } = req.body
-
+    if (!req.user) return res.sendStatus(403)
     if ((!password && (req.user.role < userRole.ADMIN)) || !newPassword || (newPassword as string).length < 8) {
         return res.sendStatus(400)
     }
@@ -193,7 +188,7 @@ export const changePassword = async (req: Request, res: Response) => {
             expiresIn: "5m"
         })
 
-        const token = await prismaClient.user.update({
+        const user = await prismaClient.user.update({
             where: {
                 UUID: UUID,
                 passwordHash: newPasswordHash
@@ -213,6 +208,8 @@ export const changePassword = async (req: Request, res: Response) => {
                 }
             }
         })
+
+        await logEvent({ event: "UPDATE", summary: `Update User Password`, description: JSON.stringify(user) })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
@@ -228,10 +225,8 @@ export const changePassword = async (req: Request, res: Response) => {
 // Patch
 export const update = async (req: Request, res: Response) => {
     const { UUID, username, role, organisationName } = req.body
-
     if (!req.user || !username || req.user.role < userRole.ADMIN || req.user.role <= role) return res.sendStatus(403)
-
-    if (!UUID || !role || !organisationName) return res.sendStatus(400)
+    if ((typeof UUID !== "string") || !role || !organisationName) return res.sendStatus(400)
 
     try {
         const user = await prismaClient.user.update({
@@ -254,6 +249,8 @@ export const update = async (req: Request, res: Response) => {
                 organisationManaged: true
             }
         })
+
+        await logEvent({ event: "UPDATE", summary: `Update User`, description: JSON.stringify(user) })
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -264,6 +261,7 @@ export const update = async (req: Request, res: Response) => {
 // Post
 export const logout = async (req: Request, res: Response) => {
     if (!req.user) return res.sendStatus(200)
+
     try {
         const user = await prismaClient.user.update({
             where: {
@@ -275,6 +273,8 @@ export const logout = async (req: Request, res: Response) => {
                 }
             }
         })
+
+        await logEvent({ event: "DELETE", summary: `Delete UserToken`, description: JSON.stringify(user) })
         res.clearCookie('refreshToken')
         return res.sendStatus(200)
     } catch (e) {
@@ -285,18 +285,13 @@ export const logout = async (req: Request, res: Response) => {
 
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
-    if (!req.user) return res.sendStatus(403)
-
     const { UUID } = req.params;
+    if (!req.user) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
-        const { role } = await prismaClient.user.findUniqueOrThrow({
-            where: { UUID: req.user.UUID },
-            select: { role: true }
-        })
-
         const user = await prismaClient.user.findUniqueOrThrow({
-            where: { UUID: UUID as string },
+            where: { UUID: UUID },
             select: {
                 UUID: true,
                 username: true,
@@ -309,6 +304,8 @@ export const deleteOne = async (req: Request, res: Response) => {
         const deletedUser = await prismaClient.user.delete({
             where: { UUID: UUID }
         })
+
+        await logEvent({ event: "DELETE", summary: `Delete Ticket`, description: JSON.stringify(deletedUser) })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

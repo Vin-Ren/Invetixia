@@ -1,6 +1,7 @@
 import { Request, Response } from "../types";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
+import { logEvent } from "../utils/databaseLogging";
 
 
 // Get
@@ -20,6 +21,7 @@ export const getAll = async (req: Request, res: Response) => {
                 usageLeft: true
             }
         });
+
         return res.json({ quotas })
     } catch (e) {
         console.log(e)
@@ -31,6 +33,7 @@ export const getAll = async (req: Request, res: Response) => {
 // always public
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const quota = await prismaClient.quota.findUniqueOrThrow({
@@ -40,6 +43,7 @@ export const getOne = async (req: Request, res: Response) => {
                 ticket: true
             }
         });
+        
         return res.json({ quota })
     } catch (e) {
         console.log(e)
@@ -51,6 +55,7 @@ export const getOne = async (req: Request, res: Response) => {
 // Post
 export const create = async (req: Request, res: Response) => {
     const { quotaTypeId, usageLeft, ticketId } = req.body
+    if (!quotaTypeId || !ticketId) return res.sendStatus(400)
 
     try {
         const { ownerAffiliationId } = await prismaClient.ticket.findUniqueOrThrow({
@@ -66,6 +71,8 @@ export const create = async (req: Request, res: Response) => {
                 ticketId: ticketId
             }
         })
+
+        await logEvent({ event: "CREATE", summary: `Create Quota`, description: JSON.stringify(quota) })
         return res.json({ quota })
     } catch (e) {
         console.log(e)
@@ -76,7 +83,7 @@ export const create = async (req: Request, res: Response) => {
 // Post
 export const consume = async (req: Request, res: Response) => {
     const { UUID } = req.body
-    if (!UUID) return res.sendStatus(400)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const { ticket } = await prismaClient.quota.findUniqueOrThrow({
@@ -101,6 +108,7 @@ export const consume = async (req: Request, res: Response) => {
             }
         })
 
+        await logEvent({ event: "CONSUME", summary: `Consume Quota`, description: JSON.stringify(consumedQuota) })
         return res.json({ quota: consumedQuota })
     } catch (e) {
         console.log(e)
@@ -111,7 +119,7 @@ export const consume = async (req: Request, res: Response) => {
 // Patch
 export const update = async (req: Request, res: Response) => {
     const { UUID, quotaTypeId, usageLeft } = req.body
-    if (!UUID || !quotaTypeId || typeof usageLeft !== "number") return res.sendStatus(400)
+    if ((typeof UUID !== "string") || !quotaTypeId || typeof usageLeft !== "number") return res.sendStatus(400)
 
     try {
         const { ticket } = await prismaClient.quota.findUniqueOrThrow({
@@ -132,6 +140,7 @@ export const update = async (req: Request, res: Response) => {
             }
         })
 
+        await logEvent({ event: "UPDATE", summary: `Update Quota`, description: JSON.stringify(updatedQuota) })
         return res.json({ quota: updatedQuota })
     } catch (e) {
         console.log(e)
@@ -142,6 +151,7 @@ export const update = async (req: Request, res: Response) => {
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const { ticket } = await prismaClient.quota.findUniqueOrThrow({
@@ -157,6 +167,8 @@ export const deleteOne = async (req: Request, res: Response) => {
         const deletedQuota = await prismaClient.quota.delete({
             where: { UUID: UUID }
         })
+
+        await logEvent({ event: "DELETE", summary: `Delete Quota`, description: JSON.stringify(deletedQuota) })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

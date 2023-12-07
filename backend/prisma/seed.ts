@@ -2,15 +2,13 @@ import { env } from 'process';
 import bcrypt from 'bcrypt'
 import { randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client'
-import { prismaClient, userRole } from "../services/database";
+import { prismaClient, userRole, logAction } from "../services/database";
 
-const { LOG_ACTIONS, QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD } = env;
+const { QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD } = env;
 
 function initialize() {
-    const logTypes = (
-        LOG_ACTIONS !== undefined ?
-            LOG_ACTIONS : "CREATE,PATCH,DELETE").split(",")
-    logTypes.forEach(act => {
+    const logActions = Object.values(logAction)
+    logActions.forEach(act => {
         prismaClient.logAction.create({ data: { name: act } }).catch((err) => {
             if (err instanceof Prisma.PrismaClientKnownRequestError) {
                 if (err.code == 'P2002') return

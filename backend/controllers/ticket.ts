@@ -1,6 +1,7 @@
 import { Request, Response } from "../types";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
+import { logEvent } from "../utils/databaseLogging";
 
 
 // Get
@@ -18,6 +19,7 @@ export const getAll = async (req: Request, res: Response) => {
                 }
             }
         });
+
         return res.json({ tickets })
     } catch (e) {
         console.log(e)
@@ -29,6 +31,7 @@ export const getAll = async (req: Request, res: Response) => {
 // always public
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const ticket = await prismaClient.ticket.findUniqueOrThrow({
@@ -51,6 +54,7 @@ export const getOne = async (req: Request, res: Response) => {
                 }
             }
         });
+        
         return res.json({ ticket })
     } catch (e) {
         console.log(e)
@@ -62,6 +66,7 @@ export const getOne = async (req: Request, res: Response) => {
 // Post
 export const create = async (req: Request, res: Response) => {
     const { ownerName, ownerContacts, invitationId } = req.body
+    if (!ownerName || !ownerContacts || !invitationId) return res.sendStatus(400)
 
     try {
         const invitation = await prismaClient.invitation.findUniqueOrThrow({
@@ -93,11 +98,13 @@ export const create = async (req: Request, res: Response) => {
             }
         })
 
-        const [_, ticket] = await prismaClient.$transaction([
+        const [consumedInvitation, ticket] = await prismaClient.$transaction([
             updateInvitation,
             createTicket
         ])
 
+        await logEvent({ event: "CONSUME", summary: `Consume Invitation`, description: JSON.stringify(consumedInvitation) })
+        await logEvent({ event: "CREATE", summary: `Create Ticket`, description: JSON.stringify(ticket) })
         return res.json({ ticket })
     } catch (e) {
         console.log(e)
@@ -108,7 +115,7 @@ export const create = async (req: Request, res: Response) => {
 // Patch
 export const update = async (req: Request, res: Response) => {
     const { UUID, ownerName, ownerContacts }: { UUID: string, ownerName: string, ownerContacts: string[] } = req.body
-    if (!UUID || !ownerName || !ownerContacts) return res.sendStatus(400)
+    if ((typeof UUID !== "string") || !ownerName || !ownerContacts) return res.sendStatus(400)
 
     try {
         if (typeof ownerName !== "string") return res.sendStatus(400)
@@ -124,6 +131,7 @@ export const update = async (req: Request, res: Response) => {
             }
         })
 
+        await logEvent({ event: "UPDATE", summary: `Update Ticket`, description: JSON.stringify(updatedTicket) })
         return res.json({ ticket: updatedTicket })
     } catch (e) {
         console.log(e)
@@ -134,6 +142,7 @@ export const update = async (req: Request, res: Response) => {
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const { ownerAffiliationId, invitationId } = await prismaClient.ticket.findUniqueOrThrow({
@@ -145,7 +154,6 @@ export const deleteOne = async (req: Request, res: Response) => {
         })
         if (!isOrganisationManager(req.user, ownerAffiliationId)) return res.sendStatus(403)
 
-
         const deleteTicket = prismaClient.ticket.delete({
             where: { UUID: UUID }
         })
@@ -155,11 +163,14 @@ export const deleteOne = async (req: Request, res: Response) => {
                 usageLeft: { increment: 1 }
             }
         })
-        
-        const [_, __] = await prismaClient.$transaction([
-            deleteTicket, 
+
+        const [deletedTicket, restoredInvitation] = await prismaClient.$transaction([
+            deleteTicket,
             restoreInvitationUsage
         ])
+
+        await logEvent({ event: "DELETE", summary: `Delete Ticket`, description: JSON.stringify(deletedTicket) })
+        await logEvent({ event: "RESTORE", summary: `Restore Invitation`, description: JSON.stringify(restoredInvitation) })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

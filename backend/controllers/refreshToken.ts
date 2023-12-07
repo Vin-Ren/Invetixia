@@ -17,7 +17,7 @@ export const refreshToken = async (req: Request, res: Response) => {
                 where: { refresh: refreshToken },
                 include: { user: true }
             });
-    
+
             if (user === null) return res.sendStatus(401);
 
             const { UUID, username, role, organisationId } = user;
