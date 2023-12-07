@@ -35,11 +35,11 @@ model Quota {
 }
 
 model QuotaType {
-  UUID               String              @id @default(dbgenerated("uuid_generate_v1mc()"))
-  name               String              @unique
-  description        String              @default("")
-  quotas             Quota[]
-  invitationDefaults InvitationDefault[]
+  UUID           String          @id @default(dbgenerated("uuid_generate_v1mc()"))
+  name           String          @unique
+  description    String          @default("")
+  quotas         Quota[]
+  defaultTickets DefaultTicket[]
 }
 
 model Organisation {
@@ -51,18 +51,18 @@ model Organisation {
 }
 
 model Invitation {
-  UUID           String              @id @default(dbgenerated("uuid_generate_v1mc()"))
+  UUID           String          @id @default(dbgenerated("uuid_generate_v1mc()"))
   name           String
-  publisher      Organisation        @relation(fields: [organisationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
+  publisher      Organisation    @relation(fields: [organisationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   organisationId String
-  usageQuota     Int                 @default(1)
-  usageLeft      Int                 @default(1)
+  usageQuota     Int             @default(1)
+  usageLeft      Int             @default(1)
   createdTickets Ticket[]
-  createdTime    DateTime            @default(now())
-  defaults       InvitationDefault[]
+  createdTime    DateTime        @default(now())
+  defaults       DefaultTicket[]
 }
 
-model InvitationDefault {
+model DefaultTicket {
   UUID         String     @id @default(dbgenerated("uuid_generate_v1mc()"))
   invitation   Invitation @relation(references: [UUID], fields: [invitationId], onUpdate: Cascade, onDelete: Cascade)
   invitationId String

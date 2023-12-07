@@ -1,4 +1,4 @@
-import { InvitationDefaultInput, Request, Response } from "../types";
+import { DefaultTicketInput, Request, Response } from "../types";
 import { prismaClient } from "../database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 
@@ -140,7 +140,7 @@ export const create = async (req: Request, res: Response) => {
     const {
         name, organisationId, usageQuota, defaults
     }: {
-        name: string, organisationId: string, usageQuota: number, defaults: InvitationDefaultInput[]
+        name: string, organisationId: string, usageQuota: number, defaults: DefaultTicketInput[]
     } = req.body
     if (!organisationId) return res.sendStatus(400)
     if (!isOrganisationManager(req.user, organisationId)) res.sendStatus(403)
@@ -182,7 +182,7 @@ export const update = async (req: Request, res: Response) => {
     const {
         UUID, name, organisationId, newUsageQuota, newDefaults
     }: {
-        UUID: string, name: string, organisationId: string, newUsageQuota: number, newDefaults: InvitationDefaultInput[]
+        UUID: string, name: string, organisationId: string, newUsageQuota: number, newDefaults: DefaultTicketInput[]
     } = req.body
     if (!name || !organisationId) return res.sendStatus(400)
     if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
@@ -198,7 +198,7 @@ export const update = async (req: Request, res: Response) => {
         newDefaults.forEach(element => { // prevents nested create
             if (typeof element.quotaTypeId !== "string") return res.sendStatus(400)
         });
-        const createNewDefaults = prismaClient.invitationDefault.createMany({
+        const createNewDefaults = prismaClient.defaultTicket.createMany({
             data: newDefaults.map((e) => { return { ...e, invitationId: UUID } })
         })
 
