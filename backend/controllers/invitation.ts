@@ -1,5 +1,5 @@
 import { InvitationDefaultInput, Request, Response } from "../types";
-import { prismaClient, userRole } from "../database";
+import { prismaClient } from "../database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 
 
@@ -49,6 +49,29 @@ export const getOne = async (req: Request, res: Response) => {
         return res.json({ invitation })
     } catch (e) {
         console.log(e)
+    }
+}
+
+
+// Get
+export const getOnePublic = async (req: Request, res: Response) => {
+    const { UUID } = req.params
+
+    try {
+        const invitation = await prismaClient.invitation.findFirstOrThrow({
+            where: { UUID: UUID as string },
+            select: {
+                name: true,
+                publisher: {
+                    select: { name: true }
+                },
+                usageLeft: true
+            }
+        });
+        return res.json({ invitation })
+    } catch (e) {
+        console.log(e)
+        return res.sendStatus(404)
     }
 }
 
