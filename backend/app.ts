@@ -1,5 +1,6 @@
 import express from "express";
 import cors from 'cors';
+import cookieParser from "cookie-parser";
 import compression from 'compression'
 
 import corsConfig from './config/cors';
@@ -15,6 +16,7 @@ import quotaTypeRouter from "./routes/quotaType";
 const app = express()
 
 app.use(cors(corsConfig))
+app.use(cookieParser())
 app.use(express.json({ limit: "64mb" }))
 app.use(compression())
 

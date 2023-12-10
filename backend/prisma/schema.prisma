@@ -82,16 +82,16 @@ model User {
 }
 
 model Tokens {
-  user    User   @relation(references: [UUID], fields: [userId])
+  user    User   @relation(references: [UUID], fields: [userId], onUpdate: Cascade, onDelete: Cascade)
   userId  String @id
   refresh String @unique
   access  String @unique
 }
 
-model Statistics {
+model Analytics {
   id          Int      @id @default(autoincrement())
   name        String   @unique
-  description String
+  description String   @default("")
   value       BigInt   @default(0)
   lastUpdated DateTime @updatedAt
 }

@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { prismaClient, userRole } from "../services/database";
 import { logEvent } from "../utils/databaseLogging";
 import { isAdmin } from "../utils/permissionCheckers";
+import { Prisma } from "@prisma/client";
 
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = env;
 
@@ -67,12 +68,32 @@ export const getOne = async (req: Request, res: Response) => {
 }
 
 
+// Get
+export const getSelf = async (req: Request, res: Response) => {
+    if (!req.user) return res.sendStatus(403)
+
+    try {
+        return res.json({
+            user: {
+                UUID: req.user.UUID,
+                username: req.user.username,
+                role: req.user.role,
+                organisationId: req.user.organisationId
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
 // Post
 // accounts are created by a super user.
 export const create = async (req: Request, res: Response) => {
     const { username, password, role, organisationName } = req.body
     if (!isAdmin(req.user)) return res.sendStatus(403)
     if (!username || !password || (password as string).length < 8 || !role || !organisationName) return res.sendStatus(400)
+    if (req.user && req.user.role <= role) return res.sendStatus(403)
 
     try {
         const duplicateUser = await prismaClient.user.findUnique({
@@ -82,7 +103,7 @@ export const create = async (req: Request, res: Response) => {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
-        const { UUID } = await prismaClient.user.create({
+        const user = await prismaClient.user.create({
             data: {
                 username: username,
                 passwordHash: passwordHash,
@@ -94,11 +115,16 @@ export const create = async (req: Request, res: Response) => {
                     }
                 }
             },
-            select: { UUID: true }
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationId: true
+            }
         })
 
-        await logEvent({ event: "CREATE", summary: `Create User`, description: JSON.stringify({ user: { UUID, username, role } }) })
-        return res.json({ user: { UUID, username, role } })
+        await logEvent({ event: "CREATE", summary: `Create User`, description: JSON.stringify({ user }) })
+        return res.json({ user })
     } catch (e) {
         console.log(e)
     }
@@ -169,7 +195,7 @@ export const changePassword = async (req: Request, res: Response) => {
     }
 
     try {
-        const { UUID, username, role } = req.user;
+        const { UUID, username, role, organisationId } = req.user;
 
         const { passwordHash } = await prismaClient.user.findUniqueOrThrow({
             where: { UUID: req.user.UUID },
@@ -184,7 +210,7 @@ export const changePassword = async (req: Request, res: Response) => {
         const refreshToken = jwt.sign({ UUID, username, role }, REFRESH_TOKEN_SECRET as string, {
             expiresIn: "1d"
         })
-        const accessToken = jwt.sign({ UUID, username, role }, ACCESS_TOKEN_SECRET as string, {
+        const accessToken = jwt.sign({ UUID, username, role, organisationId }, ACCESS_TOKEN_SECRET as string, {
             expiresIn: "5m"
         })
 
@@ -206,6 +232,12 @@ export const changePassword = async (req: Request, res: Response) => {
                         }
                     }
                 }
+            },
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationId: true
             }
         })
 
@@ -271,6 +303,12 @@ export const logout = async (req: Request, res: Response) => {
                 tokens: {
                     delete: true
                 }
+            },
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationId: true
             }
         })
 
@@ -285,7 +323,7 @@ export const logout = async (req: Request, res: Response) => {
 
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
-    const { UUID } = req.params;
+    const { UUID } = req.body;
     if (!req.user) return res.sendStatus(403)
     if (typeof UUID !== "string") return res.sendStatus(400)
 
@@ -302,12 +340,22 @@ export const deleteOne = async (req: Request, res: Response) => {
         if (user.role < userRole.ADMIN) return res.sendStatus(403)
 
         const deletedUser = await prismaClient.user.delete({
-            where: { UUID: UUID }
+            where: { UUID: UUID },
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationId: true
+            }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete Ticket`, description: JSON.stringify(deletedUser) })
+        await logEvent({ event: "DELETE", summary: `Delete User`, description: JSON.stringify(deletedUser) })
         return res.sendStatus(201)
     } catch (e) {
-        console.log(e)
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        } else {
+            console.log(e)
+        }
     }
 }
