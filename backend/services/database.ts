@@ -21,7 +21,7 @@ export enum logAction {
 
 
 function createPrismaClient() {
-    if (ENABLE_QUERY_LOGGING) {
+    if (parseInt(ENABLE_QUERY_LOGGING as string)) {
         const prismaClient = new PrismaClient({
             log: [{ level: 'query', emit: 'event' }]
         })
