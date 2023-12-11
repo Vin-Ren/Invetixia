@@ -3,15 +3,25 @@ import { PrismaClient } from "@prisma/client";
 
 const { ENABLE_QUERY_LOGGING } = env;
 
-export const userRole = {
-    SUPER_ADMIN: 0b1000,
-    ADMIN: 0b0100,
-    ORGANISATION_MANAGER: 0b0010,
-    OBSERVER: 0b0001
+export enum userRole {
+    SUPER_ADMIN = 0b1000,
+    ADMIN = 0b0100,
+    ORGANISATION_MANAGER = 0b0010,
+    OBSERVER = 0b0001
 }
 
+export type logActionT = "CREATE" | "UPDATE" | "CONSUME" | "RESTORE" | "DELETE";
+export enum logAction {
+    CREATE = "CREATE",
+    UPDATE = "UPDATE",
+    CONSUME = "CONSUME",
+    RESTORE = "RESTORE",
+    DELETE = "DELETE"
+}
+
+
 function createPrismaClient() {
-    if (ENABLE_QUERY_LOGGING) {
+    if (parseInt(ENABLE_QUERY_LOGGING as string)) {
         const prismaClient = new PrismaClient({
             log: [{ level: 'query', emit: 'event' }]
         })

@@ -1,20 +1,21 @@
 import { Router } from "express";
 import { refreshToken } from "../controllers/refreshToken";
-import { getRoles, getAll, getOne, create, login, changePassword, update, logout, deleteOne } from "../controllers/user";
+import { getRoles, getAll, getOne, getSelf, create, login, changePassword, update, logout, deleteOne } from "../controllers/user";
 import verifyToken from "../middlewares/verifyToken";
 
 
-const userRouter = Router({ mergeParams: true })
+const userRouter = Router({ mergeParams: true, caseSensitive:true })
 
 userRouter.get('/', verifyToken, getAll)
 userRouter.get('/info/:UUID', verifyToken, getOne)
+userRouter.get('/self', verifyToken, getSelf)
 
 userRouter.post('/create', verifyToken, create)
-userRouter.post('/login', verifyToken, login)
-userRouter.post('/changePassword', verifyToken, changePassword)
+userRouter.post('/login', login)
+userRouter.patch('/changePassword', verifyToken, changePassword)
 userRouter.patch('/update', verifyToken, update)
 userRouter.post('/logout', verifyToken, logout)
-userRouter.delete('/delete/:UUID', verifyToken, deleteOne)
+userRouter.delete('/delete', verifyToken, deleteOne)
 
 userRouter.get('/refreshToken', refreshToken)
 userRouter.get('/roles', getRoles)

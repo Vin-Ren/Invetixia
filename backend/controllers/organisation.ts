@@ -1,6 +1,7 @@
 import { Request, Response } from "../types";
-import { prismaClient, userRole } from "../database";
+import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
+import { logEvent } from "../utils/databaseLogging";
 
 
 // Get
@@ -23,6 +24,7 @@ export const getAll = async (req: Request, res: Response) => {
                 }
             }
         });
+
         return res.json({ organisations })
     } catch (e) {
         console.log(e)
@@ -35,6 +37,7 @@ export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { limitTickets } = req.query
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const organisation = await prismaClient.organisation.findUniqueOrThrow({
@@ -54,6 +57,7 @@ export const getOne = async (req: Request, res: Response) => {
                 }
             }
         });
+
         return res.json({ organisation })
     } catch (e) {
         console.log(e)
@@ -65,6 +69,7 @@ export const getOne = async (req: Request, res: Response) => {
 export const getManagers = async (req: Request, res: Response) => {
     const { UUID } = req.params
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const { managers } = await prismaClient.organisation.findUniqueOrThrow({
@@ -79,6 +84,7 @@ export const getManagers = async (req: Request, res: Response) => {
                 }
             }
         });
+
         return res.json({ managers })
     } catch (e) {
         console.log(e)
@@ -91,6 +97,7 @@ export const getInvitations = async (req: Request, res: Response) => {
     const { UUID } = req.params
     const { onlyUsables } = req.query
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const { publishedInvitations } = await prismaClient.organisation.findUniqueOrThrow({
@@ -106,6 +113,7 @@ export const getInvitations = async (req: Request, res: Response) => {
                 }
             }
         });
+
         if (onlyUsables) {
             return res.json({ invitations: publishedInvitations.filter((invitation) => (invitation.usageLeft > 0)) })
         }
@@ -120,6 +128,7 @@ export const getInvitations = async (req: Request, res: Response) => {
 export const getTickets = async (req: Request, res: Response) => {
     const { UUID } = req.params
     if (!isOrganisationManager(req.user, UUID)) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const { createdTickets } = await prismaClient.organisation.findUniqueOrThrow({
@@ -142,6 +151,7 @@ export const getTickets = async (req: Request, res: Response) => {
                 }
             }
         });
+
         return res.json({ tickets: createdTickets })
     } catch (e) {
         console.log(e)
@@ -151,15 +161,16 @@ export const getTickets = async (req: Request, res: Response) => {
 
 // Post
 export const create = async (req: Request, res: Response) => {
-    if (!isAdmin(req.user)) return res.sendStatus(403)
-
     const { name } = req.body
+    if (!isAdmin(req.user)) return res.sendStatus(403)
     if (!name) return res.sendStatus(400)
 
     try {
         const organisation = await prismaClient.organisation.create({
             data: { name: name }
         });
+
+        await logEvent({ event: "CREATE", summary: `Create Organisation`, description: JSON.stringify(organisation) })
         return res.json({ organisation })
     } catch (e) {
         console.log(e)
@@ -169,10 +180,9 @@ export const create = async (req: Request, res: Response) => {
 
 // Patch
 export const update = async (req: Request, res: Response) => {
-    if (!isAdmin(req.user)) return res.sendStatus(403)
-
     const { UUID, newName } = req.body
-    if (!newName) return res.sendStatus(400)
+    if (!isAdmin(req.user)) return res.sendStatus(403)
+    if ((typeof UUID !== "string") || !newName) return res.sendStatus(400)
 
     try {
         const organisation = await prismaClient.organisation.update({
@@ -190,6 +200,8 @@ export const update = async (req: Request, res: Response) => {
                 }
             }
         });
+
+        await logEvent({ event: "UPDATE", summary: `Update Organisation`, description: JSON.stringify(organisation) })
         return res.json({ organisation })
     } catch (e) {
         console.log(e)
@@ -199,14 +211,16 @@ export const update = async (req: Request, res: Response) => {
 
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
-    if (!isAdmin(req.user)) return res.sendStatus(403)
-
     const { UUID } = req.body;
+    if (!isAdmin(req.user)) return res.sendStatus(403)
+    if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
         const deletedOrganisation = await prismaClient.organisation.delete({
             where: { UUID: UUID }
         })
+
+        await logEvent({ event: "DELETE", summary: `Delete Organisation`, description: JSON.stringify(deletedOrganisation) })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)
