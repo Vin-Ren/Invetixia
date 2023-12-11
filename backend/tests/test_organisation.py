@@ -5,8 +5,6 @@ import pytest
 class TestSU:
     @pytest.fixture(autouse=True)
     def _login(self):
-        self.cls = self.__class__.__name__
-        self.clsId = 'organisation.'+self.cls
         self.session = commons.Session(credentials=commons.SUPERUSER_CREDENTIALS)
         yield None
         self.session.logout()
@@ -16,11 +14,9 @@ class TestSU:
         assert (res.ok)
 
 
-class TestAdmin:
+class TestAdmin(commons.PersistentStore):
     @pytest.fixture(autouse=True)
     def _login(self):
-        self.cls = self.__class__.__name__
-        self.clsId = 'organisation.'+self.cls
         self.su_session = commons.Session(credentials=commons.SUPERUSER_CREDENTIALS)
         self.credentials = commons.generate_create_user_input(role=commons.Role.ADMIN)
         res = self.su_session.request_path("POST", '/user/create', json=self.credentials)
@@ -47,24 +43,22 @@ class TestAdmin:
     def test_create_organisation(self):
         res = self.session.request_path("POST", '/organisation/create', json={'name':commons.generate_many_random_hex(1)[0]})
         assert (res.ok)
-        commons.PS[self.clsId+'tc1']=res.json()['organisation']
+        self.store_set('tc1', res.json()['organisation'])
     
     def test_update_organisation(self):
-        jsonData = {'UUID': commons.PS.get(self.clsId+'tc1', {})['UUID'],'newName':commons.generate_many_random_hex(1, prefix='upd-')[0]}
+        jsonData = {'UUID': self.store_get('tc1')['UUID'],'newName':commons.generate_many_random_hex(1, prefix='upd-')[0]}
         res = self.session.request_path("PATCH", '/organisation/update', json=jsonData)
         assert (res.ok)
     
     def test_delete_organisation(self):
-        jsonData = {'UUID': commons.PS.get(self.clsId+'tc1', {})['UUID']}
+        jsonData = {'UUID': self.store_get('tc1')['UUID']}
         res = self.session.request_path("DELETE", '/organisation/delete', json=jsonData)
         assert (res.ok), jsonData
 
 
-class TestOrganisationManager:
+class TestOrganisationManager(commons.PersistentStore):
     @pytest.fixture(autouse=True)
     def _login(self):
-        self.cls = self.__class__.__name__
-        self.clsId = 'organisation.'+self.cls
         self.su_session = commons.Session(credentials=commons.SUPERUSER_CREDENTIALS)
         self.credentials = commons.generate_create_user_input(role=commons.Role.ORGANISATION_MANAGER)
         res = self.su_session.request_path("POST", '/user/create', json=self.credentials)
@@ -94,17 +88,17 @@ class TestOrganisationManager:
     def test_create_organisation(self):
         res = self.session.request_path("POST", '/organisation/create', json={'name':commons.generate_many_random_hex(1)[0]})
         assert (res.ok)
-        commons.PS[self.clsId+'tc1']=res.json()['organisation']
+        self.store_set('tc1', res.json()['organisation'])
     
     @pytest.mark.xfail(reason="Only admins can manage organisation")
     def test_update_organisation(self):
-        jsonData = {'UUID': self.session.info['organisationManaged']['UUID'], 'newName':commons.generate_many_random_hex(1, prefix='upd-')[0]}
+        jsonData = {'UUID': self.store_get('tc1')['UUID'], 'newName':commons.generate_many_random_hex(1, prefix='upd-')[0]}
         res = self.session.request_path("PATCH", '/organisation/update', json=jsonData)
         assert (res.ok)
     
     @pytest.mark.xfail(reason="Only admins can delete organisation")
     def test_delete_organisation(self):
-        jsonData = {'UUID': self.session.info['organisationManaged']['UUID']}
+        jsonData = {'UUID': self.store_get('tc1')['UUID']}
         res = self.session.request_path("DELETE", '/organisation/delete', json=jsonData)
         assert (res.ok)
 
@@ -112,8 +106,6 @@ class TestOrganisationManager:
 class TestPublic:
     @pytest.fixture(autouse=True)
     def _login(self):
-        self.cls = self.__class__.__name__
-        self.clsId = 'organisation.'+self.cls
         self.session = commons.Session()
     
     @pytest.fixture
