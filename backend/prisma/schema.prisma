@@ -102,7 +102,9 @@ model Log {
   description String
   logAction   LogAction? @relation(fields: [logActionId], references: [id], onUpdate: Cascade, onDelete: SetNull)
   logActionId Int?
-  at DateTime   @default(now())
+  at          DateTime   @default(now())
+
+  @@index([logActionId, at(sort: Desc)])
 }
 
 model LogAction {

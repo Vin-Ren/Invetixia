@@ -123,7 +123,7 @@ export const create = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "CREATE", summary: `Create User`, description: JSON.stringify({ user }) })
+        await logEvent({ event: "CREATE", summary: `Create User`, description: `Created user '${user.username}' with role=${user.role} and organisation '${user.organisationId}'` })
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -174,6 +174,7 @@ export const login = async (req: Request, res: Response) => {
             }
         })
 
+        await logEvent({ event: "UPDATE", summary: `Update UserToken`, description: `Login ${username}` })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
@@ -241,7 +242,7 @@ export const changePassword = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "UPDATE", summary: `Update User Password`, description: JSON.stringify(user) })
+        await logEvent({ event: "UPDATE", summary: `Update User Password`, description: `Changed password for ${user.username}` })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
@@ -287,7 +288,7 @@ export const update = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "UPDATE", summary: `Update User`, description: JSON.stringify(user) })
+        await logEvent({ event: "UPDATE", summary: `Update User`, description: `Updated user ${user.username}` })
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -317,7 +318,7 @@ export const logout = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete UserToken`, description: JSON.stringify(user) })
+        await logEvent({ event: "DELETE", summary: `Delete UserToken`, description: `Logout ${user.username}` })
         res.clearCookie('refreshToken')
         return res.sendStatus(200)
     } catch (e) {
@@ -342,7 +343,7 @@ export const deleteOne = async (req: Request, res: Response) => {
                 organisationManaged: true
             }
         });
-        if (user.role < userRole.ADMIN || req.user.role <= user.role) return res.sendStatus(403)
+        if (user.role === userRole.SUPER_ADMIN || req.user.role <= user.role) return res.sendStatus(403)
 
         const deletedUser = await prismaClient.user.delete({
             where: { UUID: UUID },
@@ -354,7 +355,7 @@ export const deleteOne = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete User`, description: JSON.stringify(deletedUser) })
+        await logEvent({ event: "DELETE", summary: `Delete User`, description: `Deleted user ${user.username}` })
         return res.sendStatus(201)
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {

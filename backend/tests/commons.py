@@ -1,9 +1,13 @@
+from functools import lru_cache
 import os
 from enum import IntFlag
 import secrets
 from typing import Dict
 
 import requests
+import dotenv
+
+dotenv.load_dotenv()
 
 # Constants
 BASE_URL = "http://127.0.0.1:8080"
@@ -26,6 +30,12 @@ def generate_create_user_input(role: Role, organisationName = None):
     if organisationName is None:
         organisationName = 'organisation-%s' % secrets.token_hex(4)
     return {**generate_credentials(), 'role': role.value, "organisationName": organisationName}
+
+
+@lru_cache(maxsize=1000)
+def generate_many_create_user_input(role:Role, count=5):
+    if (count==0): return []
+    return generate_many_create_user_input(role, count-1)+[generate_create_user_input(role)]
 
 
 class Session(requests.Session):

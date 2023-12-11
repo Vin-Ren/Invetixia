@@ -1,5 +1,3 @@
-import json
-import secrets
 import commons
 import pytest
 
@@ -8,10 +6,10 @@ import pytest
 class TestSU:
     @pytest.fixture(autouse=True)
     def _login(self):
-        self.K = 2
+        self.K = 3
         self.session = commons.Session(credentials=commons.SUPERUSER_CREDENTIALS)
         
-        self.generated_admin_data = [commons.generate_create_user_input(commons.Role.ADMIN) for _ in range(self.K)]
+        self.generated_admin_data = commons.generate_many_create_user_input(commons.Role.ADMIN, self.K)
         self.admin_sessions = [commons.Session() for i in range(self.K)]
         
         yield None
@@ -28,10 +26,11 @@ class TestSU:
     # @pytest.mark.xfail(reason="User can only manage roles below itself")
     def test_assign_super_admin_to_admin_xfail(self, subtests):
         for i in range(self.K):
-            with subtests.test(msg="Assign super admin role to admin", xfail="User can only manage roles below itself"):
+            with subtests.test(msg="Assign super admin role to admin", i=i):
                 self.generated_admin_data[i]['role']=8
                 res = self.admin_sessions[i].request_path("PATCH", '/user/update', json=self.generated_admin_data[i])
-                assert (res.status_code==403), "Should fail"
+                assert (res.status_code==403), "Should be 403"
+                pytest.xfail("User can only manage roles below itself")
     
     def test_delete_all_users(self, subtests):
         users = []
@@ -111,7 +110,7 @@ class TestPublic:
         self.session = commons.Session()
     
     @pytest.fixture
-    def get_su(self):
+    def su_session(self):
         su_session = commons.Session(credentials=commons.SUPERUSER_CREDENTIALS)
         yield su_session
         su_session.logout()
@@ -126,8 +125,8 @@ class TestPublic:
         assert (res.ok)
     
     @pytest.mark.xfail(reason="Get a user is not available to public")
-    def test_user_one(self, get_su):
-        res = self.session.request_path("GET", '/user/info/%s' % get_su.info['UUID'])
+    def test_user_one(self, su_session):
+        res = self.session.request_path("GET", '/user/info/%s' % su_session.info['UUID'])
         assert (res.ok)
 
     @pytest.mark.xfail(reason="Only admins can create accounts")
