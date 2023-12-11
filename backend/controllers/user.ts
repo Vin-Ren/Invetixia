@@ -73,14 +73,16 @@ export const getSelf = async (req: Request, res: Response) => {
     if (!req.user) return res.sendStatus(403)
 
     try {
-        return res.json({
-            user: {
-                UUID: req.user.UUID,
-                username: req.user.username,
-                role: req.user.role,
-                organisationId: req.user.organisationId
+        const user = await prismaClient.user.findUniqueOrThrow({
+            where: { UUID: req.user.UUID as string },
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationManaged: true
             }
-        })
+        });
+        return res.json({user})
     } catch (e) {
         console.log(e)
     }

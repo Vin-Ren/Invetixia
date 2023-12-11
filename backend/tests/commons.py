@@ -12,7 +12,7 @@ dotenv.load_dotenv()
 # Constants
 BASE_URL = "http://127.0.0.1:8080"
 SUPERUSER_CREDENTIALS = {"username":"superuser", "password":str(os.environ.get("SUPERUSER_PASSWORD",""))}
-
+PS = PERSISTENT_STORE = {}
 
 class Role(IntFlag):
     SUPER_ADMIN = 0b1000
@@ -31,11 +31,21 @@ def generate_create_user_input(role: Role, organisationName = None):
         organisationName = 'organisation-%s' % secrets.token_hex(4)
     return {**generate_credentials(), 'role': role.value, "organisationName": organisationName}
 
-
-@lru_cache(maxsize=1000)
-def generate_many_create_user_input(role:Role, count=5):
-    if (count==0): return []
+@lru_cache(maxsize=None)
+def generate_many_create_user_input(role:Role, count=1):
+    "Generate many create user input, but with persistence within a session"
+    if count==0: return []
     return generate_many_create_user_input(role, count-1)+[generate_create_user_input(role)]
+
+
+def generate_random_hex(prefix: str = '', randomLength: int = 8):
+    return prefix+secrets.token_hex(randomLength)
+
+@lru_cache(maxsize=None)
+def generate_many_random_hex(count=1, prefix: str = '', randomLength: int = 8):
+    "Generate many random hex, but with persistence within a session"
+    if count==0: return []
+    return generate_many_random_hex(count-1, prefix)+[generate_random_hex(prefix, randomLength)]
 
 
 class Session(requests.Session):

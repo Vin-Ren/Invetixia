@@ -180,17 +180,17 @@ class TestPublic:
         res = self.session.request_path("GET", '/user/roles')
         assert (res.ok)
     
-    @pytest.mark.xfail(reason="Get all users is not available to public")
+    @pytest.mark.xfail(reason="Authorization is required")
     def test_user_all(self):
         res = self.session.request_path("GET", '/user')
         assert (res.ok)
     
-    @pytest.mark.xfail(reason="Get a user is not available to public")
+    @pytest.mark.xfail(reason="Authorization is required")
     def test_user_one(self, su_session):
         res = self.session.request_path("GET", '/user/info/%s' % su_session.info['UUID'])
         assert (res.ok)
 
-    @pytest.mark.xfail(reason="Only admins can create accounts")
+    @pytest.mark.xfail(reason="Authorization is required")
     def test_create_user(self):
         res = self.session.request_path("POST", '/user/create', json=commons.generate_create_user_input(role=commons.Role.OBSERVER))
         assert (res.ok)

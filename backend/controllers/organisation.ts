@@ -163,7 +163,7 @@ export const getTickets = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
     const { name } = req.body
     if (!isAdmin(req.user)) return res.sendStatus(403)
-    if (!name) return res.sendStatus(400)
+    if (!name || typeof name !== 'string') return res.sendStatus(400)
 
     try {
         const organisation = await prismaClient.organisation.create({
