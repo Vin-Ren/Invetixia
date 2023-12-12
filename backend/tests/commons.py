@@ -64,30 +64,86 @@ class Session(requests.Session):
         self.info = res2.json()['user']
     
     def logout(self):
-        if self.request_path('POST', '/user/logout').ok:
-            self.headers['Authorization']=''
-        else:
-            raise ConnectionError("FAILED TO LOGOUT")
+        res = self.request_path('POST', '/user/logout')
+        self.headers['Authorization']=''
     
     def request_path(self, method: str , path: str, params= None, data= None, headers= None, cookies= None, files= None, auth= None, timeout= None, allow_redirects= True, proxies= None, hooks= None, stream= None, verify= None, cert = None, json = None):
-        return super().request(method, BASE_URL+str(path), params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
+        kw = {"method":method, "url":BASE_URL+str(path), "params":params, "data":data, "headers":headers, "cookies":cookies, 
+              "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
+              "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
+        return super().request(**{k:v for k,v in kw.items() if v})
+
+
+class PreparedTestRequest:
+    def __init__(self, method: str , path: str, params = None, data = None, headers = None, cookies = None, files = None, auth = None, timeout = None, allow_redirects = True, proxies = None, hooks = None, stream = None, verify = None, cert = None, json = None) -> None:
+        self.kwargs = {}
+        self.update(method, path, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
+    
+    @property
+    def path(self):
+        return self.kwargs['path']
+    
+    @path.setter
+    def path(self, value):
+        self.kwargs['path'] = value
+    
+    def __call__(self, _with: Session, *args, **kwargs) -> Any:
+        return self.execute(_with, *args, **kwargs)
+
+    def update(self, 
+               method: str = '', 
+               path: str = '', 
+               params = None, 
+               data = None, 
+               headers = None, 
+               cookies = None, 
+               files = None, 
+               auth = None, 
+               timeout = None, 
+               allow_redirects = True, 
+               proxies = None, 
+               hooks = None, 
+               stream = None, 
+               verify = None, 
+               cert = None, 
+               json = None):
+        newKw = {"method":method, "path":path, "params":params, "data":data, "headers":headers, "cookies":cookies, 
+                            "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
+                            "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
+        self.kwargs.update({k:v for k,v in newKw.items() if v})
+        return self
+
+    def execute(self, _with: Session, *args, **kwargs):
+        self.update(*args, **kwargs)
+        return _with.request_path(**self.kwargs)
+
+    def x(self, _with: Session, *args, **kwargs):
+        "Shorthand for execute"
+        return self.execute(_with, *args, **kwargs)
 
 
 class PersistentStore:
     """A class which provides persistent store for test cases"""
-    def store(self, key: str, value, to_global: bool = False):
-        if to_global:
-            PS[key] = value
-        else:
-            PS["%s.%s.%s" % (self.__class__.__module__, self.__class__.__name__, key)] = value
+    def store(self, key: str, value, useGlobal: bool = False):
+        if not useGlobal:
+            key = "%s.%s.%s" % (self.__class__.__module__, self.__class__.__name__, key)
+        PS[key] = value
     
-    def get(self, key: str, to_global: bool = False):
-        if to_global:
-            return PS[key]
-        return PS["%s.%s.%s" % (self.__class__.__module__, self.__class__.__name__, key)]
+    def get(self, key: str, useGlobal: bool = False):
+        if not useGlobal:
+            key = "%s.%s.%s" % (self.__class__.__module__, self.__class__.__name__, key)
+        return PS[key]
     
-    def store_set(self, key: str, value, to_global: bool = False):
-        return self.store(key, value)
+    def update(self, key: str, updater: dict, useGlobal: bool = False):
+        if not useGlobal:
+            key = "%s.%s.%s" % (self.__class__.__module__, self.__class__.__name__, key)
+        PS[key].update(updater)
     
-    def store_get(self, key: str, to_global: bool = False):
-        return self.get(key)
+    def store_set(self, key: str, value, useGlobal: bool = False):
+        return self.store(key, value, useGlobal)
+    
+    def store_get(self, key: str, useGlobal: bool = False):
+        return self.get(key, useGlobal)
+    
+    def store_update(self, key: str, updater: dict, useGlobal: bool = False):
+        self.update(key, updater, useGlobal)

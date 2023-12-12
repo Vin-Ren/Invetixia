@@ -47,9 +47,10 @@ export const getOne = async (req: Request, res: Response) => {
 
 // Post
 export const create = async (req: Request, res: Response) => {
-    const { name, description } = req.body
+    const { name, description="" } = req.body
     if (!isAdmin(req.user)) return res.sendStatus(403)
-    if (!name || !description) return res.sendStatus(400)
+    if (!name) return res.sendStatus(400)
+    if (typeof name !== 'string' || typeof description !== 'string') return res.sendStatus(400)
 
     try {
         const quotaType = await prismaClient.quotaType.create({
@@ -71,7 +72,8 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
     const { UUID, name, description } = req.body
     if (!isAdmin(req.user)) return res.sendStatus(403)
-    if ((typeof UUID !== "string") || !name || !description) return res.sendStatus(400)
+    if ((typeof UUID !== "string") || !name) return res.sendStatus(400)
+    if (typeof name !== 'string' || typeof description !== 'string') return res.sendStatus(400)
 
     try {
         const quotaType = await prismaClient.quotaType.update({
