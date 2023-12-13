@@ -212,7 +212,7 @@ export const update = async (req: Request, res: Response) => {
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
-    if (!isAdmin(req.user)) return res.sendStatus(403)
+    if (!isAdmin(req.user) || UUID === 'default') return res.sendStatus(403)
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
