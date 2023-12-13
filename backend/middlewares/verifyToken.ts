@@ -13,9 +13,9 @@ function verifyToken(req: Request, res: Response, next: NextFunction) {
     const token = tokenHeader.split(' ')[1]
 
     jwt.verify(token, ACCESS_TOKEN_SECRET as string, (err, decoded) => {
-        if (err) return res.sendStatus(403)
+        if (err) return res.status(403).json({ message: "E101: Please login again." })
         req.user = (decoded as User)
-        req.user.recentlyLoggedIn||=false;
+        req.user.recentlyLoggedIn ||= false;
         next()
     })
 };

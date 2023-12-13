@@ -3,7 +3,7 @@ import { Request, Response } from "../types";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "../services/database";
 
-const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET } = env;
+const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFETIME } = env;
 
 export const refreshToken = async (req: Request, res: Response) => {
     try {
@@ -23,7 +23,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     
                 const { UUID, username, role, organisationId } = user;
                 const accessToken = jwt.sign({ UUID, username, role, organisationId }, ACCESS_TOKEN_SECRET as string, {
-                    expiresIn: '15m'
+                    expiresIn: ACCESS_TOKEN_LIFETIME
                 });
     
                 res.json({ accessToken });
