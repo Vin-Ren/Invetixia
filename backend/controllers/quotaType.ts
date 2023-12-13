@@ -6,6 +6,8 @@ import { logEvent } from "../utils/databaseLogging";
 
 // Get
 export const getAll = async (req: Request, res: Response) => {
+    if (!isAdmin(req.user)) return res.sendStatus(403)
+    
     try {
         const quotaTypes = await prismaClient.quotaType.findMany({})
         return res.json({ quotaTypes })

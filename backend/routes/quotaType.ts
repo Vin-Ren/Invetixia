@@ -5,7 +5,7 @@ import { create, getAll, getOne, update, deleteOne } from "../controllers/quotaT
 
 const quotaTypeRouter = Router({ mergeParams: true })
 
-quotaTypeRouter.get('/', getAll)
+quotaTypeRouter.get('/', verifyToken, getAll)
 quotaTypeRouter.get('/info/:UUID', verifyToken, getOne)
 quotaTypeRouter.post('/create', verifyToken, create)
 quotaTypeRouter.patch('/update', verifyToken, update)

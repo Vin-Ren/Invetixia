@@ -48,10 +48,12 @@ def test_admin_get_all(admin):
     res = Test.base.x(_with=admin)
     assert res.ok, admin.info
 
+@pytest.mark.xfail(reason="Admins only")
 def test_organisation_manager_get_all(organisation_manager):
     res = Test.base.x(_with=organisation_manager)
     assert res.ok
 
+@pytest.mark.xfail(reason="Unauthorized")
 def test_public_get_all(public):
     res = Test.base.x(_with=public)
     assert res.ok
