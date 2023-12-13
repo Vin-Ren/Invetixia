@@ -36,4 +36,13 @@ def organisation_manager(superuser):
 @pytest.fixture(scope="session")
 def public():
     session = commons.Session()
+    
     yield session
+
+
+@pytest.fixture(scope="module")
+def store():
+    _store = {}
+
+    yield _store
+    _store.clear()
