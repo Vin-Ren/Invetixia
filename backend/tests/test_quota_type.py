@@ -1,5 +1,4 @@
 import pytest
-from sessions import superuser, admin, organisation_manager, public
 import commons
 from commons import PreparedTestRequest
 
