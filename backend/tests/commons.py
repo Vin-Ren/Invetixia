@@ -65,9 +65,28 @@ class Session(requests.Session):
     
     def logout(self):
         res = self.request_path('POST', '/user/logout')
-        self.headers['Authorization']=''
+        if res.ok or res.status_code==403:
+            self.headers['Authorization']=''
+        else:
+            raise RuntimeError("Failed to logout, got response: %s" % res)
     
-    def request_path(self, method: str , path: str, params= None, data= None, headers= None, cookies= None, files= None, auth= None, timeout= None, allow_redirects= True, proxies= None, hooks= None, stream= None, verify= None, cert = None, json = None):
+    def request_path(self,
+                     method: str = '', 
+                     path: str = '', 
+                     params = None, 
+                     data = None, 
+                     headers = None, 
+                     cookies = None, 
+                     files = None, 
+                     auth = None, 
+                     timeout = None, 
+                     allow_redirects = True, 
+                     proxies = None, 
+                     hooks = None, 
+                     stream = None, 
+                     verify = None, 
+                     cert = None, 
+                     json = None):
         kw = {"method":method, "url":BASE_URL+str(path), "params":params, "data":data, "headers":headers, "cookies":cookies, 
               "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
               "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
@@ -75,7 +94,23 @@ class Session(requests.Session):
 
 
 class PreparedTestRequest:
-    def __init__(self, method: str , path: str, params = None, data = None, headers = None, cookies = None, files = None, auth = None, timeout = None, allow_redirects = True, proxies = None, hooks = None, stream = None, verify = None, cert = None, json = None) -> None:
+    def __init__(self,
+                 method: str, 
+                 path: str, 
+                 params = None, 
+                 data = None, 
+                 headers = None, 
+                 cookies = None, 
+                 files = None, 
+                 auth = None, 
+                 timeout = None, 
+                 allow_redirects = True, 
+                 proxies = None, 
+                 hooks = None, 
+                 stream = None, 
+                 verify = None, 
+                 cert = None, 
+                 json = None):
         self.kwargs = {}
         self.update(method, path, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
     
@@ -116,9 +151,9 @@ class PreparedTestRequest:
         kwargs['path'] = kwargs['path'] % _path_formats
         return _with.request_path(**kwargs)
 
-    def x(self, *args, _with: Session = Session(), **kwargs):
+    def x(self, *args, _with: Session = Session(), _path_formats = dict(), **kwargs):
         "Shorthand for execute"
-        return self.execute(*args, _with=_with, **kwargs)
+        return self.execute(*args, _with=_with, _path_formats=_path_formats, **kwargs)
 
 
 class PersistentStore:
