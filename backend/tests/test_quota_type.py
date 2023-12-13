@@ -61,18 +61,17 @@ def test_public_get_all(public):
 
 # get one
 def test_admin_get_one(admin):
-    Test.info.path %= store['su']['UUID']
-    res = Test.info.x(_with=admin)
+    res = Test.info.x(_with=admin, _path_formats=store['su']['UUID'])
     assert res.ok
 
 @pytest.mark.xfail(reason="Admins only")
 def test_organisation_manager_get_one(organisation_manager):
-    res = Test.info.x(_with=organisation_manager)
+    res = Test.info.x(_with=organisation_manager, _path_formats=store['su']['UUID'])
     assert res.ok
 
 @pytest.mark.xfail(reason="Unauthorized")
 def test_public_get_one(public):
-    res = Test.info.x(_with=public)
+    res = Test.info.x(_with=public, _path_formats=store['su']['UUID'])
     assert res.ok
 
 

@@ -79,47 +79,46 @@ class PreparedTestRequest:
         self.kwargs = {}
         self.update(method, path, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
     
-    @property
-    def path(self):
-        return self.kwargs['path']
-    
-    @path.setter
-    def path(self, value):
-        self.kwargs['path'] = value
-    
     def __call__(self, _with: Session, *args, **kwargs):
         return self.execute(_with, *args, **kwargs)
 
-    def update(self, 
-               method: str = '', 
-               path: str = '', 
-               params = None, 
-               data = None, 
-               headers = None, 
-               cookies = None, 
-               files = None, 
-               auth = None, 
-               timeout = None, 
-               allow_redirects = True, 
-               proxies = None, 
-               hooks = None, 
-               stream = None, 
-               verify = None, 
-               cert = None, 
-               json = None):
+    @staticmethod
+    def mergeKwargs(oldKwargs: dict = dict(), 
+                    method: str = '', 
+                    path: str = '', 
+                    params = None, 
+                    data = None, 
+                    headers = None, 
+                    cookies = None, 
+                    files = None, 
+                    auth = None, 
+                    timeout = None, 
+                    allow_redirects = True, 
+                    proxies = None, 
+                    hooks = None, 
+                    stream = None, 
+                    verify = None, 
+                    cert = None, 
+                    json = None):
         newKw = {"method":method, "path":path, "params":params, "data":data, "headers":headers, "cookies":cookies, 
-                            "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
-                            "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
-        self.kwargs.update({k:v for k,v in newKw.items() if v})
+                 "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
+                 "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
+        resKw = oldKwargs.copy()
+        resKw.update({k:v for k,v in newKw.items() if v})
+        return resKw
+    
+    def update(self, *args, **kwargs):
+        self.kwargs = self.mergeKwargs(self.kwargs, *args, **kwargs)
         return self
 
-    def execute(self, _with: Session, *args, **kwargs):
-        self.update(*args, **kwargs)
-        return _with.request_path(**self.kwargs)
+    def execute(self, *args, _with: Session = Session(), _path_formats = dict(), **kwargs):
+        kwargs = self.mergeKwargs(self.kwargs, *args, **kwargs)
+        kwargs['path'] = kwargs['path'] % _path_formats
+        return _with.request_path(**kwargs)
 
-    def x(self, _with: Session, *args, **kwargs):
+    def x(self, *args, _with: Session = Session(), **kwargs):
         "Shorthand for execute"
-        return self.execute(_with, *args, **kwargs)
+        return self.execute(*args, _with=_with, **kwargs)
 
 
 class PersistentStore:
