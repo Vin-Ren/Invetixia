@@ -87,7 +87,7 @@ class PreparedTestRequest:
     def path(self, value):
         self.kwargs['path'] = value
     
-    def __call__(self, _with: Session, *args, **kwargs) -> Any:
+    def __call__(self, _with: Session, *args, **kwargs):
         return self.execute(_with, *args, **kwargs)
 
     def update(self, 
