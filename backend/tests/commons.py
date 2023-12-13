@@ -52,23 +52,33 @@ class Session(requests.Session):
     def __init__(self, *args, credentials: Dict[str, str] | None = None, **kw):
         super().__init__(*args, **kw)
         
+        self.credentials = credentials
         self.info = {}
         if credentials:
-            self.login(credentials)
+            self.login()
     
-    def login(self, credentials: Dict[str, str]):
-        res = self.request_path('POST', '/user/login', json=credentials)
+    def login(self):
+        res = self.request_path('POST', '/user/login', json=self.credentials)
+        if not res.ok: return res.ok
         self.headers['Authorization'] = f'Bearer {res.json()["accessToken"]}'
         
-        res2 = self.request_path('GET', '/user/self', json=credentials)
+        res2 = self.request_path('GET', '/user/self', json=self.credentials)
         self.info = res2.json()['user']
+        self.info['organisationName'] = self.info['organisationManaged']['name']
+        return True
     
     def logout(self):
         res = self.request_path('POST', '/user/logout')
         if res.ok or res.status_code==403:
             self.headers['Authorization']=''
+            return True
         else:
-            raise RuntimeError("Failed to logout, got response: %s" % res)
+            return False
+            # raise RuntimeError("Failed to logout, got response: %s" % res)
+    
+    def reauth(self):
+        self.logout()
+        return self.login()
     
     def request_path(self,
                      method: str = '', 
@@ -90,7 +100,15 @@ class Session(requests.Session):
         kw = {"method":method, "url":BASE_URL+str(path), "params":params, "data":data, "headers":headers, "cookies":cookies, 
               "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
               "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
-        return super().request(**{k:v for k,v in kw.items() if v})
+        res = super().request(**{k:v for k,v in kw.items() if v})
+        if not res.ok:
+            try:
+                if res.json()['message'].startswith("E101"):
+                    if self.login():
+                        res = super().request(**{k:v for k,v in kw.items() if v})
+            except requests.exceptions.JSONDecodeError:
+                pass
+        return res
 
 
 class PreparedTestRequest:
