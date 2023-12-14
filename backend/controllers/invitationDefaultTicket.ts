@@ -63,7 +63,7 @@ export const create = async (req: Request, res: Response) => {
             }
         });
 
-        await logEvent({ event: "CREATE", summary: `Create DefaultTicket`, description: JSON.stringify(defaultTicket) })
+        await logEvent({ event: "CREATE", summary: `Create DefaultTicket`, description: `Created defaultTicket for invitationId=${invitationId} [UUID=${defaultTicket.UUID}]` })
         return res.json({ defaultTicket })
     } catch (e) {
         console.log(e)
@@ -95,7 +95,7 @@ export const update = async (req: Request, res: Response) => {
             }
         });
 
-        await logEvent({ event: "UPDATE", summary: `Update DefaultTicket`, description: JSON.stringify(updatedDefaultTicket) })
+        await logEvent({ event: "UPDATE", summary: `Update DefaultTicket`, description: `Updated default ticket for invitationId=${updatedDefaultTicket.invitationId} [UUID=${updatedDefaultTicket.UUID}]` })
         return res.json({ defaultTicket: updatedDefaultTicket })
     } catch (e) {
         console.log(e)
@@ -123,7 +123,7 @@ export const deleteOne = async (req: Request, res: Response) => {
             where: { UUID: UUID }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete DefaultTicket`, description: JSON.stringify(deletedDefaultTicket) })
+        await logEvent({ event: "DELETE", summary: `Delete DefaultTicket`, description: `Deleted defaultTicket for invitationId=${deletedDefaultTicket.invitationId} [UUID=${deletedDefaultTicket.UUID}]` })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

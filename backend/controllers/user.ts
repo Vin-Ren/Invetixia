@@ -125,7 +125,7 @@ export const create = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "CREATE", summary: `Create User`, description: `Created user '${user.username}' with role=${user.role} and organisation '${user.organisationId}'` })
+        await logEvent({ event: "CREATE", summary: `Create User`, description: `Created user '${user.username}' with role=${user.role} and organisation '${user.organisationId}' [UUID=${user.UUID}]` })
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -176,7 +176,7 @@ export const login = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "UPDATE", summary: `Update UserToken`, description: `Login ${username}` })
+        await logEvent({ event: "UPDATE", summary: `Update UserToken`, description: `Login ${username} [UUID=${UUID}]` })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
@@ -244,7 +244,7 @@ export const changePassword = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "UPDATE", summary: `Update User Password`, description: `Changed password for ${user.username}` })
+        await logEvent({ event: "UPDATE", summary: `Update User Password`, description: `Changed password for ${user.username} [UUID=${user.UUID}]` })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
@@ -302,7 +302,7 @@ export const update = async (req: Request, res: Response) => {
             })
         }
 
-        await logEvent({ event: "UPDATE", summary: `Update User`, description: `Updated user ${user.username}` })
+        await logEvent({ event: "UPDATE", summary: `Update User`, description: `Updated user ${user.username} [UUID=${user.UUID}]` })
         return res.json({ user })
     } catch (e) {
         console.log(e)
@@ -332,14 +332,14 @@ export const logout = async (req: Request, res: Response) => {
         const tokens = await prismaClient.tokens.findUnique({
             where: { userId: req.user.UUID }
         })
-        
+
         if (tokens) {
             const _ = await prismaClient.tokens.delete({
                 where: { userId: req.user.UUID }
             })
         }
 
-        await logEvent({ event: "DELETE", summary: `Delete UserToken`, description: `Logout ${user.username}` })
+        await logEvent({ event: "DELETE", summary: `Delete UserToken`, description: `Logout ${user.username} [UUID=${user.UUID}]` })
         res.clearCookie('refreshToken')
         return res.sendStatus(200)
     } catch (e) {
@@ -377,7 +377,7 @@ export const deleteOne = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete User`, description: `Deleted user ${user.username}` })
+        await logEvent({ event: "DELETE", summary: `Delete User`, description: `Deleted user ${user.username} [UUID=${user.UUID}]` })
         return res.sendStatus(201)
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {

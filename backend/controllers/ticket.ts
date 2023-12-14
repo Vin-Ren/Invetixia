@@ -54,7 +54,7 @@ export const getOne = async (req: Request, res: Response) => {
                 }
             }
         });
-        
+
         return res.json({ ticket })
     } catch (e) {
         console.log(e)
@@ -73,11 +73,17 @@ export const create = async (req: Request, res: Response) => {
             where: { UUID: invitationId },
             select: {
                 usageLeft: true,
-                organisationId: true
+                organisationId: true,
+                defaults: {
+                    select: {
+                        quotaTypeId: true,
+                        value: true
+                    }
+                }
             }
         })
 
-        if (invitation.usageLeft === 0) return res.json(404)
+        if (invitation.usageLeft === 0) return res.json(403)
 
         const updateInvitation = prismaClient.invitation.update({
             where: {
@@ -94,7 +100,12 @@ export const create = async (req: Request, res: Response) => {
                 ownerName: ownerName,
                 ownerContacts: ownerContacts,
                 invitationId: invitationId,
-                ownerAffiliationId: invitation.organisationId
+                ownerAffiliationId: invitation.organisationId,
+                quotas: {
+                    createMany: {
+                        data: invitation.defaults.map((e) => { return { quotaTypeId: e.quotaTypeId, usageLeft: e.value } })
+                    }
+                }
             }
         })
 

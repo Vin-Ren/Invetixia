@@ -12,7 +12,7 @@ export const getAll = async (req: Request, res: Response) => {
         const invitations = await prismaClient.invitation.findMany({
             include: { publisher: { select: { name: true } } }
         });
-        
+
         return res.json({ invitations })
     } catch (e) {
         console.log(e)
@@ -49,7 +49,7 @@ export const getOne = async (req: Request, res: Response) => {
             }
         });
         if (!isOrganisationManager(req.user, invitation.publisher.UUID)) return res.sendStatus(403)
-        
+
         return res.json({ invitation })
     } catch (e) {
         console.log(e)
@@ -76,7 +76,7 @@ export const getOnePublic = async (req: Request, res: Response) => {
                 usageLeft: true
             }
         });
-        
+
         return res.json({ invitation })
     } catch (e) {
         console.log(e)
@@ -151,7 +151,7 @@ export const getDefaults = async (req: Request, res: Response) => {
 // Post
 export const create = async (req: Request, res: Response) => {
     const {
-        name, organisationId, usageQuota, defaults
+        name, organisationId, usageQuota = 1, defaults = []
     }: {
         name: string, organisationId: string, usageQuota: number, defaults: DefaultTicketInput[]
     } = req.body
@@ -168,7 +168,8 @@ export const create = async (req: Request, res: Response) => {
             data: {
                 name: name,
                 organisationId: organisationId,
-                usageQuota: usageQuota || 1,
+                usageQuota: usageQuota,
+                usageLeft: usageQuota,
                 defaults: {
                     createMany: { data: defaults }
                 }

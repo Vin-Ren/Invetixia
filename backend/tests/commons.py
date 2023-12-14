@@ -132,8 +132,8 @@ class PreparedTestRequest:
         self.kwargs = {}
         self.update(method, path, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)
     
-    def __call__(self, _with: Session, *args, **kwargs):
-        return self.execute(_with, *args, **kwargs)
+    def __call__(self, *args, _with: Session = Session(), _path_formats = dict(), **kwargs):
+        return self.execute(*args, _with=_with, _path_formats=_path_formats, **kwargs)
 
     @staticmethod
     def mergeKwargs(oldKwargs: dict = dict(), 
