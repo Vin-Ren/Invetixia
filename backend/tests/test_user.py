@@ -61,9 +61,7 @@ def test_create(superuser, admin, organisation_manager, public, users_store, sub
                 generated_data = commons.generate_create_user_input(role=role)
                 res = Test.create.x(_with=client, json=generated_data)
                 
-                if client_role < commons.Role.ADMIN:
-                    assert not res.ok, (res)
-                elif client_role > role:
+                if client_role >= commons.Role.ADMIN and client_role > role:
                     assert res.ok, (res)
                     generated_data.update(res.json()['user'])
                     users_store[role].append(generated_data.copy())

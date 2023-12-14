@@ -100,12 +100,13 @@ class Session(requests.Session):
         kw = {"method":method, "url":BASE_URL+str(path), "params":params, "data":data, "headers":headers, "cookies":cookies, 
               "files":files, "auth": auth, "timeout":timeout, "allow_redirects": allow_redirects,
               "proxies":proxies, "hooks":hooks, "stream":stream, "verify":verify, "cert":cert, "json":json}
-        res = super().request(**{k:v for k,v in kw.items() if v})
+        kw = {k:v for k,v in kw.items() if v}
+        res = super().request(**kw)
         if not res.ok:
             try:
-                if res.json()['message'].startswith("E101"):
+                if res.json()['message'][:4] in ["E101", "E102"]:
                     if self.login():
-                        res = super().request(**{k:v for k,v in kw.items() if v})
+                        res = super().request(**kw)
             except requests.exceptions.JSONDecodeError:
                 pass
         return res

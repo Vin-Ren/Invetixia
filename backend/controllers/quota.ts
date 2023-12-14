@@ -43,7 +43,7 @@ export const getOne = async (req: Request, res: Response) => {
                 ticket: true
             }
         });
-        
+
         return res.json({ quota })
     } catch (e) {
         console.log(e)
@@ -86,15 +86,17 @@ export const consume = async (req: Request, res: Response) => {
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
-        const { ticket } = await prismaClient.quota.findUniqueOrThrow({
+        const { ticket, usageLeft } = await prismaClient.quota.findUniqueOrThrow({
             where: { UUID: UUID },
             select: {
                 ticket: {
                     select: { ownerAffiliationId: true }
-                }
+                },
+                usageLeft: true
             }
         })
         if (!isOrganisationManager(req.user, ticket.ownerAffiliationId)) return res.sendStatus(403)
+        if (!usageLeft) return res.sendStatus(403)
 
         const consumedQuota = await prismaClient.quota.update({
             where: {

@@ -8,7 +8,7 @@ const { ACCESS_TOKEN_SECRET } = env;
 
 function verifyToken(req: Request, res: Response, next: NextFunction) {
     const tokenHeader = req.headers.authorization
-    if (!tokenHeader) return res.sendStatus(403)
+    if (!tokenHeader) return res.status(403).json({ message: "E102: Please login first." })
 
     const token = tokenHeader.split(' ')[1]
 
