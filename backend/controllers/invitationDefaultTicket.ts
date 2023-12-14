@@ -53,7 +53,7 @@ export const create = async (req: Request, res: Response) => {
             where: { UUID: invitationId as string },
             select: { organisationId: true }
         })
-        if (!isOrganisationManager(req.user, organisationId)) res.sendStatus(403)
+        if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
 
         const defaultTicket = await prismaClient.defaultTicket.create({
             data: {

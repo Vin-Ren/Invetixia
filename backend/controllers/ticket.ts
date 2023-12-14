@@ -85,7 +85,7 @@ export const create = async (req: Request, res: Response) => {
 
         if (invitation.usageLeft === 0) return res.json(403)
 
-        const updateInvitation = prismaClient.invitation.update({
+        const consumeInvitation = prismaClient.invitation.update({
             where: {
                 UUID: invitationId,
                 usageLeft: { gt: 0 }
@@ -106,11 +106,18 @@ export const create = async (req: Request, res: Response) => {
                         data: invitation.defaults.map((e) => { return { quotaTypeId: e.quotaTypeId, usageLeft: e.value } })
                     }
                 }
+            },
+            include: {
+                quotas: {
+                    include: {
+                        quotaType: true
+                    }
+                }
             }
         })
 
         const [consumedInvitation, ticket] = await prismaClient.$transaction([
-            updateInvitation,
+            consumeInvitation,
             createTicket
         ])
 
