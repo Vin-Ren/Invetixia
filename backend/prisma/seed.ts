@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt'
 import { randomBytes } from 'crypto';
 import { Prisma } from '@prisma/client'
 import { prismaClient, userRole, logAction } from "../services/database";
-import { logEvent } from '../utils/databaseLogging';
 
-const { QUOTA_TYPES, SUPERUSER_INITIAL_PASSWORD, SEED_LOG_TABLE } = env;
+
+const { QUOTA_TYPES, SUPERUSER_PASSWORD, SEED_LOG_TABLE } = env;
+
 
 function initialize() {
     const logActions = Object.values(logAction)
@@ -61,7 +62,7 @@ function initialize() {
 
 
     let erred = 0
-    let password = SUPERUSER_INITIAL_PASSWORD
+    let password = SUPERUSER_PASSWORD
     if (password === undefined) {
         password = randomBytes(16).toString('hex');
     } else if (password.length > 50) {
@@ -91,7 +92,7 @@ function initialize() {
         if (erred) {
             console.log(`A superuser account has been created before, skipping this step.`)
         } else {
-            console.log(`Environment variable: "SUPERUSER_INITIAL_PASSWORD" is not detected, defaulting to random password.\nThe generated password is "${password}"`)
+            console.log(`Environment variable: "SUPERUSER_PASSWORD" is not detected, defaulting to random password.\nThe generated password is "${password}"`)
         }
     })
 }

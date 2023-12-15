@@ -23,6 +23,8 @@ model Ticket {
   lastUpdated        DateTime     @updatedAt
   invitation         Invitation   @relation(fields: [invitationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   invitationId       String
+
+  @@index([invitationId])
 }
 
 model Quota {
@@ -32,6 +34,8 @@ model Quota {
   usageLeft   Int       @default(1)
   ticket      Ticket    @relation(fields: [ticketId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   ticketId    String
+
+  @@unique([ticketId, quotaTypeId])
 }
 
 model QuotaType {
@@ -66,9 +70,11 @@ model DefaultTicket {
   UUID         String     @id @default(dbgenerated("uuid_generate_v1mc()"))
   invitation   Invitation @relation(references: [UUID], fields: [invitationId], onUpdate: Cascade, onDelete: Cascade)
   invitationId String
-  quotaType    QuotaType  @relation(fields: [quotaTypeId], references: [UUID])
+  quotaType    QuotaType  @relation(fields: [quotaTypeId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   quotaTypeId  String
   value        Int        @default(1)
+
+  @@unique([invitationId, quotaTypeId])
 }
 
 model User {

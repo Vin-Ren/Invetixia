@@ -163,14 +163,14 @@ export const getTickets = async (req: Request, res: Response) => {
 export const create = async (req: Request, res: Response) => {
     const { name } = req.body
     if (!isAdmin(req.user)) return res.sendStatus(403)
-    if (!name) return res.sendStatus(400)
+    if (!name || typeof name !== 'string') return res.sendStatus(400)
 
     try {
         const organisation = await prismaClient.organisation.create({
             data: { name: name }
         });
 
-        await logEvent({ event: "CREATE", summary: `Create Organisation`, description: JSON.stringify(organisation) })
+        await logEvent({ event: "CREATE", summary: `Create Organisation`, description: `Created organisation named=${organisation.name} [UUID=${organisation.UUID}]` })
         return res.json({ organisation })
     } catch (e) {
         console.log(e)
@@ -201,7 +201,7 @@ export const update = async (req: Request, res: Response) => {
             }
         });
 
-        await logEvent({ event: "UPDATE", summary: `Update Organisation`, description: JSON.stringify(organisation) })
+        await logEvent({ event: "UPDATE", summary: `Update Organisation`, description: `Updated organisation named=${newName} [UUID=${organisation.UUID}]` })
         return res.json({ organisation })
     } catch (e) {
         console.log(e)
@@ -212,7 +212,7 @@ export const update = async (req: Request, res: Response) => {
 // Delete
 export const deleteOne = async (req: Request, res: Response) => {
     const { UUID } = req.body;
-    if (!isAdmin(req.user)) return res.sendStatus(403)
+    if (!isAdmin(req.user) || UUID === 'default') return res.sendStatus(403)
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
@@ -220,7 +220,7 @@ export const deleteOne = async (req: Request, res: Response) => {
             where: { UUID: UUID }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete Organisation`, description: JSON.stringify(deletedOrganisation) })
+        await logEvent({ event: "DELETE", summary: `Delete Organisation`, description: `Deleted organisation named=${deletedOrganisation.name} [UUID=${UUID}]` })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

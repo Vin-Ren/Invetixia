@@ -1,4 +1,5 @@
 import { Request, Response } from "../types";
+import { Prisma } from "@prisma/client";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 import { logEvent } from "../utils/databaseLogging";
@@ -54,7 +55,7 @@ export const getOne = async (req: Request, res: Response) => {
                 }
             }
         });
-        
+
         return res.json({ ticket })
     } catch (e) {
         console.log(e)
@@ -72,14 +73,28 @@ export const create = async (req: Request, res: Response) => {
         const invitation = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: invitationId },
             select: {
+                usageQuota: true,
                 usageLeft: true,
-                organisationId: true
+                organisationId: true,
+                defaults: {
+                    select: {
+                        quotaTypeId: true,
+                        value: true
+                    }
+                }
             }
         })
 
-        if (invitation.usageLeft === 0) return res.json(404)
+        const { _count: createdTicketCount } = await prismaClient.ticket.aggregate({
+            where: { invitationId: invitationId },
+            _count: true
+        })
 
-        const updateInvitation = prismaClient.invitation.update({
+        if (createdTicketCount >= invitation.usageQuota) return res.json(403)
+
+        // if (invitation.usageLeft === 0) return res.json(403)
+
+        const consumeInvitation = prismaClient.invitation.update({
             where: {
                 UUID: invitationId,
                 usageLeft: { gt: 0 }
@@ -94,12 +109,24 @@ export const create = async (req: Request, res: Response) => {
                 ownerName: ownerName,
                 ownerContacts: ownerContacts,
                 invitationId: invitationId,
-                ownerAffiliationId: invitation.organisationId
+                ownerAffiliationId: invitation.organisationId,
+                quotas: {
+                    createMany: {
+                        data: invitation.defaults.map((e) => { return { quotaTypeId: e.quotaTypeId, usageLeft: e.value } })
+                    }
+                }
+            },
+            include: {
+                quotas: {
+                    include: {
+                        quotaType: true
+                    }
+                }
             }
         })
 
         const [consumedInvitation, ticket] = await prismaClient.$transaction([
-            updateInvitation,
+            consumeInvitation,
             createTicket
         ])
 
@@ -107,6 +134,9 @@ export const create = async (req: Request, res: Response) => {
         await logEvent({ event: "CREATE", summary: `Create Ticket`, description: JSON.stringify(ticket) })
         return res.json({ ticket })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+            return res.sendStatus(500)
+        }
         console.log(e)
     }
 }
@@ -173,6 +203,9 @@ export const deleteOne = async (req: Request, res: Response) => {
         await logEvent({ event: "RESTORE", summary: `Restore Invitation`, description: JSON.stringify(restoredInvitation) })
         return res.sendStatus(201)
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        }
         console.log(e)
     }
 }

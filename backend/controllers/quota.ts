@@ -1,4 +1,5 @@
 import { Request, Response } from "../types";
+import { Prisma } from "@prisma/client";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 import { logEvent } from "../utils/databaseLogging";
@@ -43,7 +44,7 @@ export const getOne = async (req: Request, res: Response) => {
                 ticket: true
             }
         });
-        
+
         return res.json({ quota })
     } catch (e) {
         console.log(e)
@@ -72,9 +73,12 @@ export const create = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "CREATE", summary: `Create Quota`, description: JSON.stringify(quota) })
+        await logEvent({ event: "CREATE", summary: `Create Quota`, description: `Created quota for ticketId=${ticketId} [UUID=${quota.UUID}]` })
         return res.json({ quota })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+            return res.sendStatus(500)
+        }
         console.log(e)
     }
 }
@@ -86,15 +90,17 @@ export const consume = async (req: Request, res: Response) => {
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
-        const { ticket } = await prismaClient.quota.findUniqueOrThrow({
+        const { ticket, usageLeft } = await prismaClient.quota.findUniqueOrThrow({
             where: { UUID: UUID },
             select: {
                 ticket: {
                     select: { ownerAffiliationId: true }
-                }
+                },
+                usageLeft: true
             }
         })
         if (!isOrganisationManager(req.user, ticket.ownerAffiliationId)) return res.sendStatus(403)
+        if (!usageLeft) return res.sendStatus(403)
 
         const consumedQuota = await prismaClient.quota.update({
             where: {
@@ -108,7 +114,7 @@ export const consume = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "CONSUME", summary: `Consume Quota`, description: JSON.stringify(consumedQuota) })
+        await logEvent({ event: "CONSUME", summary: `Consume Quota`, description: `Consumed quota with ticketId=${consumedQuota.ticketId} and quotaTypeId=${consumedQuota.quotaTypeId} [UUID=${consumedQuota.UUID}]` })
         return res.json({ quota: consumedQuota })
     } catch (e) {
         console.log(e)
@@ -140,7 +146,7 @@ export const update = async (req: Request, res: Response) => {
             }
         })
 
-        await logEvent({ event: "UPDATE", summary: `Update Quota`, description: JSON.stringify(updatedQuota) })
+        await logEvent({ event: "UPDATE", summary: `Update Quota`, description: `Updated quota for ticketId=${updatedQuota.ticketId} [UUID=${updatedQuota.UUID}]` })
         return res.json({ quota: updatedQuota })
     } catch (e) {
         console.log(e)
@@ -168,7 +174,7 @@ export const deleteOne = async (req: Request, res: Response) => {
             where: { UUID: UUID }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete Quota`, description: JSON.stringify(deletedQuota) })
+        await logEvent({ event: "DELETE", summary: `Delete Quota`, description: `Deleted quota for ticketId=${deletedQuota.ticketId} [UUID=${deletedQuota.UUID}]` })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)
