@@ -34,7 +34,7 @@ def quota_types(superuser):
     
     quota_type_create_route = PreparedTestRequest("POST", '/quotaType/create')
     quota_type_delete_route = PreparedTestRequest("DELETE", '/quotaType/delete')
-    for _ in range(4):
+    for _ in range(5):
         jsonData = {'name': commons.generate_random_hex(randomLength=8)}
         res = quota_type_create_route(_with=superuser, json=jsonData)
         assert res.ok
@@ -49,13 +49,13 @@ def quota_types(superuser):
 
 
 @pytest.fixture(scope="module")
-def invitations(superuser, admin, organisation_manager):
+def invitations(manager_sessions, superuser):
     invitations_store = {}
     
     invitation_create_route = PreparedTestRequest("POST", '/invitation/create')
     invitation_delete_route = PreparedTestRequest("DELETE", '/invitation/delete')
     
-    for client in [superuser, admin, organisation_manager]:
+    for client in manager_sessions:
         client_role = commons.Role(client.info['role'])
         generated_invitation = {'name': commons.generate_random_hex(randomLength=8), 'organisationId': client.info['organisationManaged']['UUID'], 'usageQuota': 1000}
         res1 = invitation_create_route.x(_with=client, json=generated_invitation)
@@ -101,8 +101,8 @@ def ticket(superuser):
 
 
 # Create
-def test_create(superuser, admin, organisation_manager, public, subtests, quota_types, invitations, default_ticket_store):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_create(all_sessions, subtests, quota_types, invitations, default_ticket_store):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Creating defaultTicket" % client_role.name):
             for creator_role, invitation in invitations.items():
@@ -119,8 +119,8 @@ def test_create(superuser, admin, organisation_manager, public, subtests, quota_
 
 
 # Get one
-def test_get_one(superuser, admin, organisation_manager, public, subtests, default_ticket_store):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_get_one(all_sessions, subtests, default_ticket_store):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Getting a defaultTicket" % client_role.name):
             for creator_role, default_tickets in default_ticket_store.items():
@@ -133,11 +133,11 @@ def test_get_one(superuser, admin, organisation_manager, public, subtests, defau
 
 
 # Update
-def test_update(superuser, admin, organisation_manager, public, subtests, quota_types, default_ticket_store, ticket):
+def test_update(all_sessions, subtests, quota_types, default_ticket_store, ticket):
     K = len(quota_types)
     quota_types_updater_map = {quota_types[i%K]['UUID']: quota_types[(i+1)%K]['UUID'] for i in range(K)} # cyclic map
     
-    for client in [public, organisation_manager, admin, superuser]:
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating defaultTicket's quotaType and value" % client_role.name):
             for creator_role, default_tickets in default_ticket_store.items():
@@ -165,8 +165,8 @@ def test_update(superuser, admin, organisation_manager, public, subtests, quota_
 
 
 # Delete
-def test_delete(superuser, admin, organisation_manager, public, subtests, default_ticket_store):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_delete(all_sessions, subtests, default_ticket_store):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Deleting defaultTicket" % client_role.name):
             for creator_role, default_tickets in default_ticket_store.items():

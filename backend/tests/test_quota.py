@@ -55,13 +55,13 @@ def quota_types(superuser):
 
 
 @pytest.fixture(scope="module")
-def invitations(superuser, admin, organisation_manager):
+def invitations(manager_sessions, superuser):
     invitations_store = {}
     
     invitation_create_route = PreparedTestRequest("POST", '/invitation/create')
     invitation_delete_route = PreparedTestRequest("DELETE", '/invitation/delete')
     
-    for client in [superuser, admin, organisation_manager]:
+    for client in manager_sessions:
         client_role = commons.Role(client.info['role'])
         generated_invitation = {'name': commons.generate_random_hex(randomLength=8), 'organisationId': client.info['organisationManaged']['UUID'], 'usageQuota': 1}
         res1 = invitation_create_route.x(_with=client, json=generated_invitation)
@@ -95,8 +95,8 @@ def tickets(superuser, invitations):
 
 
 # Create
-def test_create(superuser, admin, organisation_manager, public, quotas_store, subtests, quota_types, tickets):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_create(all_sessions, quotas_store, subtests, quota_types, tickets):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Creating quota" % client_role.name):
             for creator_role, ticket in tickets.items():
@@ -111,8 +111,8 @@ def test_create(superuser, admin, organisation_manager, public, quotas_store, su
 
 
 # Get all
-def test_get_all(superuser, admin, organisation_manager, public, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_get_all(all_sessions, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Getting all quota" % client_role.name):
             res = Test.base.x(_with=client)
@@ -123,8 +123,8 @@ def test_get_all(superuser, admin, organisation_manager, public, subtests):
 
 
 # Get one (always public)
-def test_get_one_public(superuser, admin, organisation_manager, public, quotas_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_get_one_public(all_sessions, quotas_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Getting a specific quota" % client_role.name):
             for quotas in quotas_store.values():
@@ -134,8 +134,8 @@ def test_get_one_public(superuser, admin, organisation_manager, public, quotas_s
 
 
 # Consume
-def test_consume(superuser, admin, organisation_manager, public, quotas_store, subtests):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_consume(all_sessions, quotas_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Consuming quota" % client_role.name):
             for creator_role, quotas in quotas_store.items():
@@ -157,11 +157,11 @@ def test_consume(superuser, admin, organisation_manager, public, quotas_store, s
 
 
 # Update - quotaType
-def test_update_quota_type(superuser, admin, organisation_manager, public, quotas_store, subtests, quota_types):
+def test_update_quota_type(all_sessions, quotas_store, subtests, quota_types):
     K = len(quota_types)
     quota_types_updater_map = {quota_types[i%K]['UUID']: quota_types[(i+1)%K]['UUID'] for i in range(K)} # cyclic map
     
-    for client in [public, organisation_manager, admin, superuser]:
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating quotaType" % client_role.name):
             for creator_role, quotas in quotas_store.items():
@@ -183,8 +183,8 @@ def test_update_quota_type(superuser, admin, organisation_manager, public, quota
 
 
 # Update - usageLeft
-def test_update_usageLeft(superuser, admin, organisation_manager, public, quotas_store, subtests):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_update_usageLeft(all_sessions, quotas_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating usageLeft" % client_role.name):
             for creator_role, quotas in quotas_store.items():

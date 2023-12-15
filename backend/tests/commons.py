@@ -19,6 +19,7 @@ class Role(IntFlag):
     ADMIN = 0b100
     ORGANISATION_MANAGER = 0b10
     OBSERVER = 0b1
+    PUBLIC = 0b0
 
 
 def generate_credentials():

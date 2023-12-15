@@ -44,8 +44,8 @@ def users_store():
 
 
 # Roles
-def test_get_roles(superuser, admin, organisation_manager, public, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_get_roles(all_sessions, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Get roles" % client_role.name):
             res = Test.roles.x(_with=client)
@@ -53,11 +53,12 @@ def test_get_roles(superuser, admin, organisation_manager, public, subtests):
 
 
 # Create
-def test_create(superuser, admin, organisation_manager, public, users_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_create(all_sessions, users_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Creating user" % client_role.name):
             for role in commons.Role:
+                if role == 0: continue
                 generated_data = commons.generate_create_user_input(role=role)
                 res = Test.create.x(_with=client, json=generated_data)
                 
@@ -70,8 +71,8 @@ def test_create(superuser, admin, organisation_manager, public, users_store, sub
 
 
 # Get all
-def test_get_all(superuser, admin, organisation_manager, public, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_get_all(all_sessions, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Get all" % client_role.name):
             res = Test.base.x(_with=client)
@@ -85,8 +86,8 @@ def test_get_all(superuser, admin, organisation_manager, public, subtests):
 
 
 # Get one
-def test_get_one(superuser, admin, organisation_manager, public, users_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_get_one(all_sessions, superuser, admin, users_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Getting user" % client_role.name):
             for target in [superuser.info, admin.info, users_store[commons.Role.ORGANISATION_MANAGER][0], users_store[commons.Role.OBSERVER][0]]:
@@ -99,8 +100,8 @@ def test_get_one(superuser, admin, organisation_manager, public, users_store, su
 
 
 # Get self
-def test_get_self(superuser, admin, organisation_manager, subtests):
-    for client in [superuser, admin, organisation_manager]:
+def test_get_self(authenticated_sessions, subtests):
+    for client in authenticated_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Getting user self" % client_role.name):
             res = Test.self.x(_with=client)
@@ -108,8 +109,8 @@ def test_get_self(superuser, admin, organisation_manager, subtests):
 
 
 # changePassword
-def test_change_password(superuser, admin, organisation_manager, subtests):
-    for client in [superuser, admin, organisation_manager]:
+def test_change_password(authenticated_sessions, subtests):
+    for client in authenticated_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Changing user password" % client_role.name):
             oldPass = client.credentials['password']
@@ -129,8 +130,8 @@ def test_change_password(superuser, admin, organisation_manager, subtests):
 
 
 # refreshToken
-def test_refreshToken(superuser, admin, organisation_manager, subtests):
-    for client in [superuser, admin, organisation_manager]:
+def test_refreshToken(authenticated_sessions, subtests):
+    for client in authenticated_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': refreshing accessToken" % client_role.name):
             client.headers['Authorization'] = ''
@@ -144,8 +145,8 @@ def test_refreshToken(superuser, admin, organisation_manager, subtests):
 
 
 # Update - username
-def test_update_username(superuser, admin, organisation_manager, public, users_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_update_username(all_sessions, superuser, users_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating users username" % client_role.name):
             for target in [superuser.info, users_store[commons.Role.ADMIN][0], users_store[commons.Role.ORGANISATION_MANAGER][0], users_store[commons.Role.OBSERVER][0]]:
@@ -165,13 +166,14 @@ def test_update_username(superuser, admin, organisation_manager, public, users_s
 
 
 # Update - Assign roles
-def test_update_roles(superuser, admin, organisation_manager, public, users_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_update_roles(all_sessions, superuser, users_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating users roles" % client_role.name):
             for target in [superuser.info, users_store[commons.Role.ADMIN][0], users_store[commons.Role.ORGANISATION_MANAGER][0], users_store[commons.Role.OBSERVER][0]]:
                 target_original_role = commons.Role(target['role'])
                 for new_role in commons.Role:
+                    if new_role == 0: continue
                     jsonData = target.copy()
                     jsonData['role'] = new_role
                     res = Test.update.x(_with=client, json=jsonData)
@@ -186,8 +188,8 @@ def test_update_roles(superuser, admin, organisation_manager, public, users_stor
 
 
 # Update - Organisation
-def test_update_organisation(superuser, admin, organisation_manager, public, users_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_update_organisation(all_sessions, superuser, users_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating users organisation" % client_role.name):
             for target in [superuser.info, users_store[commons.Role.ADMIN][0], users_store[commons.Role.ORGANISATION_MANAGER][0], users_store[commons.Role.OBSERVER][0]]:
@@ -207,8 +209,8 @@ def test_update_organisation(superuser, admin, organisation_manager, public, use
 
 
 # Update - password
-def test_update_password(superuser, admin, organisation_manager, public, users_store, subtests):
-    for client in [superuser, admin, organisation_manager, public]:
+def test_update_password(all_sessions, superuser, users_store, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Updating users password" % client_role.name):
             for target in [superuser.info, users_store[commons.Role.ADMIN][0], users_store[commons.Role.ORGANISATION_MANAGER][0], users_store[commons.Role.OBSERVER][0]]:
@@ -232,8 +234,8 @@ def test_update_password(superuser, admin, organisation_manager, public, users_s
 
 
 # Delete along with clean up
-def test_delete_all_users(superuser, admin, organisation_manager, public, subtests):
-    for client in [public, organisation_manager, admin, superuser]:
+def test_delete_all_users(all_sessions, subtests):
+    for client in all_sessions:
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Deleting users" % client_role.name):
             get_all_res = Test.base.x(_with=client)
