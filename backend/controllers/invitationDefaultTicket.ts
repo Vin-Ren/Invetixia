@@ -1,4 +1,5 @@
 import { Request, Response } from "../types";
+import { Prisma } from "@prisma/client";
 import { prismaClient } from "../services/database";
 import { isOrganisationManager } from "../utils/permissionCheckers";
 import { logEvent } from "../utils/databaseLogging";
@@ -66,6 +67,9 @@ export const create = async (req: Request, res: Response) => {
         await logEvent({ event: "CREATE", summary: `Create DefaultTicket`, description: `Created defaultTicket for invitationId=${invitationId} [UUID=${defaultTicket.UUID}]` })
         return res.json({ defaultTicket })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+            return res.sendStatus(500)
+        }
         console.log(e)
     }
 }

@@ -40,7 +40,7 @@ def quota_types(superuser):
     
     quota_type_create_route = PreparedTestRequest("POST", '/quotaType/create')
     quota_type_delete_route = PreparedTestRequest("DELETE", '/quotaType/delete')
-    for _ in range(4):
+    for _ in range(20):
         jsonData = {'name': commons.generate_random_hex(randomLength=8)}
         res = quota_type_create_route(_with=superuser, json=jsonData)
         assert res.ok
@@ -100,9 +100,14 @@ def test_create(all_sessions, quotas_store, subtests, quota_types, tickets):
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Creating quota" % client_role.name):
             for creator_role, ticket in tickets.items():
-                for quota_type in quota_types:
+                for quota_type in quota_types[:10]:
                     jsonData = {'quotaTypeId': quota_type['UUID'], 'usageLeft': 2, 'ticketId': ticket['UUID']}
                     res = Test.create.x(_with=client, json=jsonData)
+                    
+                    if quota_type['UUID'] in [quota['quotaTypeId'] for quota in quotas_store[creator_role]]:
+                        assert not res.ok
+                        continue
+                    
                     if client_role >= commons.Role.ADMIN or (creator_role==client_role and client_role>=commons.Role.ORGANISATION_MANAGER):
                         assert res.ok, jsonData
                         quotas_store[creator_role].append(res.json()['quota'])
@@ -159,7 +164,7 @@ def test_consume(all_sessions, quotas_store, subtests):
 # Update - quotaType
 def test_update_quota_type(all_sessions, quotas_store, subtests, quota_types):
     K = len(quota_types)
-    quota_types_updater_map = {quota_types[i%K]['UUID']: quota_types[(i+1)%K]['UUID'] for i in range(K)} # cyclic map
+    quota_types_updater_map = {quota_types[i%K]['UUID']: quota_types[(i+10)%K]['UUID'] for i in range(K)} # cyclic map
     
     for client in all_sessions:
         client_role = commons.Role(client.info['role'])

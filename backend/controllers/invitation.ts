@@ -1,4 +1,5 @@
 import { DefaultTicketInput, Request, Response } from "../types";
+import { Prisma } from "@prisma/client";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 import { logEvent } from "../utils/databaseLogging";
@@ -66,6 +67,7 @@ export const getOnePublic = async (req: Request, res: Response) => {
         const invitation = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
+                UUID: true,
                 name: true,
                 publisher: {
                     select: {
@@ -73,6 +75,7 @@ export const getOnePublic = async (req: Request, res: Response) => {
                         name: true
                     }
                 },
+                usageQuota: true,
                 usageLeft: true
             }
         });
@@ -115,8 +118,8 @@ export const getTickets = async (req: Request, res: Response) => {
                 }
             }
         });
-
         if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
+
         return res.json({ tickets: createdTickets })
     } catch (e) {
         console.log(e)
@@ -156,7 +159,7 @@ export const create = async (req: Request, res: Response) => {
         name: string, organisationId: string, usageQuota: number, defaults: DefaultTicketInput[]
     } = req.body
     if (!name || !organisationId) return res.sendStatus(400)
-    if (!isOrganisationManager(req.user, organisationId)) res.sendStatus(403)
+    if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
 
     try {
         if (typeof usageQuota !== "number") return res.sendStatus(400)
@@ -188,6 +191,9 @@ export const create = async (req: Request, res: Response) => {
         await logEvent({ event: "CREATE", summary: `Create Invitation`, description: JSON.stringify(invitation) })
         return res.json({ invitation })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+            return res.sendStatus(500)
+        }
         console.log(e)
     }
 }
