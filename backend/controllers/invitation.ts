@@ -24,7 +24,6 @@ export const getAll = async (req: Request, res: Response) => {
 // Get
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
-    const { limitTickets } = req.query
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
@@ -43,15 +42,17 @@ export const getOne = async (req: Request, res: Response) => {
                         }
                     }
                 },
-                createdTickets: { // by default get 10 most recent tickets
-                    take: -(parseInt(limitTickets as string) || 10)
-                },
                 defaults: true
             }
         });
         if (!isOrganisationManager(req.user, invitation.publisher.UUID)) return res.sendStatus(403)
 
-        return res.json({ invitation })
+        const { _count: createdTicketCount } = await prismaClient.ticket.aggregate({
+            where: { invitationId: UUID },
+            _count: true
+        })
+
+        return res.json({ invitation: { ...invitation, createdTicketCount } })
     } catch (e) {
         console.log(e)
     }
@@ -202,12 +203,12 @@ export const create = async (req: Request, res: Response) => {
 // Patch
 export const update = async (req: Request, res: Response) => {
     const {
-        UUID, name, organisationId, newUsageQuota, newDefaults
+        UUID, name, organisationId, newUsageQuota, newDefaults = []
     }: {
         UUID: string, name: string, organisationId: string, newUsageQuota: number, newDefaults: DefaultTicketInput[]
     } = req.body
     if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
-    if ((typeof UUID !== "string") || !name || !organisationId || !newUsageQuota || !newDefaults) return res.sendStatus(400)
+    if ((typeof UUID !== "string") || !name || !organisationId || !newUsageQuota) return res.sendStatus(400)
 
     try {
         if (typeof newUsageQuota !== "number") return res.sendStatus(400)
@@ -241,10 +242,15 @@ export const update = async (req: Request, res: Response) => {
             }
         });
 
-        const [_, invitation] = await prismaClient.$transaction([createNewDefaults, invitationTransaction])
+        const getCreatedTicketCount = prismaClient.ticket.aggregate({
+            where: { invitationId: UUID },
+            _count: true
+        })
+
+        const [_, invitation, { _count: createdTicketCount }] = await prismaClient.$transaction([createNewDefaults, invitationTransaction, getCreatedTicketCount])
 
         await logEvent({ event: "UPDATE", summary: `Update Invitation`, description: JSON.stringify(invitation) })
-        return res.json({ invitation })
+        return res.json({ invitation: { ...invitation, createdTicketCount } })
     } catch (e) {
         console.log(e)
     }

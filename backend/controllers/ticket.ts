@@ -73,6 +73,7 @@ export const create = async (req: Request, res: Response) => {
         const invitation = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: invitationId },
             select: {
+                usageQuota: true,
                 usageLeft: true,
                 organisationId: true,
                 defaults: {
@@ -84,7 +85,14 @@ export const create = async (req: Request, res: Response) => {
             }
         })
 
-        if (invitation.usageLeft === 0) return res.json(403)
+        const { _count: createdTicketCount } = await prismaClient.ticket.aggregate({
+            where: { invitationId: invitationId },
+            _count: true
+        })
+
+        if (createdTicketCount >= invitation.usageQuota) return res.json(403)
+
+        // if (invitation.usageLeft === 0) return res.json(403)
 
         const consumeInvitation = prismaClient.invitation.update({
             where: {
@@ -195,6 +203,9 @@ export const deleteOne = async (req: Request, res: Response) => {
         await logEvent({ event: "RESTORE", summary: `Restore Invitation`, description: JSON.stringify(restoredInvitation) })
         return res.sendStatus(201)
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        }
         console.log(e)
     }
 }
