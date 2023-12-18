@@ -5,7 +5,7 @@ from commons import PreparedTestRequest
 
 
 class Endpoint:
-    base = '/invitationDefaultTicket'
+    base = '/invitationDefaultQuota'
     info = '%s/info/%s' % (base, '%s')
     create = '%s/create' % (base)
     update = '%s/update' % (base)
@@ -114,7 +114,7 @@ def test_create(all_sessions, subtests, quota_types, invitations, defaults_store
                     
                     if client_role >= commons.Role.ADMIN or (creator_role==client_role and client_role>=commons.Role.ORGANISATION_MANAGER):
                         assert res.ok
-                        defaults_store[creator_role].append(res.json()['defaultTicket'])
+                        defaults_store[creator_role].append(res.json()['defaultQuota'])
                     else:
                         assert not res.ok
                         continue

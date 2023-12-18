@@ -10,7 +10,7 @@ export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
 
     try {
-        const { invitation } = await prismaClient.defaultTicket.findUniqueOrThrow({
+        const { invitation } = await prismaClient.defaultQuota.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {
@@ -22,7 +22,7 @@ export const getOne = async (req: Request, res: Response) => {
         })
         if (!isOrganisationManager(req.user, invitation.organisationId)) return res.sendStatus(403)
 
-        const defaultTicket = await prismaClient.defaultTicket.findUniqueOrThrow({
+        const defaultQuota = await prismaClient.defaultQuota.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {
@@ -37,7 +37,7 @@ export const getOne = async (req: Request, res: Response) => {
                 value: true
             }
         })
-        return res.json({ defaultTicket })
+        return res.json({ defaultQuota })
     } catch (e) {
         console.log(e)
     }
@@ -56,7 +56,7 @@ export const create = async (req: Request, res: Response) => {
         })
         if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
 
-        const defaultTicket = await prismaClient.defaultTicket.create({
+        const defaultQuota = await prismaClient.defaultQuota.create({
             data: {
                 invitationId: invitationId,
                 quotaTypeId: quotaTypeId,
@@ -64,8 +64,8 @@ export const create = async (req: Request, res: Response) => {
             }
         });
 
-        await logEvent({ event: "CREATE", summary: `Create DefaultTicket`, description: `Created defaultTicket for invitationId=${invitationId} [UUID=${defaultTicket.UUID}]` })
-        return res.json({ defaultTicket })
+        await logEvent({ event: "CREATE", summary: `Create DefaultQuota`, description: `Created defaultQuota for invitationId=${invitationId} [UUID=${defaultQuota.UUID}]` })
+        return res.json({ defaultQuota })
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
             return res.sendStatus(500)
@@ -81,7 +81,7 @@ export const update = async (req: Request, res: Response) => {
     if (!UUID || !quotaTypeId || typeof value !== "number") return res.sendStatus(400)
 
     try {
-        const { invitation } = await prismaClient.defaultTicket.findUniqueOrThrow({
+        const { invitation } = await prismaClient.defaultQuota.findUniqueOrThrow({
             where: { UUID: UUID as string },
             select: {
                 invitation: {
@@ -91,7 +91,7 @@ export const update = async (req: Request, res: Response) => {
         })
         if (!isOrganisationManager(req.user, invitation.organisationId)) return res.sendStatus(403)
 
-        const updatedDefaultTicket = await prismaClient.defaultTicket.update({
+        const updatedDefaultTicket = await prismaClient.defaultQuota.update({
             where: { UUID: UUID },
             data: {
                 quotaTypeId: quotaTypeId,
@@ -100,7 +100,7 @@ export const update = async (req: Request, res: Response) => {
         });
 
         await logEvent({ event: "UPDATE", summary: `Update DefaultTicket`, description: `Updated default ticket for invitationId=${updatedDefaultTicket.invitationId} [UUID=${updatedDefaultTicket.UUID}]` })
-        return res.json({ defaultTicket: updatedDefaultTicket })
+        return res.json({ defaultQuota: updatedDefaultTicket })
     } catch (e) {
         console.log(e)
     }
@@ -113,7 +113,7 @@ export const deleteOne = async (req: Request, res: Response) => {
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
-        const { invitation } = await prismaClient.defaultTicket.findUniqueOrThrow({
+        const { invitation } = await prismaClient.defaultQuota.findUniqueOrThrow({
             where: { UUID: UUID },
             select: {
                 invitation: {
@@ -123,11 +123,11 @@ export const deleteOne = async (req: Request, res: Response) => {
         })
         if (!isOrganisationManager(req.user, invitation.organisationId)) return res.sendStatus(403)
 
-        const deletedDefaultTicket = await prismaClient.defaultTicket.delete({
+        const deletedDefaultTicket = await prismaClient.defaultQuota.delete({
             where: { UUID: UUID }
         })
 
-        await logEvent({ event: "DELETE", summary: `Delete DefaultTicket`, description: `Deleted defaultTicket for invitationId=${deletedDefaultTicket.invitationId} [UUID=${deletedDefaultTicket.UUID}]` })
+        await logEvent({ event: "DELETE", summary: `Delete DefaultTicket`, description: `Deleted defaultQuota for invitationId=${deletedDefaultTicket.invitationId} [UUID=${deletedDefaultTicket.UUID}]` })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

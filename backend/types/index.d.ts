@@ -5,7 +5,7 @@ export type Request = ExpressRequest & {user?:User}
 export type Response = Response
 export type NextFunction = NextFunction
 
-export type DefaultTicketInput = {
+export type DefaultQuotaInput = {
     quotaTypeId: string, 
     value: number
 }

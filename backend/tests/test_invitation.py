@@ -11,7 +11,7 @@ class Endpoint:
     info = '%s/info/%s' % (base, '%s')
     
     info_tickets = '%s/info/%s/tickets' % (base, '%s')
-    info_defaults = '%s/info/%s/defaults' % (base, '%s')
+    info_defaults = '%s/info/%s/defaultQuotas' % (base, '%s')
     
     create = '%s/create' % (base)
     update = '%s/update' % (base)
@@ -103,11 +103,11 @@ def test_create(all_sessions, invitations_store, tickets_store, quota_types, sub
             jsonData = {'name': commons.generate_random_hex(randomLength=8), 
                         'organisationId': organisationId, 
                         'usageQuota': 1000, 
-                        'defaults': []}
+                        'defaultQuotas': []}
             
             for i in set([random.randint(K//2,K-1) for _ in range(random.randint(K//2, K-1))]):
                 quota_type = quota_types[i]
-                jsonData['defaults'].append({'quotaTypeId': quota_type['UUID'], 'value': random.randint(1, 100)})
+                jsonData['defaultQuotas'].append({'quotaTypeId': quota_type['UUID'], 'value': random.randint(1, 100)})
             
             res = Test.create.x(_with=client, json=jsonData)
             
@@ -125,12 +125,12 @@ def test_create(all_sessions, invitations_store, tickets_store, quota_types, sub
                 assert ticket['ownerAffiliationId'] == jsonData['organisationId']
                 
                 mapped_quotas = {quota['quotaTypeId']: quota['usageLeft'] for quota in ticket['quotas']}
-                assert len(ticket['quotas']) == len(jsonData['defaults'])
-                for default_entry in jsonData['defaults']:
+                assert len(ticket['quotas']) == len(jsonData['defaultQuotas'])
+                for default_entry in jsonData['defaultQuotas']:
                     assert mapped_quotas[default_entry['quotaTypeId']] == default_entry['value']
             
             invitations_store[client_role][0]['createdTicketCount'] = len(tickets_store[client_role])
-            invitations_store[client_role][0]['defaultCount'] = len(jsonData['defaults'])
+            invitations_store[client_role][0]['defaultCount'] = len(jsonData['defaultQuotas'])
 
 
 # Get all
@@ -160,7 +160,7 @@ def test_get_one_public(all_sessions, subtests, invitations_store):
                     assert res.ok
                     data = res.json()['invitation']
                     assert 'managers' not in data['publisher']
-                    assert all([k not in data for k in ['createdTicketCount', 'createdTime', 'defaults']])
+                    assert all([k not in data for k in ['createdTicketCount', 'createdTime', 'defaultQuotas']])
 
 
 # Get one
@@ -176,7 +176,7 @@ def test_get_one(all_sessions, subtests, invitations_store):
                         assert res.ok
                         data = res.json()['invitation']
                         assert 'managers' in data['publisher']
-                        assert all([k in data for k in ['createdTicketCount', 'createdTime', 'defaults']])
+                        assert all([k in data for k in ['createdTicketCount', 'createdTime', 'defaultQuotas']])
                     else:
                         assert not res.ok
 
@@ -202,18 +202,18 @@ def test_get_tickets(all_sessions, subtests, invitations_store):
                         assert not res.ok
 
 
-# Get defaults
+# Get defaultQuotas
 def test_get_defaults(all_sessions, subtests, invitations_store):
     for client in all_sessions:
         client_role = commons.Role(client.info['role'])
-        with subtests.test(msg="'%s': Getting invitation's defaults" % client_role.name):
+        with subtests.test(msg="'%s': Getting invitation's defaultQuotas" % client_role.name):
             for creator_role, invitations in invitations_store.items():
                 for invitation in invitations:
                     res = Test.info_defaults.x(_with=client, _path_formats=invitation['UUID'])
                     
                     if client_role >= commons.Role.ADMIN or (creator_role == client_role and client_role >= commons.Role.ORGANISATION_MANAGER):
                         assert res.ok
-                        data = res.json()['defaults']
+                        data = res.json()['defaultQuotas']
                         assert len(data) == invitations_store[creator_role][0]['defaultCount']
                         for default_entry in data:
                             assert all([k in default_entry for k in ['UUID', 'invitationId', 'quotaTypeId', 'quotaType', 'value']])
@@ -238,7 +238,7 @@ def test_update(all_sessions, subtests, invitations_store):
                     if client_role >= commons.Role.ADMIN or (creator_role == client_role and client_role >= commons.Role.ORGANISATION_MANAGER):
                         assert res.ok
                         data = res.json()['invitation']
-                        assert all([k in data for k in ['createdTicketCount', 'createdTime', 'defaults']])
+                        assert all([k in data for k in ['createdTicketCount', 'createdTime', 'defaultQuotas']])
                     else:
                         assert not res.ok
                         continue

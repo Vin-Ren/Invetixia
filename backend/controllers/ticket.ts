@@ -76,7 +76,7 @@ export const create = async (req: Request, res: Response) => {
                 usageQuota: true,
                 usageLeft: true,
                 organisationId: true,
-                defaults: {
+                defaultQuotas: {
                     select: {
                         quotaTypeId: true,
                         value: true
@@ -112,7 +112,7 @@ export const create = async (req: Request, res: Response) => {
                 ownerAffiliationId: invitation.organisationId,
                 quotas: {
                     createMany: {
-                        data: invitation.defaults.map((e) => { return { quotaTypeId: e.quotaTypeId, usageLeft: e.value } })
+                        data: invitation.defaultQuotas.map((e) => { return { quotaTypeId: e.quotaTypeId, usageLeft: e.value } })
                     }
                 }
             },
