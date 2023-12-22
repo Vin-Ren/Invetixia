@@ -23,7 +23,7 @@ export const getAll = async (req: Request, res: Response) => {
 
 // Get
 export const getOne = async (req: Request, res: Response) => {
-    const { UUID } = req.params
+    const { UUID = "" } = req.params
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
@@ -54,6 +54,9 @@ export const getOne = async (req: Request, res: Response) => {
 
         return res.json({ invitation: { ...invitation, createdTicketCount } })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        }
         console.log(e)
     }
 }
@@ -83,8 +86,10 @@ export const getOnePublic = async (req: Request, res: Response) => {
 
         return res.json({ invitation })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        }
         console.log(e)
-        return res.sendStatus(404)
     }
 }
 

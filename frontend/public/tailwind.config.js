@@ -11,7 +11,7 @@ export default {
   // eslint-disable-next-line no-undef
   plugins: [require('daisyui')],
   daisyui: {
-    themes: ["light", "dark", "cupcake", "night"],
-    darkTheme: "dark"
+    themes: ["dim", "night"],
+    darkTheme: "night"
   }
 }

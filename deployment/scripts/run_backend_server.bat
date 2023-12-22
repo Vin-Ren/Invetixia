@@ -1,2 +1,3 @@
 cd %~dp0/../../backend
-yarn ts-node index.ts
+set NODE_ENV=production
+yarn nodemon index.ts

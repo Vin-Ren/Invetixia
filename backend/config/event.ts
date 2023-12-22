@@ -1,26 +1,32 @@
 
-type Contacts = {
-    // e.g https://example.com
+type Socials = { // Links to social profiles
+    // e.g: https://example.com
     mainWebsite?: string,
-
-    // e.g: @username
     instagram?: string,
-
+    youtube?: string,
+    x_twitter?: string,
+    
     // e.g: example@mail.com
-    mail?: string,
+    email?: string,
 }
 
 const event: {
     name: string, // displayed as hero's title
     description: string, // displayed as the paragraph text on hero
+    locationName: string, 
     startTime: Date, // used to calculate time left to the event, for countdown.
-    contacts?: Contacts // to be displayed on footer of hero
+    socials?: Socials // to be displayed on footer of hero
 } = {
     name: "Invetixia", // title on hero
     description: "Invetixia launching event", // description on hero
-    startTime: new Date("2099-01-01T00:00:00.000+00:00"),
-    contacts: {
-        mainWebsite: "https://github.com/Vin-Ren/Invetixia"
+    locationName: "Zoom meeting",
+    startTime: new Date("2024-01-01T00:00:00.000+00:00"),
+    socials: {
+        mainWebsite: "https://github.com/Vin-Ren/Invetixia",
+        instagram: "https://instagram.com/instagram",
+        youtube: "https://youtube.com/youtube",
+        x_twitter: "https://x.com/",
+        email: "example@mail.com"
     }
 }
 
