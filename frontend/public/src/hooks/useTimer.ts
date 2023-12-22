@@ -4,7 +4,7 @@ import { differenceInSeconds } from 'date-fns';
 
 const useTimer = (initialDate: Date) => {
     const timerRef = useRef(0);
-    const intervalRef = useRef<number>();
+    const intervalRef = useRef<any>();
 
     const [date, setDate] = useState(initialDate)
 
