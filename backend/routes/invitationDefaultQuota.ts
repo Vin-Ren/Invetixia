@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../middlewares/verifyToken";
-import { create, getOne, update, deleteOne } from "../controllers/invitationDefaultTicket";
+import { create, getOne, update, deleteOne } from "../controllers/invitationDefaultQuota";
 
 
 const invitationDefaultRouter = Router({ mergeParams: true })

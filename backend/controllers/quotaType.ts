@@ -36,7 +36,7 @@ export const getOne = async (req: Request, res: Response) => {
                         usageLeft: true
                     }
                 },
-                defaultTickets: true
+                defaultQuotas: true
             }
         })
 

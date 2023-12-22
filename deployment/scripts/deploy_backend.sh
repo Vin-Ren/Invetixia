@@ -1,5 +1,6 @@
 cd %~dp0/../../backend
+set NODE_ENV=production
 yarn install
 yarn prisma db push
 yarn prisma db seed
-yarn ts-node index.ts
+yarn nodemon index.ts

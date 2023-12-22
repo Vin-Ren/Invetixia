@@ -43,7 +43,7 @@ model QuotaType {
   name           String          @unique
   description    String          @default("")
   quotas         Quota[]
-  defaultTickets DefaultTicket[]
+  defaultQuotas DefaultQuota[]
 }
 
 model Organisation {
@@ -63,10 +63,10 @@ model Invitation {
   usageLeft      Int             @default(1)
   createdTickets Ticket[]
   createdTime    DateTime        @default(now())
-  defaults       DefaultTicket[]
+  defaultQuotas       DefaultQuota[]
 }
 
-model DefaultTicket {
+model DefaultQuota {
   UUID         String     @id @default(dbgenerated("uuid_generate_v1mc()"))
   invitation   Invitation @relation(references: [UUID], fields: [invitationId], onUpdate: Cascade, onDelete: Cascade)
   invitationId String

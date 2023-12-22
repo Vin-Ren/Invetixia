@@ -1,4 +1,4 @@
-import { DefaultTicketInput, Request, Response } from "../types";
+import { DefaultQuotaInput, Request, Response } from "../types";
 import { Prisma } from "@prisma/client";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
@@ -23,7 +23,7 @@ export const getAll = async (req: Request, res: Response) => {
 
 // Get
 export const getOne = async (req: Request, res: Response) => {
-    const { UUID } = req.params
+    const { UUID = "" } = req.params
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
@@ -42,7 +42,7 @@ export const getOne = async (req: Request, res: Response) => {
                         }
                     }
                 },
-                defaults: true
+                defaultQuotas: true
             }
         });
         if (!isOrganisationManager(req.user, invitation.publisher.UUID)) return res.sendStatus(403)
@@ -54,6 +54,9 @@ export const getOne = async (req: Request, res: Response) => {
 
         return res.json({ invitation: { ...invitation, createdTicketCount } })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        }
         console.log(e)
     }
 }
@@ -83,8 +86,10 @@ export const getOnePublic = async (req: Request, res: Response) => {
 
         return res.json({ invitation })
     } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        }
         console.log(e)
-        return res.sendStatus(404)
     }
 }
 
@@ -129,22 +134,22 @@ export const getTickets = async (req: Request, res: Response) => {
 
 
 // Get
-export const getDefaults = async (req: Request, res: Response) => {
+export const getDefaultQuotas = async (req: Request, res: Response) => {
     const { UUID } = req.params
     if (typeof UUID !== "string") return res.sendStatus(400)
 
     try {
-        const { organisationId, defaults } = await prismaClient.invitation.findUniqueOrThrow({
+        const { organisationId, defaultQuotas } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID as string },
             include: {
-                defaults: {
+                defaultQuotas: {
                     include: { quotaType: true }
                 }
             }
         });
 
         if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
-        return res.json({ defaults })
+        return res.json({ defaultQuotas })
     } catch (e) {
         console.log(e)
     }
@@ -155,16 +160,16 @@ export const getDefaults = async (req: Request, res: Response) => {
 // Post
 export const create = async (req: Request, res: Response) => {
     const {
-        name, organisationId, usageQuota = 1, defaults = []
+        name, organisationId, usageQuota = 1, defaultQuotas = []
     }: {
-        name: string, organisationId: string, usageQuota: number, defaults: DefaultTicketInput[]
+        name: string, organisationId: string, usageQuota: number, defaultQuotas: DefaultQuotaInput[]
     } = req.body
     if (!name || !organisationId) return res.sendStatus(400)
     if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
 
     try {
         if (typeof usageQuota !== "number") return res.sendStatus(400)
-        defaults.forEach(element => { // prevents nested create
+        defaultQuotas.forEach(element => { // prevents nested create
             if (typeof element.quotaTypeId !== "string") return res.sendStatus(400)
         });
 
@@ -174,12 +179,12 @@ export const create = async (req: Request, res: Response) => {
                 organisationId: organisationId,
                 usageQuota: usageQuota,
                 usageLeft: usageQuota,
-                defaults: {
-                    createMany: { data: defaults }
+                defaultQuotas: {
+                    createMany: { data: defaultQuotas }
                 }
             },
             include: {
-                defaults: {
+                defaultQuotas: {
                     include: {
                         quotaType: {
                             select: { name: true }
@@ -205,7 +210,7 @@ export const update = async (req: Request, res: Response) => {
     const {
         UUID, name, organisationId, newUsageQuota, newDefaults = []
     }: {
-        UUID: string, name: string, organisationId: string, newUsageQuota: number, newDefaults: DefaultTicketInput[]
+        UUID: string, name: string, organisationId: string, newUsageQuota: number, newDefaults: DefaultQuotaInput[]
     } = req.body
     if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
     if ((typeof UUID !== "string") || !name || !organisationId || !newUsageQuota) return res.sendStatus(400)
@@ -221,7 +226,7 @@ export const update = async (req: Request, res: Response) => {
         newDefaults.forEach(element => { // prevents nested create
             if (typeof element.quotaTypeId !== "string") return res.sendStatus(400)
         });
-        const createNewDefaults = prismaClient.defaultTicket.createMany({
+        const createNewDefaults = prismaClient.defaultQuota.createMany({
             data: newDefaults.map((e) => { return { ...e, invitationId: UUID } })
         })
 
@@ -234,7 +239,7 @@ export const update = async (req: Request, res: Response) => {
                 usageLeft: { increment: newUsageQuota - originalUsageQuota }
             },
             include: {
-                defaults: {
+                defaultQuotas: {
                     include: {
                         quotaType: { select: { name: true } }
                     }

@@ -1,6 +1,6 @@
 import { env } from "process"
 
-let originList: any[] = ['*'] // allow all by default
+let originList: any[] | string = '*' // allow all by default
 if (env.ROOT_DOMAIN !== undefined) {
     const subdomainRe = new RegExp(`\.${env.ROOT_DOMAIN.replace(".", "\\.")}$`)
     originList = [`http://${env.ROOT_DOMAIN}`, `https://${env.ROOT_DOMAIN}`, subdomainRe]
