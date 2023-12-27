@@ -2,10 +2,11 @@ import { IoCaretBackOutline } from "react-icons/io5"
 import { TextInput } from "../components/form"
 import { useState } from "react"
 import { QueryClient, useQuery } from "@tanstack/react-query"
-import { ticketQuery } from "../queries"
+import { eventQuery, ticketQuery } from "../queries"
 import { Params, useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { queryClient } from "../main"
+import { Helmet } from "react-helmet-async"
 
 
 export const loader = (queryClient: QueryClient) => {
@@ -31,6 +32,7 @@ export default function EditTicket() {
     const params = useParams()
     const navigate = useNavigate()
     const { data, isError } = useQuery(ticketQuery(params.UUID || ''))
+    const { data: { event = null } } = useQuery(eventQuery)
     if (isError) navigate('/')
 
     const [ownerName, setOwnerName] = useState(data.ticket.ownerName)
@@ -58,7 +60,7 @@ export default function EditTicket() {
             errors.email = 'Invalid email'
         }
 
-        const numberFormatRegex = /[0-9]{10,}$/
+        const numberFormatRegex = /[0-9]{10,13}$/
         if (!numberFormatRegex.test(ownerNumber)) {
             errors.number = 'Invalid number'
         }
@@ -72,7 +74,7 @@ export default function EditTicket() {
                 data: {
                     UUID: params.UUID,
                     ownerName: (ownerName as string).toLowerCase(),
-                    ownerContacts: [ownerEmail, ownerNumber],
+                    ownerContacts: [ownerEmail.toLowerCase(), ownerNumber.toLowerCase()],
                 },
                 validateStatus: () => true
             })
@@ -86,10 +88,14 @@ export default function EditTicket() {
     }
 
     return (
-        <div className="hero min-h-screen bg-base-200 bg-opacity-60">
+        <div className="hero min-h-screen bg-base-200 bg-opacity-60 px-2 py-4">
+            <Helmet>
+                <title>Edit Information - {event.name}</title>
+            </Helmet>
+
             <div className="hero-content justify-center">
                 <div></div>
-                <div className="max-w-lg bg-base-300 p-3 rounded-xl bg-opacity-70">
+                <div className="max-w-lg bg-base-300 p-3 rounded-xl bg-opacity-75 backdrop-blur-sm">
                     <button className="btn btn-ghost" disabled={status === 'loading'} onClick={() => handleGoBack()}><IoCaretBackOutline /><span>Back</span></button>
                     <form className="form-control p-9 pt-0" onSubmit={(e) => { e.preventDefault(); handleSubmit() }}>
                         <TextInput prompt="What is your name?" placeholder="John Doe" value={ownerName} stateSetter={setOwnerName} error={errors?.name} infoText="" />

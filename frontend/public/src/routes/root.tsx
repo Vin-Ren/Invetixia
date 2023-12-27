@@ -7,6 +7,7 @@ import { FaSlackHash, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { eventQuery } from "../queries";
+import { Helmet } from "react-helmet-async";
 
 export const loader = (queryClient: QueryClient) => {
     return async () => {
@@ -19,11 +20,14 @@ export const loader = (queryClient: QueryClient) => {
 
 
 export default function Root() {
-    const { data: { event: { socials = null } } } = useQuery(eventQuery)
+    const { data: { event: { name, socials = null } } } = useQuery(eventQuery)
     const iconSize = 24
 
     return (
         <div className="min-h-screen bg-no-repeat bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url('/${import.meta.env.VITE_EVENT_POSTER_IMAGE}')` }}>
+            <Helmet>
+                <title>{name}</title>
+            </Helmet>
 
             <main className="content"><Outlet /></main>
 
