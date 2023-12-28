@@ -3,6 +3,16 @@ import { Prisma } from "@prisma/client";
 import { prismaClient } from "../services/database";
 import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 import { logEvent } from "../utils/databaseLogging";
+import { z } from "zod";
+
+const UUIDValidator = z.string().uuid({ message: 'Invalid UUID' })
+const nameValidator = z.string()
+    .min(3, { message: 'Name must be at least 3 characters' })
+    .max(50, { message: 'Name must be at most 50 characters' })
+const contactsValidator = z.object({
+    email: z.string().email({ message: 'Invalid email' }).nullable(),
+    number: z.string().regex(/\d{11,13}$/, { message: 'Invalid number' })
+})
 
 
 // Get
@@ -32,7 +42,7 @@ export const getAll = async (req: Request, res: Response) => {
 // always public
 export const getOne = async (req: Request, res: Response) => {
     const { UUID } = req.params
-    if (typeof UUID !== "string") return res.sendStatus(400)
+    if (typeof UUID !== "string") return res.status(400)
 
     try {
         const ticket = await prismaClient.ticket.findUniqueOrThrow({
@@ -67,7 +77,14 @@ export const getOne = async (req: Request, res: Response) => {
 // Post
 export const create = async (req: Request, res: Response) => {
     const { ownerName, ownerContacts, invitationId } = req.body
-    if (!ownerName || !ownerContacts || !invitationId) return res.sendStatus(400)
+    const parsedName = await nameValidator.safeParseAsync(ownerName)
+    const parsedContacts = await contactsValidator.safeParseAsync(ownerContacts)
+    const errors = {name: '', contacts: ''}
+    if (!parsedName.success) errors['name'] = parsedName.error.message
+    if (!parsedContacts.success) errors['contacts'] = parsedContacts.error.message
+    
+    if (!parsedName.success || !parsedContacts.success || !(typeof invitationId !== "string")) return res.status(400).json({errors})
+
 
     try {
         const invitation = await prismaClient.invitation.findUniqueOrThrow({
@@ -144,15 +161,16 @@ export const create = async (req: Request, res: Response) => {
 
 // Patch
 export const update = async (req: Request, res: Response) => {
-    const { UUID, ownerName, ownerContacts }: { UUID: string, ownerName: string, ownerContacts: string[] } = req.body
-    if ((typeof UUID !== "string") || !ownerName || !ownerContacts) return res.sendStatus(400)
+    const { UUID, ownerName, ownerContacts } = req.body
+    const parsedName = await nameValidator.safeParseAsync(ownerName)
+    const parsedContacts = await contactsValidator.safeParseAsync(ownerContacts)
+    const errors = {name: '', contacts: ''}
+    if (!parsedName.success) errors['name'] = parsedName.error.message
+    if (!parsedContacts.success) errors['contacts'] = parsedContacts.error.message
+    
+    if (!parsedName.success || !parsedContacts.success || (typeof UUID !== "string")) return res.status(400).json({errors})
 
     try {
-        if (typeof ownerName !== "string") return res.sendStatus(400)
-        ownerContacts.forEach(e => {
-            if (typeof e !== "string") return res.sendStatus(400)
-        });
-
         const updatedTicket = await prismaClient.ticket.update({
             where: { UUID: UUID },
             data: {

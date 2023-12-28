@@ -10,6 +10,7 @@ import Invitation, { loader as InvitationLoader } from './routes/invitation.tsx'
 import Ticket from './routes/ticket.tsx'
 import EditTicket, {loader as TicketLoader} from './routes/editTicket.tsx'
 import CountdownPage from './routes/countdown.tsx'
+import { HelmetProvider } from 'react-helmet-async'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,7 +63,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <HelmetProvider>
+        <RouterProvider router={router} />
+      </HelmetProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )

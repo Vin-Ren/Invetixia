@@ -5,7 +5,8 @@ import axios from "axios"
 import { IoCaretBackOutline } from "react-icons/io5";
 
 import { TextInput } from "../components/form"
-import { invitationQuery } from "../queries"
+import { eventQuery, invitationQuery } from "../queries"
+import { Helmet } from "react-helmet-async";
 
 export const loader = (queryClient: QueryClient) => {
     return async ({ params }: { params: Params }) => {
@@ -30,6 +31,7 @@ export default function Invitation() {
     const params = useParams()
     const navigate = useNavigate()
     const { data, isError } = useQuery(invitationQuery(params.UUID || ''))
+    const { data: { event = {} } } = useQuery(eventQuery)
     if (isError) navigate('/')
 
     const [ownerName, setOwnerName] = useState('')
@@ -50,8 +52,8 @@ export default function Invitation() {
             errors.name = 'Name is too long'
         }
 
-        if (!ownerName) {
-            errors.name = 'Name is required'
+        if (ownerName.length<3) {
+            errors.name = 'Name must be at least 3 characters'
         }
 
         const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
@@ -59,7 +61,7 @@ export default function Invitation() {
             errors.email = 'Invalid email'
         }
 
-        const numberFormatRegex = /[0-9]{10,}$/
+        const numberFormatRegex = /\d{11,13}$/
         if (!numberFormatRegex.test(ownerNumber)) {
             errors.number = 'Invalid number'
         }
@@ -72,7 +74,10 @@ export default function Invitation() {
                 url: `${import.meta.env.VITE_API_BASE_URL}/ticket/create`,
                 data: {
                     ownerName: (ownerName as string).toLowerCase(),
-                    ownerContacts: [ownerEmail, ownerNumber],
+                    ownerContacts: {
+                        email: ownerEmail.toLowerCase(), 
+                        number: ownerNumber.toLowerCase()
+                    },
                     invitationId: data.invitation.UUID
                 },
                 validateStatus: () => true
@@ -85,9 +90,13 @@ export default function Invitation() {
 
     return (
         <div className="hero min-h-screen bg-base-200 bg-opacity-60">
+            <Helmet>
+                <title>Register - {event.name}</title>
+            </Helmet>
+            
             <div className="hero-content justify-center">
                 <div></div>
-                <div className="max-w-lg bg-base-300 p-3 rounded-xl bg-opacity-70">
+                <div className="max-w-lg bg-base-300 p-3 rounded-xl bg-opacity-75 backdrop-blur-sm">
                     <button className="btn btn-ghost" disabled={status === 'loading'} onClick={() => handleGoBack()}><IoCaretBackOutline /><span>Back</span></button>
                     <form className="form-control p-9 pt-0" onSubmit={(e) => { e.preventDefault(); handleSubmit() }}>
                         <TextInput prompt="What is your name?" placeholder="John Doe" value={ownerName} stateSetter={setOwnerName} error={errors?.name} infoText="" />

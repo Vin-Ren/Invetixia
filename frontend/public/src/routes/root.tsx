@@ -7,6 +7,7 @@ import { FaSlackHash, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { eventQuery } from "../queries";
+import { Helmet } from "react-helmet-async";
 
 export const loader = (queryClient: QueryClient) => {
     return async () => {
@@ -19,11 +20,14 @@ export const loader = (queryClient: QueryClient) => {
 
 
 export default function Root() {
-    const { data: { event: { socials = null } } } = useQuery(eventQuery)
+    const { data: { event: { name, socials = null } } } = useQuery(eventQuery)
     const iconSize = 24
 
     return (
         <div className="min-h-screen bg-no-repeat bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url('/${import.meta.env.VITE_EVENT_POSTER_IMAGE}')` }}>
+            <Helmet>
+                <title>{name}</title>
+            </Helmet>
 
             <main className="content"><Outlet /></main>
 
@@ -31,7 +35,7 @@ export default function Root() {
                 <nav className="pl-4">
                     <div className="grid grid-flow-col gap-4">
                         <OptionalSocialLink icon={<TbWorldWww size={iconSize} />} url={socials?.mainWebsite} tooltip="Website" />
-                        <OptionalSocialLink icon={<MdEmail size={iconSize} />} url={socials?.email} tooltip="E-Mail" />
+                        <OptionalSocialLink icon={<MdEmail size={iconSize} />} url={`mailto:${socials?.email}`} tooltip="E-Mail" />
                         <OptionalSocialLink icon={<FaInstagram size={iconSize} />} url={socials?.instagram} tooltip="Instagram" />
                         <OptionalSocialLink icon={<FaYoutube size={iconSize} />} url={socials?.youtube} tooltip="Youtube" />
                         <OptionalSocialLink icon={<FaXTwitter size={iconSize} />} url={socials?.x_twitter} tooltip="X (Twitter)" />

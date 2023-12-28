@@ -22,7 +22,7 @@ const event: {
     locationName: "Zoom meeting",
     startTime: new Date("2024-01-01T00:00:00.000+00:00"),
     socials: {
-        mainWebsite: "https://github.com/Vin-Ren/Invetixia",
+        mainWebsite: "https://example.com",
         instagram: "https://instagram.com/instagram",
         youtube: "https://youtube.com/youtube",
         x_twitter: "https://x.com/",
