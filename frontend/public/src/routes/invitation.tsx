@@ -52,8 +52,8 @@ export default function Invitation() {
             errors.name = 'Name is too long'
         }
 
-        if (!ownerName) {
-            errors.name = 'Name is required'
+        if (ownerName.length<3) {
+            errors.name = 'Name must be at least 3 characters'
         }
 
         const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
@@ -61,7 +61,7 @@ export default function Invitation() {
             errors.email = 'Invalid email'
         }
 
-        const numberFormatRegex = /[0-9]{10,}$/
+        const numberFormatRegex = /\d{11,13}$/
         if (!numberFormatRegex.test(ownerNumber)) {
             errors.number = 'Invalid number'
         }
@@ -74,7 +74,10 @@ export default function Invitation() {
                 url: `${import.meta.env.VITE_API_BASE_URL}/ticket/create`,
                 data: {
                     ownerName: (ownerName as string).toLowerCase(),
-                    ownerContacts: [ownerEmail, ownerNumber],
+                    ownerContacts: {
+                        email: ownerEmail.toLowerCase(), 
+                        number: ownerNumber.toLowerCase()
+                    },
                     invitationId: data.invitation.UUID
                 },
                 validateStatus: () => true

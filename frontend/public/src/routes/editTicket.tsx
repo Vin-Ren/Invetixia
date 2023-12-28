@@ -31,14 +31,14 @@ export default function EditTicket() {
     const [status, setStatus] = useState<'idle' | 'loading'>('idle')
     const params = useParams()
     const navigate = useNavigate()
-    const { data, isError } = useQuery(ticketQuery(params.UUID || ''))
+    const { data: { ticket = {} }, isError } = useQuery(ticketQuery(params.UUID || ''))
     const { data: { event = null } } = useQuery(eventQuery)
     if (isError) navigate('/')
 
-    const [ownerName, setOwnerName] = useState(data.ticket.ownerName)
-    const [ownerEmail, setOwnerEmail] = useState(data.ticket.ownerContacts[0])
-    const [ownerNumber, setOwnerNumber] = useState(data.ticket.ownerContacts[1])
-    const [ownerOrganisation] = useState(data.ticket.ownerAffiliation.name)
+    const [ownerName, setOwnerName] = useState(ticket.ownerName)
+    const [ownerEmail, setOwnerEmail] = useState(ticket.ownerContacts['email'])
+    const [ownerNumber, setOwnerNumber] = useState(ticket.ownerContacts['number'])
+    const [ownerOrganisation] = useState(ticket.ownerAffiliation.name)
 
     const handleGoBack = async () => navigate(`/ticket/${params.UUID}`, { replace: true })
 
@@ -51,8 +51,8 @@ export default function EditTicket() {
             errors.name = 'Name is too long'
         }
 
-        if (!ownerName) {
-            errors.name = 'Name is required'
+        if (ownerName.length < 3) {
+            errors.name = 'Name must be at least 3 characters'
         }
 
         const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
@@ -60,7 +60,7 @@ export default function EditTicket() {
             errors.email = 'Invalid email'
         }
 
-        const numberFormatRegex = /[0-9]{10,13}$/
+        const numberFormatRegex = /\d{11,13}$/
         if (!numberFormatRegex.test(ownerNumber)) {
             errors.number = 'Invalid number'
         }
@@ -74,14 +74,17 @@ export default function EditTicket() {
                 data: {
                     UUID: params.UUID,
                     ownerName: (ownerName as string).toLowerCase(),
-                    ownerContacts: [ownerEmail.toLowerCase(), ownerNumber.toLowerCase()],
+                    ownerContacts: {
+                        email: ownerEmail.toLowerCase(),
+                        number: ownerNumber.toLowerCase()
+                    },
                 },
                 validateStatus: () => true
             })
-
-            await queryClient.invalidateQueries({ queryKey: ['ticket', params.UUID] })
-
-            navigate(`/ticket/${res.data.ticket.UUID}`, { replace: true })
+            if (res.status < 400) {
+                await queryClient.invalidateQueries({ queryKey: ['ticket', params.UUID] })
+                navigate(`/ticket/${res.data.ticket.UUID}`, { replace: true })
+            }
         }
 
         setStatus('idle')

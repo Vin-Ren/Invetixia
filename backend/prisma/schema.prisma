@@ -15,7 +15,7 @@ datasource db {
 model Ticket {
   UUID               String       @id @default(dbgenerated("uuid_generate_v1mc()"))
   ownerName          String       @unique
-  ownerContacts      String[]
+  ownerContacts      Json
   ownerAffiliation   Organisation @relation(fields: [ownerAffiliationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   ownerAffiliationId String
   quotas             Quota[]
@@ -117,4 +117,11 @@ model LogAction {
   id   Int    @id @default(autoincrement())
   name String @unique
   logs Log[]
+}
+
+model INTERNALS_InvetixiaConfig { // For internal invetixia use
+  id Int @id @default(autoincrement())
+  name String @unique
+  value Json
+  @@map("__INTERNALS_InvetixiaConfig")
 }

@@ -35,7 +35,7 @@ export default function Root() {
                 <nav className="pl-4">
                     <div className="grid grid-flow-col gap-4">
                         <OptionalSocialLink icon={<TbWorldWww size={iconSize} />} url={socials?.mainWebsite} tooltip="Website" />
-                        <OptionalSocialLink icon={<MdEmail size={iconSize} />} url={socials?.email} tooltip="E-Mail" />
+                        <OptionalSocialLink icon={<MdEmail size={iconSize} />} url={`mailto:${socials?.email}`} tooltip="E-Mail" />
                         <OptionalSocialLink icon={<FaInstagram size={iconSize} />} url={socials?.instagram} tooltip="Instagram" />
                         <OptionalSocialLink icon={<FaYoutube size={iconSize} />} url={socials?.youtube} tooltip="Youtube" />
                         <OptionalSocialLink icon={<FaXTwitter size={iconSize} />} url={socials?.x_twitter} tooltip="X (Twitter)" />
