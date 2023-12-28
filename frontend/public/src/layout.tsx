@@ -1,12 +1,12 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { Outlet } from "react-router-dom";
-import { OptionalSocialLink } from "../components/socials";
+import { OptionalSocialLink } from "./components/socials";
 
 import { TbWorldWww } from "react-icons/tb";
 import { FaSlackHash, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
-import { eventQuery } from "../queries";
+import { eventQuery } from "./queries";
 import { Helmet } from "react-helmet-async";
 
 export const loader = (queryClient: QueryClient) => {
@@ -19,7 +19,7 @@ export const loader = (queryClient: QueryClient) => {
 }
 
 
-export default function Root() {
+export default function Layout() {
     const { data: { event: { name, socials = null } } } = useQuery(eventQuery)
     const iconSize = 24
 
