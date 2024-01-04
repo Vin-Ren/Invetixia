@@ -68,22 +68,26 @@ export default function EditTicket() {
         if (errors.name || errors.email || errors.number) {
             await setErrors(errors)
         } else {
-            const res = await axios.request({
-                method: 'PATCH',
-                url: `${import.meta.env.VITE_API_BASE_URL}/ticket/update`,
-                data: {
-                    UUID: params.UUID,
-                    ownerName: (ownerName as string).toLowerCase(),
-                    ownerContacts: {
-                        email: ownerEmail.toLowerCase(),
-                        number: ownerNumber.toLowerCase()
+            try {
+                const res = await axios.request({
+                    method: 'PATCH',
+                    url: `${import.meta.env.VITE_API_BASE_URL}/ticket/update`,
+                    data: {
+                        UUID: params.UUID,
+                        ownerName: (ownerName as string).toLowerCase(),
+                        ownerContacts: {
+                            email: ownerEmail.toLowerCase(),
+                            phone_number: ownerNumber.toLowerCase()
+                        },
                     },
-                },
-                validateStatus: () => true
-            })
-            if (res.status < 400) {
-                await queryClient.invalidateQueries({ queryKey: ['ticket', params.UUID] })
-                navigate(`/ticket/${res.data.ticket.UUID}`, { replace: true })
+                    validateStatus: () => true
+                })
+                if (res.status < 400) {
+                    await queryClient.invalidateQueries({ queryKey: ['ticket', params.UUID] })
+                    navigate(`/ticket/${res.data.ticket.UUID}`, { replace: true })
+                }
+            } catch (e) {
+                console.log("Error", e)
             }
         }
 

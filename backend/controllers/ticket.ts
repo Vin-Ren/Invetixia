@@ -11,7 +11,7 @@ const nameValidator = z.string()
     .max(50, { message: 'Name must be at most 50 characters' })
 const contactsValidator = z.object({
     email: z.string().email({ message: 'Invalid email' }).nullable(),
-    number: z.string().regex(/\d{11,13}$/, { message: 'Invalid number' })
+    phone_number: z.string().regex(/\d{11,13}$/, { message: 'Invalid phone number' }).nullable()
 })
 
 
@@ -82,8 +82,8 @@ export const create = async (req: Request, res: Response) => {
     const errors = {name: '', contacts: ''}
     if (!parsedName.success) errors['name'] = parsedName.error.message
     if (!parsedContacts.success) errors['contacts'] = parsedContacts.error.message
-    
-    if (!parsedName.success || !parsedContacts.success || !(typeof invitationId !== "string")) return res.status(400).json({errors})
+
+    if (!parsedName.success || !parsedContacts.success || (typeof invitationId !== "string")) return res.status(400).json({errors})
 
 
     try {

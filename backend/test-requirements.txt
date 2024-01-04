@@ -2,3 +2,4 @@ requests
 pytest
 pytest-subtests
 python-dotenv
+faker

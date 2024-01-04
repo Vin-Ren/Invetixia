@@ -83,7 +83,9 @@ def tickets(superuser, invitations):
     ticket_create_route = PreparedTestRequest("POST", '/ticket/create')
     
     for creator_role, invitation in invitations.items():
-        jsonData = {'ownerName': commons.generate_random_hex(randomLength=8), 'ownerContacts': [commons.generate_random_hex(randomLength=8)], 'invitationId': invitation['UUID']}
+        jsonData = {'ownerName': commons.FAKE.unique.name(), 
+                    'ownerContacts': {'email': commons.FAKE.unique.email(), 'phone_number': commons.FAKE.unique.msisdn()}, 
+                    'invitationId': invitation['UUID']}
         res = ticket_create_route.x(_with=superuser, json=jsonData)
         assert res.ok
         

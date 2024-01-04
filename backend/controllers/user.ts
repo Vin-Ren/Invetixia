@@ -4,8 +4,9 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { prismaClient, userRole } from "../services/database";
 import { logEvent } from "../utils/databaseLogging";
-import { isAdmin } from "../utils/permissionCheckers";
+import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
 import { Prisma } from "@prisma/client";
+import { assert } from "console";
 
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME_AFTER_LOGIN } = env;
 
@@ -179,11 +180,11 @@ export const login = async (req: Request, res: Response) => {
         await logEvent({ event: "UPDATE", summary: `Update UserToken`, description: `Login ${username} [UUID=${UUID}]` })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
+            sameSite: false,
             maxAge: 24 * 60 * 60 * 1000 // 1 day
         })
         res.json({ accessToken })
     } catch (e) {
-        console.log(e)
         res.sendStatus(404)
     }
 }
@@ -378,6 +379,48 @@ export const deleteOne = async (req: Request, res: Response) => {
         })
 
         await logEvent({ event: "DELETE", summary: `Delete User`, description: `Deleted user ${user.username} [UUID=${user.UUID}]` })
+        return res.sendStatus(201)
+    } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+            return res.sendStatus(404)
+        } else {
+            console.log(e)
+        }
+    }
+}
+
+
+// Delete
+export const deleteMany = async (req: Request, res: Response) => {
+    const { UUIDs }: { UUIDs: string[] } = req.body;
+    if (!req.user) return res.sendStatus(403)
+
+    try {
+        const users = await prismaClient.user.findMany({
+            where: {
+                UUID: { in: UUIDs }
+            },
+            select: {
+                UUID: true,
+                username: true,
+                role: true,
+                organisationManaged: true
+            }
+        });
+        
+        let permitted = true
+        users.map(
+            (user) => {
+                permitted &&= (user.role < userRole.SUPER_ADMIN && (req.user?.role || 0) > user.role)
+            }
+        )
+        if (!permitted) return res.sendStatus(403)
+
+        const deletedUsers = await prismaClient.user.deleteMany({
+            where: { UUID: { in: UUIDs } },
+        })
+
+        await logEvent({ event: "DELETE", summary: `Delete User`, description: `Deleted ${deletedUsers.count} users [UUIDs=${UUIDs}]` })
         return res.sendStatus(201)
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {

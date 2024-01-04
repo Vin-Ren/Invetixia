@@ -6,6 +6,7 @@ from typing import Dict
 
 import requests
 import dotenv
+from faker import Faker
 
 dotenv.load_dotenv()
 
@@ -13,6 +14,7 @@ dotenv.load_dotenv()
 BASE_URL = "http://127.0.0.1:8080"
 SUPERUSER_CREDENTIALS = {"username":"superuser", "password":str(os.environ.get("SUPERUSER_PASSWORD",""))}
 PS = PERSISTENT_STORE = {}
+FAKE = Faker()
 
 class Role(IntFlag):
     SUPER_ADMIN = 0b1000
@@ -23,14 +25,14 @@ class Role(IntFlag):
 
 
 def generate_credentials():
-    credentials = {'username':secrets.token_hex(4), 'password':secrets.token_hex(16)}
+    credentials = {'username':FAKE.unique.name(), 'password':secrets.token_hex(16)}
     return credentials
 
 
 def generate_create_user_input(role: Role, organisationName = None):
     if organisationName is None:
         organisationName = 'organisation-%s' % secrets.token_hex(4)
-    return {**generate_credentials(), 'role': role.value, "organisationName": organisationName}
+    return {**generate_credentials(), 'role': role.value, "organisationName": FAKE.unique.company()}
 
 @lru_cache(maxsize=None)
 def generate_many_create_user_input(role:Role, count=1):
@@ -105,6 +107,7 @@ class Session(requests.Session):
         res = super().request(**kw)
         if not res.ok:
             try:
+                assert(res.json().get('message') is not None), res.json()
                 if res.json()['message'][:4] in ["E101", "E102"]:
                     if self.login():
                         res = super().request(**kw)

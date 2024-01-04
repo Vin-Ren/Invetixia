@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 
-function getSavedValue(key: string, initialValue: any) {
+function getSavedValue<T>(key: string, initialValue: T) {
   const jsonValue = localStorage.getItem(key)
   if (jsonValue != null) return JSON.parse(jsonValue)
   if (initialValue instanceof Function) return initialValue()
@@ -9,9 +9,9 @@ function getSavedValue(key: string, initialValue: any) {
 }
 
 
-export default function useLocalStorage(key: string, initialValue?: any) {
-  const [value, setValue] = useState(() => {
-    return getSavedValue(key, initialValue)
+export default function useLocalStorage<T>(key: string, initialValue?: T): [T, Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    return getSavedValue(key, () => (initialValue))
   })
 
   useEffect(() => {

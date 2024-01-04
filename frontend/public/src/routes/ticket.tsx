@@ -13,14 +13,8 @@ import { Helmet } from "react-helmet-async"
 export default function Ticket() {
     const params = useParams()
     const navigate = useNavigate()
-    const { data: { event = {} } } = useQuery({
-        refetchInterval: import.meta.env.VITE_QUERY_STALE_TIME_AND_REFRESH_INTERVAL,
-        ...eventQuery
-    })
-    const { data: { ticket = {}}} = useQuery({
-        refetchInterval: import.meta.env.VITE_QUERY_STALE_TIME_AND_REFRESH_INTERVAL,
-        ...ticketQuery(params.UUID as string)
-    })
+    const { data: { event = {} } } = useQuery(eventQuery)
+    const { data: { ticket = {}}} = useQuery(ticketQuery(params.UUID as string))
     const [targetDate, setTargetDate] = useState<Date>(new Date(event?.startTime))
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState('')
     

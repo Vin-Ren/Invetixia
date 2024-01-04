@@ -26,23 +26,23 @@ class Test:
 
 # Create
 def test_superuser_create_organisation(superuser, store):
-    res = Test.create.execute(_with=superuser, json={'name':commons.generate_random_hex()})
+    res = Test.create.execute(_with=superuser, json={'name':commons.FAKE.unique.company()})
     assert res.ok
     store['org1'] = res.json()['organisation']
 
 def test_admin_create_organisation(admin, store):
-    res = Test.create.execute(_with=admin, json={'name':commons.generate_random_hex()})
+    res = Test.create.execute(_with=admin, json={'name':commons.FAKE.unique.company()})
     assert res.ok
     store['org2'] = res.json()['organisation']
 
 @pytest.mark.xfail(reason="Admins only")
 def test_organisation_manager_create_organisation(organisation_manager):
-    res = Test.create.execute(_with=organisation_manager, json={'name':commons.generate_random_hex()})
+    res = Test.create.execute(_with=organisation_manager, json={'name':commons.FAKE.unique.company()})
     assert res.ok
 
 @pytest.mark.xfail(reason="Unauthorized")
 def test_public_create_organisation(public):
-    res = Test.create.execute(_with=public, json={'name':commons.generate_random_hex()})
+    res = Test.create.execute(_with=public, json={'name':commons.FAKE.unique.company()})
     assert res.ok
 
 
@@ -103,42 +103,42 @@ def test_public_get_one_other(public, superuser):
 
 # Update - self
 def test_superuser_update_self(superuser):
-    jsonData = {'UUID': superuser.info['organisationManaged']['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': superuser.info['organisationManaged']['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=superuser, json=jsonData)
     assert res.ok
 
 def test_admin_update_self(admin):
-    jsonData = {'UUID': admin.info['organisationManaged']['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': admin.info['organisationManaged']['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=admin, json=jsonData)
     assert res.ok
 
 @pytest.mark.xfail(reason="Only admins can manage organisation")
 def test_organisation_manager_update_self(organisation_manager):
-    jsonData = {'UUID': organisation_manager.info['organisationManaged']['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': organisation_manager.info['organisationManaged']['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=organisation_manager, json=jsonData)
     assert res.ok
 
 
 # Update - other
 def test_superuser_update_other(superuser, admin):
-    jsonData = {'UUID': admin.info['organisationManaged']['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': admin.info['organisationManaged']['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=superuser, json=jsonData)
     assert res.ok
 
 def test_admin_update_other(admin, organisation_manager):
-    jsonData = {'UUID': organisation_manager.info['organisationManaged']['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': organisation_manager.info['organisationManaged']['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=admin, json=jsonData)
     assert res.ok
 
 @pytest.mark.xfail(reason="Only admins can manage organisation")
 def test_organisation_manager_update_other(organisation_manager, admin):
-    jsonData = {'UUID': admin.info['organisationManaged']['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': admin.info['organisationManaged']['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=organisation_manager, json=jsonData)
     assert res.ok
 
 @pytest.mark.xfail(reason="Unauthorized")
 def test_public_update_other(public, store):
-    jsonData = {'UUID': store.get('org1')['UUID'],'newName':commons.generate_random_hex(prefix='upd-')}
+    jsonData = {'UUID': store.get('org1')['UUID'],'newName': commons.FAKE.unique.company()}
     res = Test.update.x(_with=public, json=jsonData)
     assert res.ok
 

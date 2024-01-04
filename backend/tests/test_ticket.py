@@ -81,7 +81,9 @@ def test_create(all_sessions, tickets_store, subtests, invitations):
         client_role = commons.Role(client.info['role'])
         with subtests.test(msg="'%s': Creating ticket" % client_role.name):
             for creator_role, invitation in invitations.items():
-                jsonData = {'ownerName': commons.generate_random_hex(randomLength=8), 'ownerContacts': [commons.generate_random_hex(randomLength=8)], 'invitationId': invitation['UUID']}
+                jsonData = {'ownerName': commons.FAKE.unique.name(), 
+                            'ownerContacts': {'email': commons.FAKE.unique.email(), 'phone_number': commons.FAKE.unique.msisdn()}, 
+                            'invitationId': invitation['UUID']}
                 res = Test.create.x(_with=client, json=jsonData)
                 
                 assert res.ok, jsonData
@@ -120,8 +122,8 @@ def test_update(all_sessions, tickets_store, subtests):
             for tickets in tickets_store.values():
                 for ticket in tickets:
                     jsonData = ticket.copy()
-                    jsonData['ownerName'] = commons.generate_random_hex("upd-", 8)
-                    jsonData['ownerContacts'] = [commons.generate_random_hex(randomLength=8) for _ in range(3)]
+                    jsonData['ownerName'] = commons.FAKE.unique.name()
+                    jsonData['ownerContacts'] = {'email': commons.FAKE.unique.email(), 'phone_number': commons.FAKE.unique.msisdn()}
                     res = Test.update.x(_with=client, json=jsonData)
                     assert res.ok
                     resData = res.json()['ticket']

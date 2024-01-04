@@ -6,10 +6,7 @@ import { format } from 'date-fns'
 
 
 export default function CountdownPage() {
-    const { data: { event = {} } } = useQuery({
-        refetchInterval: import.meta.env.VITE_QUERY_STALE_TIME_AND_REFRESH_INTERVAL,
-        ...eventQuery
-    })
+    const { data: { event = {} } } = useQuery(eventQuery)
     const [targetDate, setTargetDate] = useState<Date>(new Date(event?.startTime))
 
     useEffect(() => {

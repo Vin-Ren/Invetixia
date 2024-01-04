@@ -1,6 +1,6 @@
 import { Router } from "express";
 import verifyToken from "../middlewares/verifyToken";
-import { create, deleteOne, getAll, getOne, getInvitations, getManagers, getTickets, update } from "../controllers/organisation";
+import { create, deleteOne, getAll, getOne, getInvitations, getManagers, getTickets, update, deleteMany } from "../controllers/organisation";
 
 
 const organisationRouter = Router({ mergeParams: true })
@@ -13,6 +13,7 @@ organisationRouter.get('/info/:UUID/tickets', verifyToken, getTickets)
 organisationRouter.post('/create', verifyToken, create)
 organisationRouter.patch('/update', verifyToken, update)
 organisationRouter.delete('/delete', verifyToken, deleteOne)
+organisationRouter.delete('/deleteMany', verifyToken, deleteMany)
 
 
 export default organisationRouter
