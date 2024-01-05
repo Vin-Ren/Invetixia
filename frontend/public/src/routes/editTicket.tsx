@@ -5,7 +5,7 @@ import { QueryClient, useQuery } from "@tanstack/react-query"
 import { eventQuery, ticketQuery } from "../queries"
 import { Params, useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
-import { queryClient } from "../main"
+import { queryClient } from "../lib/api"
 import { Helmet } from "react-helmet-async"
 
 
@@ -37,7 +37,7 @@ export default function EditTicket() {
 
     const [ownerName, setOwnerName] = useState(ticket.ownerName)
     const [ownerEmail, setOwnerEmail] = useState(ticket.ownerContacts['email'])
-    const [ownerNumber, setOwnerNumber] = useState(ticket.ownerContacts['number'])
+    const [ownerNumber, setOwnerNumber] = useState(ticket.ownerContacts['phone_number'])
     const [ownerOrganisation] = useState(ticket.ownerAffiliation.name)
 
     const handleGoBack = async () => navigate(`/ticket/${params.UUID}`, { replace: true })

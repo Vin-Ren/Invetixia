@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import Layout, { loader as EventInfoLoader } from './layout.tsx'
 import ErrorPage from './errorPage.tsx'
@@ -11,16 +11,7 @@ import Ticket from './routes/ticket.tsx'
 import EditTicket, {loader as TicketLoader} from './routes/editTicket.tsx'
 import CountdownPage from './routes/countdown.tsx'
 import { HelmetProvider } from 'react-helmet-async'
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: import.meta.env.VITE_QUERY_STALE_TIME_AND_REFRESH_INTERVAL,
-      refetchInterval: import.meta.env.VITE_QUERY_STALE_TIME_AND_REFRESH_INTERVAL,
-      refetchOnReconnect: true
-    },
-  },
-})
+import { queryClient } from './lib/api/index.ts'
 
 const router = createBrowserRouter([
   {
