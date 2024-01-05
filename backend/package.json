@@ -12,11 +12,13 @@
   "author": "",
   "description": "",
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/faker": "^6.6.9",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.10.3",
     "cors": "^2.8.5",

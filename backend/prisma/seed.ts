@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client'
 import { prismaClient, userRole, logAction } from "../services/database";
 
 
-const { QUOTA_TYPES, SUPERUSER_PASSWORD, SEED_LOG_TABLE } = env;
+const { QUOTA_TYPES, SUPERUSER_PASSWORD } = env;
 
 
 function initialize() {
@@ -19,34 +19,6 @@ function initialize() {
             }
         })
     });
-
-    const rng = (max: number) => Math.floor(Math.random()*max)
-
-    if (parseInt(SEED_LOG_TABLE as string)) {
-        console.log(`Seeding log table with size=${SEED_LOG_TABLE}`)
-        let K = logActions.length
-        for (let i = 0; i < parseInt(SEED_LOG_TABLE as string); i++) {
-            let crA = rng(K-1)+1;
-            prismaClient.log.create({
-                data: {
-                    logAction: {
-                        connect: {
-                            id: crA
-                        }
-                    },
-                    summary: `${logActions[crA-1]} ${randomBytes(rng(8)+1).toString('hex')}`,
-                    description: randomBytes(rng(20)+4).toString('hex')
-                },
-                select: {}
-            }).catch((err) => {
-                if (err instanceof Prisma.PrismaClientKnownRequestError) {
-                    if (err.code == 'P2002') return
-                } else {
-                    console.log(err)
-                }
-            })
-        }
-    }
 
     const quotaTypes = (QUOTA_TYPES !== undefined ?
         QUOTA_TYPES : "ENTRY").split(",")
