@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { queryClient } from "@/main"
+import { queryClient } from "@/lib/api"
 import { RefreshDataButton } from "@/components/refresh-data-button"
 
 import { getOrganisationTableColumns } from "./columns"
@@ -25,7 +25,7 @@ export const OrganisationDashboard = () => {
                     </Button>
                 </div>
             </div>
-            <DataTable columns={getOrganisationTableColumns()} data={data} />
+            <DataTable columns={getOrganisationTableColumns()} data={data}/>
             <RefreshDataButton query={getAll}/>
         </div>
     )

@@ -1,6 +1,6 @@
 import { UserSelfData, login, logout, } from "@/lib/api/user";
 import { getUserSelf } from "@/lib/queries/user";
-import { queryClient } from "@/main";
+import { queryClient } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode, createContext, useMemo } from "react";
 

@@ -33,7 +33,8 @@ export const getAll = async (req: Request, res: Response) => {
                 UUID: true,
                 username: true,
                 role: true,
-                organisationManaged: true
+                organisationManaged: true,
+                organisationId: true
             }
         });
 
@@ -57,7 +58,8 @@ export const getOne = async (req: Request, res: Response) => {
                 UUID: true,
                 username: true,
                 role: true,
-                organisationManaged: true
+                organisationManaged: true,
+                organisationId: true
             }
         });
         if (req.user.role < userRole.ADMIN) return res.sendStatus(403)

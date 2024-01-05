@@ -1,4 +1,4 @@
-import { queryClient } from "@/main"
+import { queryClient } from "@/lib/api"
 import { InvalidateQueryFilters } from "@tanstack/react-query"
 import { useToast } from "./ui/use-toast"
 import { Button, ButtonProps } from "./ui/button"

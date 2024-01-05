@@ -1,10 +1,25 @@
 import { DataTableColumnHeader } from "@/components/data-table";
 import { UserSanitized } from "@/lib/api/data-types";
-import { DataTableActionsCell, DataTableActionsHeader, getDataTableSelectRowsColumn, getGenericTableColumns } from "@/components/data-table-custom-columns";
+import { getGenericTableColumns } from "@/components/data-table-custom-columns";
+import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
+import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
+import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { Row, Table } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/user";
-import { queryClient } from "@/main";
+import { queryClient } from "@/lib/api";
 import { deleteMany, deleteOne } from "@/lib/api/user";
+import { DeleteDialogAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
+
+
+export const UserViewDetailsAction = () => ViewDetailsAction((row: Row<UserSanitized>) => `/dashboard/user/${row.original.UUID}`)
+export const UserViewOrganisationAction = () => ViewDetailsAction((row: Row<UserSanitized>) => `/dashboard/organisation/${row.original.organisationId}`, "View user's organisation details")
+export const UserDeleteAction = () => DeleteDialogAction<UserSanitized>({
+    deleteOne: async ({row}) => await deleteOne(row.original.UUID),
+    queriesInvalidator: (row) => {
+        queryClient.invalidateQueries(getAll)
+        queryClient.invalidateQueries(getOne(row.original.UUID))
+    }
+})
 
 
 export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
@@ -26,7 +41,7 @@ export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
             header: DataTableColumnHeader
         },
         {
-            id: "Organisation Managed",
+            id: "Organisation",
             accessorKey: "organisationManaged.name",
             header: DataTableColumnHeader
         },
@@ -49,12 +64,11 @@ export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
                 return (
                     <DataTableActionsCell
                         row={row}
-                        getDetailsPageUrl={(row) => `/dashboard/user/${row.original.UUID}`}
-                        deleteSelected={async (row) => await deleteOne(row.original.UUID)}
-                        queriesInvalidator={(row) => {
-                            queryClient.invalidateQueries(getAll)
-                            queryClient.invalidateQueries(getOne(row.original.UUID))
-                        }}
+                        actions={[
+                            UserViewDetailsAction(),
+                            UserViewOrganisationAction(),
+                            UserDeleteAction()
+                        ]}
                         {...actionsCellProps}
                     />
                 )

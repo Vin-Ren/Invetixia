@@ -23,22 +23,37 @@ export const getOne = async (UUID: string): Promise<Organisation> => {
 }
 
 
+export const updateOne = async (UUID: string, newName: string): Promise<boolean> => {
+    const res = await axios({
+        method: 'PATCH',
+        url: `${import.meta.env.VITE_API_BASE_URL}/organisation/update`,
+        data: { UUID, newName },
+        validateStatus: () => true
+    })
+    return res.status < 400
+}
+
+
 export const deleteOne = async (UUID: string): Promise<boolean> => {
     const res = await axios({
         method: 'DELETE',
         url: `${import.meta.env.VITE_API_BASE_URL}/organisation/delete`,
         data: { UUID }
     })
-    return res.status<400
+    return res.status < 400
 }
 
 
 export const deleteMany = async (UUIDs: string[]): Promise<boolean> => {
-    const res = await axios({
-        method: 'DELETE',
-        url: `${import.meta.env.VITE_API_BASE_URL}/organisation/deleteMany`,
-        data: { UUIDs },
-        validateStatus: () => true
-    })
-    return res.status<400
+    try {
+        const res = await axios({
+            method: 'DELETE',
+            url: `${import.meta.env.VITE_API_BASE_URL}/organisation/deleteMany`,
+            data: { UUIDs },
+            validateStatus: () => true
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
 }

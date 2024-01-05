@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import NavItem from "@/components/nav-item"
 import useUser from "@/hooks/useUser"
 import { Button } from "@/components/ui/button"
-import { queryClient } from "@/main"
+import { queryClient } from "@/lib/api"
 
 
 export const Dashboard = () => {

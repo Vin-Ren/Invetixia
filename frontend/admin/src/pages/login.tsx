@@ -17,7 +17,7 @@ import { Navigate, useNavigate } from "react-router-dom"
 import { z } from 'zod'
 import { CredentialsSchema } from "@/lib/api/user"
 import { CustomizedFormField } from "@/components/customized-form"
-import { queryClient } from "@/main"
+import { queryClient } from "@/lib/api"
 
 export function Login() {
     const navigate = useNavigate()

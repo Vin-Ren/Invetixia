@@ -120,23 +120,43 @@ export const getOne = async (UUID: string): Promise<UserSanitized> => {
 }
 
 
+export const updateOne = async ({ UUID, username, role, organisationName }: { UUID: string, username: string, role: number, organisationName: string }): Promise<boolean> => {
+    try {
+        const res = await axios({
+            method: 'PATCH',
+            url: `${import.meta.env.VITE_API_BASE_URL}/user/update`,
+            data: { UUID, username, role, organisationName }
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
+}
+
+
 export const deleteOne = async (UUID: string): Promise<boolean> => {
-    const res = await axios({
-        method: 'DELETE',
-        url: `${import.meta.env.VITE_API_BASE_URL}/user/delete`,
-        data: { UUID },
-        validateStatus: () => true
-    })
-    return res.status<400
+    try {
+        const res = await axios({
+            method: 'DELETE',
+            url: `${import.meta.env.VITE_API_BASE_URL}/user/delete`,
+            data: { UUID }
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
 }
 
 
 export const deleteMany = async (UUIDs: string[]): Promise<boolean> => {
-    const res = await axios({
-        method: 'DELETE',
-        url: `${import.meta.env.VITE_API_BASE_URL}/user/deleteMany`,
-        data: { UUIDs },
-        validateStatus: () => true
-    })
-    return res.status<400
+    try {
+        const res = await axios({
+            method: 'DELETE',
+            url: `${import.meta.env.VITE_API_BASE_URL}/user/deleteMany`,
+            data: { UUIDs }
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
 }

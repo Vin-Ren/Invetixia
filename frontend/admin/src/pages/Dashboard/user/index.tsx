@@ -3,7 +3,7 @@ import { getAll } from "@/lib/queries/user"
 import { useQuery } from "@tanstack/react-query"
 
 
-import { queryClient } from "@/main"
+import { queryClient } from "@/lib/api"
 import { RefreshDataButton } from "@/components/refresh-data-button"
 import { getUserTableColumns } from "./columns"
 
