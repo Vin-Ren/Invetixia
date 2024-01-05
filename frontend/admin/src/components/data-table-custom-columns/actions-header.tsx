@@ -16,7 +16,8 @@ export interface DataTableActionsHeaderProps<TData> {
     failedDeletionToastProps?: (table: Table<TData>) => Toast;
     queriesInvalidator?: (rows: Row<TData>[]) => void;
     options?: {
-        clearRowSelectionOnSuccess?: boolean;
+        clearRowSelectionOnSuccess?: boolean,
+        enableDeleteSelected?: boolean
     };
 }
 
@@ -33,7 +34,7 @@ export function DataTableActionsHeader<
     }), queriesInvalidator = () => null, options = {}
 }: DataTableActionsHeaderProps<TData>
 ) {
-    options = { clearRowSelectionOnSuccess: true, ...options };
+    options = { clearRowSelectionOnSuccess: true, enableDeleteSelected: true, ...options };
     const { toast } = useToast();
 
     const handleDelete = async () => {
@@ -70,12 +71,16 @@ export function DataTableActionsHeader<
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DialogTrigger asChild disabled={!(table.getSelectedRowModel().rows.length > 0)}>
-                        <DropdownMenuItem>
-                            <TrashIcon className="mr-2 h-4 w-4" />
-                            Delete {table.getSelectedRowModel().rows.length} selected items
-                        </DropdownMenuItem>
-                    </DialogTrigger>
+                    {
+                        options.enableDeleteSelected ?
+                            <DialogTrigger asChild disabled={!(table.getSelectedRowModel().rows.length > 0)}>
+                                <DropdownMenuItem>
+                                    <TrashIcon className="mr-2 h-4 w-4" />
+                                    Delete {table.getSelectedRowModel().rows.length} selected items
+                                </DropdownMenuItem>
+                            </DialogTrigger>
+                            : null
+                    }
                 </DropdownMenuContent>
             </DropdownMenu>
 

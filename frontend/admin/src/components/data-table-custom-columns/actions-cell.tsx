@@ -103,10 +103,9 @@ export function DataTableActionsCell<
 }: DataTableActionsCellProps<TData>) {
     options = { enableCopyUUID: true, ...options };
 
+    // Hooks for actions
     const navigate = useNavigate();
-
     const ds = useDS<unknown[]>()
-
     const { toast } = useToast();
 
     const [targetActionDialog, setTargetActionDialog] = useState(() => ((actions.length > 0) ? actions[0].actionId : "delete"));
@@ -121,8 +120,9 @@ export function DataTableActionsCell<
 
         // Actually converting actions to records
         return arrayToKeyObject(actions, 'actionId');
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [actions]);
-
 
 
     const handleAction = async ({ actionId, row }: { actionId: string, row: Row<TData> }) => {

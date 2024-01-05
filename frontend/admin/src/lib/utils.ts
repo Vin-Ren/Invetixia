@@ -19,3 +19,7 @@ export function arrayToKeyObject<
 ): Record<T[TKeyName], T> {
     return Object.fromEntries(array.map(a => [a[key], a])) as Record<T[TKeyName], T>
 }
+
+export const isFunction = (fn: never | ((...arg0: never[]) => never)): fn is ((...arg0: never[]) => never) => {
+    return (typeof fn === 'function')
+}
