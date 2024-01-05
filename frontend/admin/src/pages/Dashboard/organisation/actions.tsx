@@ -1,12 +1,12 @@
 import { UserSelfData } from "@/lib/api/user";
 import { Row } from "@tanstack/react-table";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { TrashIcon, UserMinus } from "lucide-react";
+import { UserMinus } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Organisation, UserSanitized } from "@/lib/api/data-types";
 import { ToastAction } from "@/components/ui/toast";
-import { DeleteDialogAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
+import { DeleteDialogAction, GenericDialogConfirmAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { queryClient } from "@/lib/api";
 import { deleteOne, updateOne } from "@/lib/api/organisation";
 import { getAll, getOne } from "@/lib/queries/organisation";
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PencilIcon } from "lucide-react";
 
-export const OrganisationViewDetailsAction = () => ViewDetailsAction((row: Row<Organisation>) => `/dashboard/organisation/${row.original.UUID}`);
+export const OrganisationViewDetailsAction = () => ViewDetailsAction((row: Row<Organisation>) => `/dashboard/organisation/details/${row.original.UUID}`);
 
 export const OrganisationDeleteAction = () => DeleteDialogAction<Organisation>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
@@ -83,8 +83,7 @@ export function RemoveUserFromOrganisationAction({
     organisation: Organisation;
     executorUser: UserSelfData;
 }): CellDialogAction<UserSanitized> {
-    return ({
-        actionType: 'dialog',
+    return GenericDialogConfirmAction({
         actionId: "delete",
         triggerNode: (
             <>
@@ -94,22 +93,9 @@ export function RemoveUserFromOrganisationAction({
         ),
         actionHandler: removeOne,
         queriesInvalidator,
-        dialogContent: ({ row, internalActionHandler }) => {
-            return (
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Confirm deletion</DialogTitle>
-                        <DialogDescription>
-                            The user {row.original.username} is not going to be a manager of {organisation.name} afterwards, instead they will be a manager of your managed organisation({executorUser.organisationManaged?.name}). Are you sure you would like to proceed?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="flex justify-end">
-                        <DialogClose asChild>
-                            <Button variant={"destructive"} onClick={async () => await internalActionHandler({ actionId: 'delete', row })}>Confirm</Button>
-                        </DialogClose>
-                    </DialogFooter>
-                </DialogContent>
-            );
+        dialogOptions: {
+            title: "Confirm Removal",
+            description: ({row}) => `The user '${row.original.username}' is not going to be a part of '${organisation.name}' afterwards, instead they will be a part of your managed organisation( '${executorUser.organisationManaged?.name}' ). Are you sure you would like to proceed?`
         },
         toasts: {
             onSuccess: ({ row }) => ({

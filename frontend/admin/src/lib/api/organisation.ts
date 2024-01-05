@@ -24,13 +24,16 @@ export const getOne = async (UUID: string): Promise<Organisation> => {
 
 
 export const updateOne = async (UUID: string, newName: string): Promise<boolean> => {
-    const res = await axios({
-        method: 'PATCH',
-        url: `${import.meta.env.VITE_API_BASE_URL}/organisation/update`,
-        data: { UUID, newName },
-        validateStatus: () => true
-    })
-    return res.status < 400
+    try {
+        const res = await axios({
+            method: 'PATCH',
+            url: `${import.meta.env.VITE_API_BASE_URL}/organisation/update`,
+            data: { UUID, newName },
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
 }
 
 

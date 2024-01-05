@@ -13,6 +13,7 @@ import Error from './pages/error.tsx'
 import { configureAxios, queryClient } from './lib/api/index.ts'
 import { UserDashboard } from './pages/Dashboard/user/index.tsx'
 import { OrganisationDetails } from './pages/Dashboard/organisation/details.tsx'
+import { UserDetails } from './pages/Dashboard/user/details.tsx'
 
 configureAxios()
 
@@ -49,12 +50,16 @@ export const router = createBrowserRouter([
             element: <OrganisationDashboard />,
           },
           {
-            path: '/dashboard/organisation/:UUID',
+            path: '/dashboard/organisation/details/:UUID',
             element: <OrganisationDetails />,
           },
           {
             path: '/dashboard/user',
             element: <UserDashboard />
+          },
+          {
+            path: '/dashboard/user/details/:UUID',
+            element: <UserDetails />
           }
         ]
       }

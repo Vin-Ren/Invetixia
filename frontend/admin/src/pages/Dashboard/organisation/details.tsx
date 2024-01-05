@@ -54,18 +54,19 @@ export const OrganisationDetails = () => {
                 <div className="flex flex-col w-full gap-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>{organisation.name} (Organisation)</CardTitle>
+                            <CardTitle>{`${organisation.name}`}</CardTitle>
                             <CardDescription>Lead by {organisation.top_manager || "No manager"}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <CardDescription>Created invitations: {organisation.publishedInvitations?.length || '0'}</CardDescription>
-                            <CardDescription>Created tickets: {organisation.createdTicketCount || '0'}</CardDescription>
+                            <CardDescription>{`Object Signature - Organisation{${organisation.UUID}}`}</CardDescription>
+                            <CardDescription>Created invitation count - {organisation.publishedInvitations?.length || '0'}</CardDescription>
+                            <CardDescription>Created ticket count - {organisation.createdTicketCount || '0'}</CardDescription>
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader>
                             <CardTitle>Managers</CardTitle>
-                            <CardDescription>{organisation.managers?.length} People</CardDescription>
+                            <CardDescription>{organisation.managers?.length} Personel(s)</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <DataTable columns={userTableColumns} data={sanitizeUsers(organisation.managers || [])} />

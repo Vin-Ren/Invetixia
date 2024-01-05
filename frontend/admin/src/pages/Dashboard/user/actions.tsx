@@ -6,9 +6,9 @@ import { deleteOne } from "@/lib/api/user";
 import { DeleteDialogAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 
 
-export const UserViewDetailsAction = () => ViewDetailsAction((row: Row<UserSanitized>) => `/dashboard/user/${row.original.UUID}`);
+export const UserViewDetailsAction = () => ViewDetailsAction((row: Row<UserSanitized>) => `/dashboard/user/details/${row.original.UUID}`);
 
-export const UserViewOrganisationAction = () => ViewDetailsAction((row: Row<UserSanitized>) => `/dashboard/organisation/${row.original.organisationId}`, "View user's organisation details");
+export const UserViewOrganisationAction = () => ViewDetailsAction((row: Row<UserSanitized>) => `/dashboard/organisation/details/${row.original.organisationId}`, "View user's organisation details");
 
 export const UserDeleteAction = () => DeleteDialogAction<UserSanitized>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),

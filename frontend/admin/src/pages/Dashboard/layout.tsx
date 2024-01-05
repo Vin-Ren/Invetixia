@@ -5,20 +5,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import NavItem from "@/components/nav-item"
 import useUser from "@/hooks/useUser"
 import { Button } from "@/components/ui/button"
-import { queryClient } from "@/lib/api"
+import { CircleUserRound } from "lucide-react"
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 
 
 export const Dashboard = () => {
     const navigate = useNavigate()
-    const { logout } = useUser()
-
-    const handleLogout = async () => {
-        const success = await logout()
-        if (success) {
-            await queryClient.invalidateQueries({ queryKey: ['user', 'self'] })
-            navigate('/login')
-        }
-    }
+    const { user } = useUser()
 
     return (
         <ProtectedRoute>
@@ -33,10 +26,21 @@ export const Dashboard = () => {
                             </div>
                         </ScrollArea>
 
-                        {/* This should be inside a hover popup */}
-                        <form onSubmit={(e) => { e.preventDefault(); handleLogout() }} className="p-4 pr-0 flex justify-center flex-1 place-items-end">
-                            <Button type="submit" variant={"destructive"}>Logout</Button>
-                        </form>
+                        {/* This should be a special page instead of details. will be changed later. */}
+                        <div className="p-4 pr-0 flex justify-center flex-1 place-items-end">
+                            <TooltipProvider delayDuration={250}>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button variant={'ghost'} onClick={() => navigate(`/dashboard/user/details/${user.UUID}`)}>
+                                            <CircleUserRound />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>User Details</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
                     </div>
                     <Separator orientation="vertical" className="mx-4 mt-4 place-self-end self-center" />
                 </div>

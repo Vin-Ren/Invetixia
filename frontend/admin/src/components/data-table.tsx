@@ -53,14 +53,21 @@ import { cn } from "@/lib/utils"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    data: TData[],
+    options?: {
+        enableFilters?: boolean,
+        enableViewColumnCheckbox?: boolean,
+        enablePagination?: boolean
+    }
 }
 
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    options = {}
 }: DataTableProps<TData, TValue>) {
+    options = { enableFilters: true, enableViewColumnCheckbox: true, enablePagination: true, ...options }
     const [sorting, setSorting] = useState<SortingState>([])
 
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -85,10 +92,17 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <div className="flex items-center py-4 gap-2">
-                <DataTableFilter table={table} />
-                <DataTableViewOptions table={table} />
-            </div>
+            {
+                (() => (options.enableFilters || options.enableViewColumnCheckbox) ?
+                    (
+                        <div className="flex items-center py-4 gap-2">
+                            {options.enableFilters ? <DataTableFilter table={table} /> : null}
+                            {options.enableViewColumnCheckbox ? <DataTableViewOptions table={table} /> : null}
+                        </div>
+                    )
+                    : null
+                )()
+            }
             <div>
                 <div className="rounded-md border">
                     <Table>
@@ -134,7 +148,7 @@ export function DataTable<TData, TValue>({
                         </TableBody>
                     </Table>
                 </div>
-                <DataTablePagination table={table} />
+                { options.enablePagination ? <DataTablePagination table={table} /> : null}
             </div>
         </div>
     )

@@ -4,6 +4,7 @@ import { User, UserSanitized, userRole } from "./data-types"
 
 export interface UserSelfData {
     authenticated: boolean,
+    UUID?: string,
     username?: string,
     accessToken?: string,
     role?: string,
