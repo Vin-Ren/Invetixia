@@ -38,12 +38,16 @@ export const updateOne = async (UUID: string, newName: string): Promise<boolean>
 
 
 export const deleteOne = async (UUID: string): Promise<boolean> => {
-    const res = await axios({
-        method: 'DELETE',
-        url: `${import.meta.env.VITE_API_BASE_URL}/organisation/delete`,
-        data: { UUID }
-    })
-    return res.status < 400
+    try {
+        const res = await axios({
+            method: 'DELETE',
+            url: `${import.meta.env.VITE_API_BASE_URL}/organisation/delete`,
+            data: { UUID }
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
 }
 
 

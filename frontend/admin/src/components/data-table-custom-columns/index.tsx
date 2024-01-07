@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table"
-import { DataTableActionsHeaderProps } from "./actions-header"
+import { DataTableActionsHeaderProps } from "./actions-header-experimental"
 import { DataTableActionsCellProps } from "./actions-cell"
 
 

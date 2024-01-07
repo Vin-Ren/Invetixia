@@ -1,61 +1,26 @@
-import { EyeOpenIcon, TrashIcon } from "@radix-ui/react-icons";
-import { CellDialogAction, CellButtonAction, ActionHandlerType, QueriesInvalidatorType, DialogContentProps, DialogToastProps } from "./actions-cell";
-import { To } from "react-router-dom";
 import { Row, isFunction } from "@tanstack/react-table";
+import { ActionHandlerType, DialogContentProps, DialogToastProps, HeaderDialogAction } from "./actions-header-experimental";
+import { TrashIcon } from "lucide-react";
+import { QueriesInvalidatorType } from "./commons";
+import { Toast } from "../ui/use-toast";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Toast } from "../ui/use-toast";
-
-export interface GenericNavigatorButtonActionProps<TData> {
-    actionId: string,
-    getTo: (row: Row<TData>) => To,
-    triggerNode: React.ReactNode | React.ReactNode[],
-}
-
-export function GenericNavigatorButtonAction<TData>({
-    actionId, getTo, triggerNode
-}: GenericNavigatorButtonActionProps<TData>
-): CellButtonAction<TData> {
-    return ({
-        actionType: 'button',
-        actionId,
-        triggerNode,
-        actionHandler: ({ row, navigate }) => navigate(getTo(row))
-    })
-}
-
-
-export function ViewDetailsAction<TData>(
-    getDetailsPageUrl: (row: Row<TData>) => To,
-    label?: string,
-): CellButtonAction<TData> {
-    return GenericNavigatorButtonAction({
-        actionId: "view_details",
-        getTo: getDetailsPageUrl,
-        triggerNode: (
-            <>
-                <EyeOpenIcon className="mr-2 h-4 w-4" />
-                {label ? label : "View details"}
-            </>
-        )
-    })
-}
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface GenericDialogConfirmActionDialogOptions<TData, TDialogData = any> {
+export interface GenericHeaderDialogConfirmActionDialogOptions<TData, TDialogData = any> {
     title?: string | ((props: DialogContentProps<TData, TDialogData>) => string),
     description?: string | ((props: DialogContentProps<TData, TDialogData>) => string),
     confirmButtonLabel?: string,
     confirmButtonVariant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost"
 }
 
-export interface GenericDialogConfirmActionProps<TData> {
+export interface GenericHeaderDialogConfirmActionProps<TData> {
     actionId: string,
     actionHandler: ActionHandlerType<TData>
-    queriesInvalidator?: QueriesInvalidatorType<TData>,
+    queriesInvalidator?: QueriesInvalidatorType<Row<TData>[]>,
     triggerNode: React.ReactNode | React.ReactNode[],
-    dialogOptions?: GenericDialogConfirmActionDialogOptions<TData, object>,
+    dialogOptions?: GenericHeaderDialogConfirmActionDialogOptions<TData, object>,
     toasts: {
         onSuccess?: (props: DialogToastProps<TData, object>) => Toast,
         onFailure?: (props: DialogToastProps<TData, object>) => Toast
@@ -63,7 +28,7 @@ export interface GenericDialogConfirmActionProps<TData> {
 }
 
 
-export function GenericDialogConfirmAction<
+export function GenericHeaderDialogConfirmAction<
     TData extends { UUID: string }
 >({
     actionId,
@@ -72,7 +37,7 @@ export function GenericDialogConfirmAction<
     triggerNode,
     dialogOptions = {},
     toasts = {}
-}: GenericDialogConfirmActionProps<TData>): CellDialogAction<TData> {
+}: GenericHeaderDialogConfirmActionProps<TData>): HeaderDialogAction<TData> {
     dialogOptions = {
         title: "Confirm action",
         description: "Upon confirmation, The affected data will be lost. Are you sure to proceed?",
@@ -112,7 +77,7 @@ export function GenericDialogConfirmAction<
                         <DialogClose asChild>
                             <Button
                                 variant={dialogOptions.confirmButtonVariant}
-                                onClick={async () => await props.internalActionHandler({ actionId, row: props.row })}>
+                                onClick={async () => await props.internalActionHandler({ actionId, rows: props.rows })}>
                                 {dialogOptions.confirmButtonLabel}
                             </Button>
                         </DialogClose>
@@ -126,36 +91,36 @@ export function GenericDialogConfirmAction<
 
 
 
-export function DeleteDialogAction<
+export function HeaderDeleteDialogAction<
     TData extends { UUID: string }
 >({
     deleteHandler,
     queriesInvalidator
 }: {
-    deleteHandler: (props: { row: Row<TData> }) => Promise<boolean>,
-    queriesInvalidator: (row: Row<TData>) => void
-}): CellDialogAction<TData> {
-    return GenericDialogConfirmAction({
+    deleteHandler: (props: { rows: Row<TData>[] }) => Promise<boolean>,
+    queriesInvalidator: (rows: Row<TData>[]) => void
+}): HeaderDialogAction<TData> {
+    return GenericHeaderDialogConfirmAction({
         actionId: 'delete',
         triggerNode: (
             <>
                 <TrashIcon className="mr-2 h-4 w-4" />
-                Delete item
+                Delete items
             </>
         ),
         actionHandler: deleteHandler,
         queriesInvalidator,
         dialogOptions: {
             title: "Confirm deletion",
-            description: ({ row }) => `This action cannot be undone. The deleted item [UUID=${row.original.UUID}] is not going to be recoverable afterwards. Are you sure you would like to proceed?`
+            description: ({ rows }) => `This action cannot be undone. The ${rows.length} deleted items are not going to be recoverable afterwards. Are you sure you would like to proceed?`
         },
         toasts: {
-            onSuccess: ({ row }) => ({
-                title: "Deleted item!",
-                description: `Successfully deleted an item [UUID=${row.original.UUID}].`
+            onSuccess: ({ rows }) => ({
+                title: "Deleted items!",
+                description: `Successfully deleted selected items [UUIDs=${rows.map((row) => row.original.UUID)}].`
             }),
             onFailure: () => ({
-                title: "Failed to delete item",
+                title: "Failed to delete items",
                 variant: "destructive"
             }),
         }

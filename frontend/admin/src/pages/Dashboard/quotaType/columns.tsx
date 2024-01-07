@@ -1,17 +1,13 @@
 import { DataTableColumnHeader } from "@/components/data-table";
-import { UserSanitized } from "@/lib/api/data-types";
+import { QuotaType } from "@/lib/api/data-types";
 import { getGenericTableColumns } from "@/components/data-table-custom-columns";
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header-experimental";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
-import { Row, Table } from "@tanstack/react-table";
-import { getAll, getOne } from "@/lib/queries/user";
-import { queryClient } from "@/lib/api";
-import { deleteMany } from "@/lib/api/user";
-import { UserViewDetailsAction, UserViewOrganisationAction, UserDeleteAction, UserHeaderDeleteAction } from "./actions";
+import { QuotaTypeViewDetailsAction, QuotaTypeDeleteAction } from "./actions";
 
 
-export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
+export const getQuotaTypeTableColumns = getGenericTableColumns<QuotaType>(
     ({ actionsHeaderProps, actionsCellProps }) => ([
         getDataTableSelectRowsColumn(),
         {
@@ -20,41 +16,32 @@ export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
             header: DataTableColumnHeader
         },
         {
-            id: "Username",
-            accessorKey: "username",
+            id: "Name",
+            accessorKey: "name",
             header: DataTableColumnHeader,
         },
         {
-            id: "Role",
-            accessorKey: "role_string",
-            header: DataTableColumnHeader
-        },
-        {
-            id: "Organisation",
-            accessorKey: "organisationManaged.name",
+            id: "Description",
+            accessorKey: "description",
             header: DataTableColumnHeader
         },
         {
             id: "actions",
-            header: ({ table }: { table: Table<UserSanitized> }) => {
+            header: ({ table }) => {
                 return (
                     <DataTableActionsHeader
                         table={table}
-                        actions={[
-                            UserHeaderDeleteAction()
-                        ]}
                         {...actionsHeaderProps}
                     />
                 )
             },
-            cell: ({ row }: { row: Row<UserSanitized> }) => {
+            cell: ({ row }) => {
                 return (
                     <DataTableActionsCell
                         row={row}
                         actions={[
-                            UserViewDetailsAction(),
-                            UserViewOrganisationAction(),
-                            UserDeleteAction()
+                            QuotaTypeViewDetailsAction(),
+                            QuotaTypeDeleteAction()
                         ]}
                         {...actionsCellProps}
                     />

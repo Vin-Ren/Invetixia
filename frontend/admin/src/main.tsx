@@ -14,6 +14,9 @@ import { configureAxios, queryClient } from './lib/api/index.ts'
 import { UserDashboard } from './pages/Dashboard/user/index.tsx'
 import { OrganisationDetails } from './pages/Dashboard/organisation/details.tsx'
 import { UserDetails } from './pages/Dashboard/user/details.tsx'
+import { QuotaTypeDashboard } from './pages/Dashboard/quotaType/index.tsx'
+import { QuotaTypeDetails } from './pages/Dashboard/quotaType/details.tsx'
+import { Profile } from './pages/Dashboard/profile.tsx'
 
 configureAxios()
 
@@ -42,9 +45,14 @@ export const router = createBrowserRouter([
             element: <Navigate to={'/dashboard/overview'} />
           },
           {
+            path: '/dashboard/profile',
+            element: <Profile />
+          },
+          {
             path: '/dashboard/overview',
             element: <OverviewDashboard />
           },
+
           {
             path: '/dashboard/organisation',
             element: <OrganisationDashboard />,
@@ -53,6 +61,7 @@ export const router = createBrowserRouter([
             path: '/dashboard/organisation/details/:UUID',
             element: <OrganisationDetails />,
           },
+
           {
             path: '/dashboard/user',
             element: <UserDashboard />
@@ -60,6 +69,15 @@ export const router = createBrowserRouter([
           {
             path: '/dashboard/user/details/:UUID',
             element: <UserDetails />
+          },
+
+          {
+            path: '/dashboard/quotaType',
+            element: <QuotaTypeDashboard />
+          },
+          {
+            path: '/dashboard/quotaType/details/:UUID',
+            element: <QuotaTypeDetails />
           }
         ]
       }

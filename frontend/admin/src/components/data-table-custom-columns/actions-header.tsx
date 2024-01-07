@@ -11,7 +11,7 @@ import { MoreHorizontal, TrashIcon } from "lucide-react";
 
 export interface DataTableActionsHeaderProps<TData> {
     table: Table<TData>;
-    deleteSelected: (rows: Row<TData>[]) => boolean | Promise<boolean>;
+    deleteSelected?: (rows: Row<TData>[]) => boolean | Promise<boolean>;
     successfulDeletionToastProps?: (table: Table<TData>) => Toast;
     failedDeletionToastProps?: (table: Table<TData>) => Toast;
     queriesInvalidator?: (rows: Row<TData>[]) => void;
@@ -38,7 +38,7 @@ export function DataTableActionsHeader<
     const { toast } = useToast();
 
     const handleDelete = async () => {
-        const success = await deleteSelected(table.getSelectedRowModel().rows);
+        const success = await deleteSelected?.(table.getSelectedRowModel().rows);
         if (success) {
             toast(successfulDeletionToastProps(table));
             queriesInvalidator(table.getSelectedRowModel().rows);

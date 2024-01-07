@@ -5,17 +5,20 @@ import { Button, ButtonProps } from "./ui/button"
 
 
 export const RefreshDataButton = ({
-    query, 
+    query = undefined, 
+    queries = [],
     text = "Refresh Data",
     buttonProps = {variant: "secondary"}
 } : {
-    query: InvalidateQueryFilters, 
+    query?: InvalidateQueryFilters, 
+    queries?: InvalidateQueryFilters[],
     text?: string,
     buttonProps?: Omit<ButtonProps, "onClick">
 }) => {
+    if (query !== undefined) queries.push(query)
     const {toast} = useToast()
     const handleRefreshData = () => {
-        queryClient.invalidateQueries(query)
+        queries.map((q) => queryClient.invalidateQueries(q))
         toast({
             title: "Refresh data",
             description: "Successfully refreshed data."

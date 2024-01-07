@@ -6,9 +6,9 @@ import { queryClient } from "@/lib/api"
 import { getAll, getOne } from "@/lib/queries/organisation"
 import { getGenericTableColumns } from "@/components/data-table-custom-columns"
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell"
-import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header"
+import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header-experimental"
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column"
-import { OrganisationViewDetailsAction } from "./actions"
+import { OrganisationHeaderDeleteAction, OrganisationViewDetailsAction } from "./actions"
 import { OrganisationDeleteAction } from "./actions"
 import { OrganisationEditAction } from "./actions"
 
@@ -37,11 +37,9 @@ export const getOrganisationTableColumns = getGenericTableColumns<Organisation>(
                 return (
                     <DataTableActionsHeader
                         table={table}
-                        deleteSelected={async (rows) => await deleteMany(rows.map((row) => row.original.UUID))}
-                        queriesInvalidator={(rows) => {
-                            queryClient.invalidateQueries(getAll)
-                            rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-                        }}
+                        actions={[
+                            OrganisationHeaderDeleteAction()
+                        ]}
                         {...actionsHeaderProps}
                     />
                 )

@@ -5,18 +5,37 @@ import { useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/api"
 import { RefreshDataButton } from "@/components/refresh-data-button"
-import { useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
-import { getOrganisationTableColumns } from "../organisation/columns"
+import { Button } from "@/components/ui/button"
+import useUser from "@/hooks/useUser"
+import { getOrganisationTableColumns } from "./organisation/columns"
 
 
 
-export const UserDetails = () => {
-    const { UUID = '' } = useParams()
-    const { data: user } = useQuery(getOne(UUID), queryClient)
+export const Profile = () => {
+    const navigate = useNavigate()
+    const { user: userSelf, logout } = useUser()
+    const { data: user } = useQuery(getOne(userSelf.UUID as string), queryClient)
     const { data: organisation } = useQuery(organisationGetOne(user?.organisationId as string), queryClient)
     if (user === undefined || organisation === undefined) return <></>
+    if (user === undefined) return <></>
+
+    const handleLogout = async () => {
+        const success = await logout()
+        if (success) {
+            await queryClient.invalidateQueries({ queryKey: ['user', 'self'] })
+            navigate('/login')
+        }
+    }
+
+    const organisationTableColumns = getOrganisationTableColumns({
+        disableColumnsById: ['Manager', 'select'],
+        actionsHeaderProps: {
+            options: { enableDeleteSelected: false }
+        }
+    })
 
     return (
         <div className="container py-4 flex flex-col gap-4">
@@ -37,7 +56,7 @@ export const UserDetails = () => {
                             <CardTitle>Organisation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={getOrganisationTableColumns({ disableColumnsById: ['Manager', 'select'] })} data={[organisation]} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
+                            <DataTable columns={organisationTableColumns} data={[organisation]} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
                         </CardContent>
                     </Card>
                 </div>
@@ -45,8 +64,18 @@ export const UserDetails = () => {
 
             <div className="grid grid-cols-3">
                 <div className="col-span-1">
-                    <RefreshDataButton query={getOne(UUID)} />
+                    <RefreshDataButton queries={[getOne(user.UUID), organisationGetOne(user.organisationId)]} />
                 </div>
+                {
+                    userSelf.UUID === user.UUID ?
+                        <>
+                            <div className="col-span-1"></div>
+                            <form onSubmit={(e) => { e.preventDefault(); handleLogout() }} className="flex justify-end flex-1 place-items-end">
+                                <Button type="submit" variant={"destructive"}>Logout</Button>
+                            </form>
+                        </>
+                        : null
+                }
             </div>
         </div>
     )

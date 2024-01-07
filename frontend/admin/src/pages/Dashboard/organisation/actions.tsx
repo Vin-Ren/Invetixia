@@ -8,11 +8,12 @@ import { Organisation, UserSanitized } from "@/lib/api/data-types";
 import { ToastAction } from "@/components/ui/toast";
 import { DeleteDialogAction, GenericDialogConfirmAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { queryClient } from "@/lib/api";
-import { deleteOne, updateOne } from "@/lib/api/organisation";
+import { deleteMany, deleteOne, updateOne } from "@/lib/api/organisation";
 import { getAll, getOne } from "@/lib/queries/organisation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PencilIcon } from "lucide-react";
+import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 
 export const OrganisationViewDetailsAction = () => ViewDetailsAction((row: Row<Organisation>) => `/dashboard/organisation/details/${row.original.UUID}`);
 
@@ -23,6 +24,16 @@ export const OrganisationDeleteAction = () => DeleteDialogAction<Organisation>({
         queryClient.invalidateQueries(getOne(row.original.UUID))
     }
 });
+
+
+export const OrganisationHeaderDeleteAction = () => HeaderDeleteDialogAction<Organisation>({
+    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    queriesInvalidator: (rows) => {
+        queryClient.invalidateQueries(getAll)
+        rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
+    }
+})
+
 
 export const OrganisationEditAction = (): CellDialogAction<Organisation, { newName: string }> => ({
     actionType: "dialog",
@@ -84,7 +95,7 @@ export function RemoveUserFromOrganisationAction({
     executorUser: UserSelfData;
 }): CellDialogAction<UserSanitized> {
     return GenericDialogConfirmAction({
-        actionId: "delete",
+        actionId: "delete-user",
         triggerNode: (
             <>
                 <UserMinus className="mr-2 h-4 w-4" />
