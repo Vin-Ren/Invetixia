@@ -10,7 +10,7 @@ import { DataTableActionsHeader } from "@/components/data-table-custom-columns/a
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column"
 import { OrganisationHeaderDeleteAction, OrganisationViewDetailsAction } from "./actions"
 import { OrganisationDeleteAction } from "./actions"
-import { OrganisationEditAction } from "./actions"
+import { OrganisationEditNameAction } from "./actions"
 
 
 export const getOrganisationTableColumns = getGenericTableColumns<Organisation>(
@@ -50,7 +50,7 @@ export const getOrganisationTableColumns = getGenericTableColumns<Organisation>(
                         row={row}
                         actions={[
                             OrganisationViewDetailsAction(),
-                            OrganisationEditAction(),
+                            OrganisationEditNameAction(),
                             OrganisationDeleteAction()
                         ]}
                         {...actionsCellProps}

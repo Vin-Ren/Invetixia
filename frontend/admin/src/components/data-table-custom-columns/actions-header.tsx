@@ -158,6 +158,8 @@ export function DataTableActionsHeader<
         }
     };
 
+    if (actions.length === 0) return null
+
     return (
         <Dialog>
             <DropdownMenu>

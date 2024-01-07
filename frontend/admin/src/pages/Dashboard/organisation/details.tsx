@@ -24,9 +24,7 @@ export const OrganisationDetails = () => {
     const userTableColumns = getUserTableColumns({
         disableColumnsById: ['Organisation'],
         actionsHeaderProps: {
-            options: {
-                enableDeleteSelected: false
-            }
+            actions: [] // TODO: add actions. e.g. remove users in batch
         },
         actionsCellProps: {
             actions: [

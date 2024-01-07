@@ -35,13 +35,13 @@ export const OrganisationHeaderDeleteAction = () => HeaderDeleteDialogAction<Org
 })
 
 
-export const OrganisationEditAction = (): CellDialogAction<Organisation, { newName: string }> => ({
+export const OrganisationEditNameAction = (): CellDialogAction<Organisation, { newName: string }> => ({
     actionType: "dialog",
-    actionId: "edit-organisation",
+    actionId: "edit-organisation-name",
     triggerNode: (
         <>
             <PencilIcon className="mr-2 h-4 w-4" />
-            Edit item
+            Edit item name
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {

@@ -159,6 +159,8 @@ export function DataTableActionsCell<
         }
     };
 
+    if (actions.length === 0 && !options.enableCopyUUID) return null
+
     return (
         <Dialog>
             <DropdownMenu>
