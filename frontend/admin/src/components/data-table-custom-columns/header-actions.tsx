@@ -1,5 +1,5 @@
 import { Row, isFunction } from "@tanstack/react-table";
-import { ActionHandlerType, DialogContentProps, DialogToastProps, HeaderDialogAction } from "./actions-header-experimental";
+import { ActionHandlerType, DialogContentProps, DialogToastProps, HeaderDialogAction } from "./actions-header";
 import { TrashIcon } from "lucide-react";
 import { QueriesInvalidatorType } from "./commons";
 import { Toast } from "../ui/use-toast";

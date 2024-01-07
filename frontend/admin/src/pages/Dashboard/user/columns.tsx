@@ -2,7 +2,7 @@ import { DataTableColumnHeader } from "@/components/data-table";
 import { UserSanitized } from "@/lib/api/data-types";
 import { getGenericTableColumns } from "@/components/data-table-custom-columns";
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
-import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header-experimental";
+import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { Row, Table } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/user";
