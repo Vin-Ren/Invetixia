@@ -24,14 +24,14 @@ export default function Layout() {
   return (
     <UserProvider>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-        <div className="min-h-screen flex flex-col">
+        <div className="h-screen flex flex-col">
           <main className="content space-y-1 flex-1 flex flex-col">
             <Outlet />
           </main>
 
           <div>
             <Toaster />
-            <Separator className="mt-4"/>
+            <Separator className="mt-0"/>
             <footer className="px-4 py-2 w-full bottom-0 grid grid-cols-2 text-sm items-center">
               <ModeToggle />
               <aside className="place-self-center justify-self-end items-center grid-flow-col grid gap-2 py-2">

@@ -41,11 +41,10 @@ export const Dashboard = () => {
                         </ScrollArea>
 
                     </div>
-                    <Separator orientation="vertical" className="mx-4 mt-4 place-self-end self-center" />
+                    <Separator orientation="vertical" className="ml-4 my-4 place-self-end self-center" />
                 </div>
 
-                <ScrollArea className="flex-1 border m-2 ml-0 mb-0 max-h-[88vh] max-w-full">
-                {/* <ScrollArea className="flex-1 m-2 ml-0 mb-0" > */}
+                <ScrollArea className="flex-1 max-h-[90.5vh] max-w-full">
                     <Outlet />
                     <ScrollBar orientation="vertical" />
                     <ScrollBar orientation="horizontal" />

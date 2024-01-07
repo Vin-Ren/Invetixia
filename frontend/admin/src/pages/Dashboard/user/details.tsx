@@ -18,6 +18,13 @@ export const UserDetails = () => {
     const { data: organisation } = useQuery(organisationGetOne(user?.organisationId as string), queryClient)
     if (user === undefined || organisation === undefined) return <></>
 
+    const organisationTableColumns = getOrganisationTableColumns({ 
+        disableColumnsById: ['select'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
+
     return (
         <div className="container py-4 flex flex-col gap-4">
             <div className="grid grid-cols-1 w-full">
@@ -37,7 +44,7 @@ export const UserDetails = () => {
                             <CardTitle>Organisation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={getOrganisationTableColumns({ disableColumnsById: ['Manager', 'select'] })} data={[organisation]} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
+                            <DataTable columns={organisationTableColumns} data={[organisation]} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
                         </CardContent>
                     </Card>
                 </div>

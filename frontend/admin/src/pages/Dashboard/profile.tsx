@@ -30,10 +30,10 @@ export const Profile = () => {
         }
     }
 
-    const organisationTableColumns = getOrganisationTableColumns({
-        disableColumnsById: ['Manager', 'select'],
+    const organisationTableColumns = getOrganisationTableColumns({ 
+        disableColumnsById: ['select'],
         actionsHeaderProps: {
-            options: { enableDeleteSelected: false }
+            actions: []
         }
     })
 
