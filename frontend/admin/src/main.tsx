@@ -17,6 +17,7 @@ import { UserDetails } from './pages/Dashboard/user/details.tsx'
 import { QuotaTypeDashboard } from './pages/Dashboard/quotaType/index.tsx'
 import { QuotaTypeDetails } from './pages/Dashboard/quotaType/details.tsx'
 import { Profile } from './pages/Dashboard/profile.tsx'
+import { OrganisationCreatePage } from './pages/Dashboard/organisation/create.tsx'
 
 configureAxios()
 
@@ -42,42 +43,62 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to={'/dashboard/overview'} />
+            element: <Navigate to={'overview'} />
           },
           {
-            path: '/dashboard/profile',
+            path: 'profile',
             element: <Profile />
           },
           {
-            path: '/dashboard/overview',
+            path: 'overview',
             element: <OverviewDashboard />
           },
 
           {
-            path: '/dashboard/organisation',
-            element: <OrganisationDashboard />,
-          },
-          {
-            path: '/dashboard/organisation/details/:UUID',
-            element: <OrganisationDetails />,
+            path: 'organisation',
+            children: [
+              {
+                index: true,
+                element: <OrganisationDashboard />
+              },
+              {
+                path: 'create',
+                element: <OrganisationCreatePage />
+              },
+              {
+                path: 'details/:UUID',
+                element: <OrganisationDetails />,
+              }
+            ]
           },
 
           {
-            path: '/dashboard/user',
-            element: <UserDashboard />
-          },
-          {
-            path: '/dashboard/user/details/:UUID',
-            element: <UserDetails />
+            path: 'user',
+            children: [
+              {
+                index: true,
+                element: <UserDashboard />
+              },
+              {
+                path: 'details/:UUID',
+                element: <UserDetails />
+              },
+            ]
           },
 
+
           {
-            path: '/dashboard/quotaType',
-            element: <QuotaTypeDashboard />
-          },
-          {
-            path: '/dashboard/quotaType/details/:UUID',
-            element: <QuotaTypeDetails />
+            path: 'quotaType',
+            children: [
+              {
+                index: true,
+                element: <QuotaTypeDashboard />
+              },
+              {
+                path: 'details/:UUID',
+                element: <QuotaTypeDetails />
+              }
+            ]
           }
         ]
       }

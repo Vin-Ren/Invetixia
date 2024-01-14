@@ -43,7 +43,7 @@ export const Profile = () => {
                 <div className="flex flex-col w-full gap-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>{`${user.username}`} </CardTitle>
+                            <CardTitle>{`${user.username}`}</CardTitle>
                             <CardDescription>Part of {user.organisationManaged?.name} organisation</CardDescription>
                         </CardHeader>
                         <CardContent>

@@ -23,6 +23,26 @@ export const getOne = async (UUID: string): Promise<Organisation> => {
 }
 
 
+export const createOne = async (name: string): Promise<Organisation> => {
+    const res = await axios({
+        method: 'POST',
+        url: `${import.meta.env.VITE_API_BASE_URL}/organisation/create`,
+        data: { name },
+    })
+    return res.data.organisation
+}
+
+
+export const createMany = async (names: string[]): Promise<Organisation[]> => {
+    const res = await axios({
+        method: 'POST',
+        url: `${import.meta.env.VITE_API_BASE_URL}/organisation/createMany`,
+        data: { names },
+    })
+    return res.data.organisations
+}
+
+
 export const updateOne = async (UUID: string, newName: string): Promise<boolean> => {
     try {
         const res = await axios({

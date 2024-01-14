@@ -62,7 +62,7 @@ export const getOne = async (req: Request, res: Response) => {
             where: { ownerAffiliationId: UUID as string }
         })
 
-        return res.json({ organisation: {...organisation, createdTicketCount} })
+        return res.json({ organisation: { ...organisation, createdTicketCount } })
     } catch (e) {
         console.log(e)
     }
@@ -180,6 +180,38 @@ export const create = async (req: Request, res: Response) => {
         console.log(e)
     }
 }
+
+
+// Post
+export const createMany = async (req: Request, res: Response) => {
+    const { names }: { names: string[] } = req.body
+    if (!isAdmin(req.user)) return res.sendStatus(403)
+
+    let permitted = 1;
+    names.forEach((name) => {
+        if (!name || typeof name !== 'string') permitted = 0
+    })
+
+    if (!permitted) return res.sendStatus(400)
+
+    try {
+        // const organisations = await prismaClient.organisation.createMany({
+        //     data: names.map((name) => ({ name })),
+
+        // });
+
+        const organisations = await prismaClient.$transaction(
+            names.map((name) => (
+                prismaClient.organisation.create({ data: { name } })))
+        )
+
+        await logEvent({ event: "CREATE", summary: `Create Many Organisation`, description: `Created ${organisations.length} organisations named=${names} [UUIDs=${organisations.map((org) => org.UUID)}]` })
+        return res.json({ organisations })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
 
 
 // Patch

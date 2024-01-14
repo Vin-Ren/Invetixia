@@ -39,7 +39,6 @@ export const Dashboard = () => {
                                 <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>
                             </div>
                         </ScrollArea>
-
                     </div>
                     <Separator orientation="vertical" className="ml-4 my-4 place-self-end self-center" />
                 </div>
