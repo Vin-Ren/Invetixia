@@ -7,7 +7,8 @@ export interface UserSelfData {
     UUID?: string,
     username?: string,
     accessToken?: string,
-    role?: string,
+    role?: number,
+    role_string?: string,
     organisationManaged?: {
         UUID: string,
         name: string,
@@ -31,7 +32,7 @@ export const getUserSelf = async (): Promise<UserSelfData> => {
             method: 'GET',
             url: `${import.meta.env.VITE_API_BASE_URL}/user/self`,
         })
-        return { authenticated: true, ...res.data.user }
+        return { authenticated: true, ...sanitizeUser(res.data.user) }
     } catch (e) {
         return { authenticated: false }
     }
@@ -118,6 +119,26 @@ export const getOne = async (UUID: string): Promise<UserSanitized> => {
         url: `${import.meta.env.VITE_API_BASE_URL}/user/info/${UUID}`,
     })
     return sanitizeUser(res.data.user)
+}
+
+
+export const createOne = async ({ username, password, role, organisationName }: { username: string, password: string, role: number, organisationName: string }): Promise<UserSanitized> => {
+    const res = await axios({
+        method: 'POST',
+        url: `${import.meta.env.VITE_API_BASE_URL}/user/create`,
+        data: { username, password, role, organisationName }
+    })
+    return sanitizeUser(res.data.user)
+}
+
+
+export const createMany = async (users: {username: string, password: string, role: number, organisationName: string}[] ): Promise<UserSanitized[]> => {
+    const resList = await Promise.all(users.map(({username, password, role, organisationName}) => axios({
+        method: 'POST',
+        url: `${import.meta.env.VITE_API_BASE_URL}/user/create`,
+        data: { username, password, role, organisationName }
+    })))
+    return sanitizeUsers(resList.map((e) => e.data.user))
 }
 
 

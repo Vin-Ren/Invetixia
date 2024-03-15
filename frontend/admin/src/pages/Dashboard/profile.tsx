@@ -16,10 +16,8 @@ import { getOrganisationTableColumns } from "./organisation/columns"
 
 export const Profile = () => {
     const navigate = useNavigate()
-    const { user: userSelf, logout } = useUser()
-    const { data: user } = useQuery(getOne(userSelf.UUID as string), queryClient)
-    const { data: organisation } = useQuery(organisationGetOne(user?.organisationId as string), queryClient)
-    if (user === undefined || organisation === undefined) return <></>
+    const { user, logout } = useUser()
+    const { data: organisation } = useQuery(organisationGetOne(user?.organisationManaged?.UUID as string), queryClient)
     if (user === undefined) return <></>
 
     const handleLogout = async () => {
@@ -56,7 +54,7 @@ export const Profile = () => {
                             <CardTitle>Organisation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={organisationTableColumns} data={[organisation]} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
+                            <DataTable columns={organisationTableColumns} data={organisation ? [organisation]: []} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
                         </CardContent>
                     </Card>
                 </div>
@@ -64,18 +62,12 @@ export const Profile = () => {
 
             <div className="grid grid-cols-3">
                 <div className="col-span-1">
-                    <RefreshDataButton queries={[getOne(user.UUID), organisationGetOne(user.organisationId)]} />
+                    <RefreshDataButton queries={[getOne(user.UUID as string), organisationGetOne(user.organisationManaged?.UUID as string)]} />
                 </div>
-                {
-                    userSelf.UUID === user.UUID ?
-                        <>
-                            <div className="col-span-1"></div>
-                            <form onSubmit={(e) => { e.preventDefault(); handleLogout() }} className="flex justify-end flex-1 place-items-end">
-                                <Button type="submit" variant={"destructive"}>Logout</Button>
-                            </form>
-                        </>
-                        : null
-                }
+                <div className="col-span-1"></div>
+                <form onSubmit={(e) => { e.preventDefault(); handleLogout() }} className="flex justify-end flex-1 place-items-end">
+                    <Button type="submit" variant={"destructive"}>Logout</Button>
+                </form>
             </div>
         </div>
     )

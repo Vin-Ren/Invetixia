@@ -18,6 +18,8 @@ import { Form } from "@/components/ui/form";
 import { CustomizedFormField, CustomizedFormTextAreaField } from "@/components/customized-form";
 import { createMany, createOne } from "@/lib/api/organisation";
 import { useToast } from "@/components/ui/use-toast";
+import { queryClient } from "@/lib/api";
+import { getAll } from "@/lib/queries/organisation";
 
 
 
@@ -45,6 +47,7 @@ function OrganisationCreate() {
                 title: "Successfully created an organisation!",
                 description: "Redirecting in a second."
             })
+            queryClient.invalidateQueries(getAll)
             navigate(`../details/${organisation.UUID}`)
         } catch (e) {
             toast({
@@ -107,6 +110,7 @@ function OrganisationCreateMany() {
                 title: "Successfully created multiple organisation!",
                 description: `Created organisation UUIDs=${organisations.map((org) => org.UUID)}`
             })
+            queryClient.invalidateQueries(getAll)
             navigate(`../`)
         } catch (e) {
             toast({

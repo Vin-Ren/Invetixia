@@ -21,7 +21,7 @@ export const OrganisationDashboard = () => {
         <div className="container mx-auto py-10">
             <div className="flex flex-col w-full">
                 <div className="place-self-end flex flex-row">
-                    <Button variant={"outline"} size={"sm"} onClick={() => navigate('create')}>
+                    <Button variant={"outline"} size={"sm"} onClick={() => navigate('create')} className="ml-auto hidden h-8 lg:flex">
                         <PlusIcon className="mr-2 h-4 w-4"/>
                         Create
                     </Button>

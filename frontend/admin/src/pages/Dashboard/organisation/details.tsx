@@ -13,6 +13,8 @@ import { UserViewDetailsAction } from "../user/actions"
 import { sanitizeUsers, updateOne } from "@/lib/api/user"
 import useUser from "@/hooks/useUser"
 import { RemoveUserFromOrganisationAction } from "./actions"
+import { deleteOne } from "@/lib/api/organisation"
+import { GenericDetailsDeleteButton } from "@/components/custom-buttons"
 
 
 export const OrganisationDetails = () => {
@@ -73,10 +75,13 @@ export const OrganisationDetails = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3">
-                <div className="col-span-1">
-                    <RefreshDataButton query={getOne(UUID)} />
-                </div>
+            <div className="flex flex-row gap-4">
+                <RefreshDataButton query={getOne(UUID)} />
+                <GenericDetailsDeleteButton
+                    UUID={UUID}
+                    deleteHandler={async () => await deleteOne(UUID)}
+                    queriesInvalidator={() => [queryClient, [getAll, getOne(UUID)]]}
+                />
             </div>
         </div>
     )

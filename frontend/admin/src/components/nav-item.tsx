@@ -6,7 +6,7 @@ type _NavLinkProps = React.ForwardRefExoticComponent<NavLinkProps & React.RefAtt
 export default function NavItem(props: _NavLinkProps) {
     return <NavLink {...{
         to: '/',
-        className: ({ isActive }: { isActive: boolean }) => buttonVariants({ variant: isActive ? 'default' : 'ghost' }),
+        className: ({ isActive }: { isActive: boolean }) => `w-full ${buttonVariants({ variant: isActive ? 'default' : 'ghost' })}`,
         ...props
     }}/>
 }

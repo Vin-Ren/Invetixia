@@ -5,9 +5,6 @@ import { DataTableActionsCell } from "@/components/data-table-custom-columns/act
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { Row, Table } from "@tanstack/react-table";
-import { getAll, getOne } from "@/lib/queries/user";
-import { queryClient } from "@/lib/api";
-import { deleteMany } from "@/lib/api/user";
 import { UserViewDetailsAction, UserViewOrganisationAction, UserDeleteAction, UserHeaderDeleteAction } from "./actions";
 
 

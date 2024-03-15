@@ -1,5 +1,5 @@
 
-import { getOne } from "@/lib/queries/user"
+import { getAll, getOne } from "@/lib/queries/user"
 import { getOne as organisationGetOne } from "@/lib/queries/organisation"
 import { useQuery } from "@tanstack/react-query"
 
@@ -9,6 +9,8 @@ import { useParams } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
 import { getOrganisationTableColumns } from "../organisation/columns"
+import { deleteOne } from "@/lib/api/user";
+import { GenericDetailsDeleteButton } from "@/components/custom-buttons";
 
 
 
@@ -50,10 +52,13 @@ export const UserDetails = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3">
-                <div className="col-span-1">
-                    <RefreshDataButton query={getOne(UUID)} />
-                </div>
+            <div className="flex flex-row gap-4">
+                <RefreshDataButton query={getOne(UUID)} />
+                <GenericDetailsDeleteButton
+                    UUID={UUID}
+                    deleteHandler={async () => await deleteOne(UUID)}
+                    queriesInvalidator={() => [queryClient, [getAll, getOne(UUID)]]}
+                />
             </div>
         </div>
     )
