@@ -4,9 +4,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { prismaClient, userRole } from "../services/database";
 import { logEvent } from "../utils/databaseLogging";
-import { isAdmin, isOrganisationManager } from "../utils/permissionCheckers";
+import { isAdmin } from "../utils/permissionCheckers";
 import { Prisma } from "@prisma/client";
-import { assert } from "console";
 
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME, ACCESS_TOKEN_LIFETIME_AFTER_LOGIN } = env;
 

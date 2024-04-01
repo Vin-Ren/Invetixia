@@ -54,7 +54,7 @@ export default function Ticket() {
                     <div className="divider divider-primary"></div>
                     <div className="grid max-md:grid-rows-2 md:grid-cols-2 gap-4 w-full">
                         <button type="submit" className="btn btn-accent btn-outline font-bold h-full btn-block rounded-2xl" onClick={() => handleEdit()}>Edit your information</button>
-                        <div role="alert" className="alert alert-warning">
+                        <div role="alert" className="alert alert-error">
                             <div>
                                 <span className="font-bold flex flex-row items-center gap-2 mb-0"><i><IoWarning  size='1.25rem'/></i> <span>Warning</span></span>
                                 <span className="whitespace-break-spaces">Do not share this link or QR with others!</span>
