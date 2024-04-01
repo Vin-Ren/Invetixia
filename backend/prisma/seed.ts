@@ -9,6 +9,36 @@ const { QUOTA_TYPES, SUPERUSER_PASSWORD } = env;
 
 
 function initialize() {
+    prismaClient.iNTERNALS_InvetixiaConfig.createMany({
+        data: [
+            {
+                name: 'event_info',
+                value: {
+                    name: "Invetixia", // title on hero
+                    description: "Invetixia launching event", // description on hero
+                    locationName: "a Zoom meeting",
+                    startTime: new Date("2024-05-15T00:00:00.000+00:00"),
+                }
+            },
+            {
+                name: 'event_socials',
+                value: {
+                    mainWebsite: "https://example.com",
+                    instagram: "https://instagram.com/instagram",
+                    youtube: "https://youtube.com/youtube",
+                    x_twitter: "https://x.com/",
+                    email: "example@mail.com"
+                }
+            }
+        ]
+    }).catch((err)=> {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code == 'P2002') return
+        } else {
+            console.log(err)
+        }
+    })
+
     const logActions = Object.values(logAction)
     logActions.forEach(act => {
         prismaClient.logAction.create({ data: { name: act } }).catch((err) => {
