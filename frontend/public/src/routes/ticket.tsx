@@ -17,6 +17,8 @@ export default function Ticket() {
     const { data: { ticket = {}}} = useQuery(ticketQuery(params.UUID as string))
     const [targetDate, setTargetDate] = useState<Date>(new Date(event?.startTime))
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState('')
+    const [qrVisible, setQrVisible] = useState(false);
+    console.log(qrVisible)
     
     useEffect(() => {
         setTargetDate(new Date(event?.startTime))
@@ -48,7 +50,12 @@ export default function Ticket() {
                         <p className="text-base whitespace-break-spaces text-neutral-content">The ticket will also be sent to you on <a href="#eventStartTime"><span className="font-bold text-accent">D-Day</span></a></p>
                     </div>
                     <div className="divider divider-primary"></div>
-                    <img className="rounded-3xl self-center mb-4 max-md:max-h-52 md:max-w-xs p-4" src={qrCodeDataUrl} alt="Your Ticket QR Code"/>
+                    <div className="mb-4 self-center flex flex-col">
+                        <img 
+                            className={`rounded-3xl self-center max-md:max-h-52 md:max-w-xs p-4 ${qrVisible ? 'animate-unblur' : 'animate-blur'}`} 
+                            onClick={() => setQrVisible((prv)=>!prv)} src={qrCodeDataUrl} alt="Your Ticket QR Code"/>
+                        <small>Click on the blurred image to reveal your QR code</small>
+                    </div>
                     <Countdown targetDate={targetDate} />
                     <p className="text-sm font-bold whitespace-break-spaces mt-4" id="eventStartTime">The event will take place at {event?.locationName} on {format(targetDate, 'PPPP')}, at {format(targetDate, 'pp')} in your local time.</p>
                     <div className="divider divider-primary"></div>
