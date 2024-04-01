@@ -7,8 +7,8 @@ import Layout, { loader as EventInfoLoader } from './layout.tsx'
 import ErrorPage from './errorPage.tsx'
 import Index from './routes/index.tsx'
 import Invitation, { loader as InvitationLoader } from './routes/invitation.tsx'
-import Ticket from './routes/ticket.tsx'
-import EditTicket, {loader as TicketLoader} from './routes/editTicket.tsx'
+import Ticket, { loader as TicketLoader } from './routes/ticket.tsx'
+import EditTicket, { loader as EditTicketLoader } from './routes/editTicket.tsx'
 import CountdownPage from './routes/countdown.tsx'
 import { HelmetProvider } from 'react-helmet-async'
 import { queryClient } from './lib/api/index.ts'
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       {
         path: '/ticket/:UUID/edit',
         element: <EditTicket />,
-        loader: TicketLoader(queryClient)
+        loader: EditTicketLoader(queryClient)
       },
       {
         path: '/countdown',

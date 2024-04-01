@@ -3,7 +3,6 @@ import { eventQuery } from "../queries"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
 
 
 export default function Index() {
@@ -34,10 +33,6 @@ export default function Index() {
 
     return (
         <div className="hero min-h-screen bg-base-200 bg-opacity-50">
-            <Helmet>
-                <title>{event.name}</title>
-            </Helmet>
-
             <div className="hero-content items-start flex flex-col lg:flex-row bg-base-200 p-6 rounded-xl bg-opacity-75 backdrop-blur-sm m-4">
                 <img src={import.meta.env.VITE_EVENT_POSTER_IMAGE} alt="Event Poster Background" className="max-w-sm rounded-lg shadow-2xl h-auto w-[98%]" />
                 <div className="flex-1 w-full flex flex-col">

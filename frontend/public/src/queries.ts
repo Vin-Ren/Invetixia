@@ -9,7 +9,16 @@ export const getEvent = async () => {
     return res.data
 }
 
-export const getInvitation = async (UUID:string) => {
+export const getEventDetails = async (UUID: string) => {
+    const res = await axios.request({
+        method: 'GET',
+        url: `${import.meta.env.VITE_API_BASE_URL}/event/details`,
+        params: { UUID }
+    })
+    return res.data
+}
+
+export const getInvitation = async (UUID: string) => {
     const res = await axios.request({
         method: 'GET',
         url: `${import.meta.env.VITE_API_BASE_URL}/invitation/public/${UUID}`
@@ -17,7 +26,7 @@ export const getInvitation = async (UUID:string) => {
     return res.data
 }
 
-export const getTicket = async (UUID:string) => {
+export const getTicket = async (UUID: string) => {
     const res = await axios.request({
         method: 'GET',
         url: `${import.meta.env.VITE_API_BASE_URL}/ticket/public/${UUID}`
@@ -30,6 +39,11 @@ export const eventQuery = {
     queryKey: ['eventInfo'],
     queryFn: () => getEvent(),
 }
+
+export const eventDetailsQuery = (UUID: string) => ({
+    queryKey: ['eventDetails', UUID],
+    queryFn: () => getEventDetails(UUID)
+})
 
 export const invitationQuery = (UUID: string) => ({
     queryKey: ['invitation', UUID],
