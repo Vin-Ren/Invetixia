@@ -1,11 +1,13 @@
 
-import { getOne } from "@/lib/queries/quotaType"
+import { getAll, getOne } from "@/lib/queries/quotaType"
 import { useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/api"
 import { RefreshDataButton } from "@/components/refresh-data-button"
 import { useParams } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { GenericDetailsDeleteButton } from "@/components/custom-buttons"
+import { deleteOne } from "@/lib/api/quotaType"
 
 
 export const QuotaTypeDetails = () => {
@@ -26,22 +28,16 @@ export const QuotaTypeDetails = () => {
                             <CardDescription>{`Object Signature - QuotaType{${quotaType.UUID}}`}</CardDescription>
                         </CardContent>
                     </Card>
-                    {/* <Card>
-                        <CardHeader>
-                            <CardTitle>Managers</CardTitle>
-                            <CardDescription>{quotaType.managers?.length} Personel(s)</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <DataTable columns={userTableColumns} data={sanitizeUsers(quotaType.managers || [])} />
-                        </CardContent>
-                    </Card> */}
                 </div>
             </div>
 
-            <div className="grid grid-cols-3">
-                <div className="col-span-1">
-                    <RefreshDataButton query={getOne(UUID)} />
-                </div>
+            <div className="flex flex-row gap-4">
+                <RefreshDataButton query={getOne(UUID)} />
+                <GenericDetailsDeleteButton
+                    UUID={UUID}
+                    deleteHandler={async () => await deleteOne(UUID)}
+                    queriesInvalidator={() => [queryClient, [getAll, getOne(UUID)]]}
+                />
             </div>
         </div>
     )

@@ -4,7 +4,7 @@ import { getGenericTableColumns } from "@/components/data-table-custom-columns";
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
-import { QuotaTypeViewDetailsAction, QuotaTypeDeleteAction } from "./actions";
+import { QuotaTypeViewDetailsAction, QuotaTypeDeleteAction, QuotaTypeHeaderDeleteAction } from "./actions";
 
 
 export const getQuotaTypeTableColumns = getGenericTableColumns<QuotaType>(
@@ -31,6 +31,9 @@ export const getQuotaTypeTableColumns = getGenericTableColumns<QuotaType>(
                 return (
                     <DataTableActionsHeader
                         table={table}
+                        actions={[
+                            QuotaTypeHeaderDeleteAction()
+                        ]}
                         {...actionsHeaderProps}
                     />
                 )

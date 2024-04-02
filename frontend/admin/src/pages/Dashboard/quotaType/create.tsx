@@ -16,42 +16,43 @@ import {
 import { TabsTemplate } from "@/components/tabs-template";
 import { Form } from "@/components/ui/form";
 import { CustomizedFormField, CustomizedFormTextAreaField } from "@/components/customized-form";
-import { createMany, createOne } from "@/lib/api/organisation";
+import { createMany, createOne } from "@/lib/api/quotaType";
 import { useToast } from "@/components/ui/use-toast";
 import { queryClient } from "@/lib/api";
-import { getAll } from "@/lib/queries/organisation";
+import { getAll } from "@/lib/queries/quotaType";
 
 
 
-export const OrganisationCreateSchema = z.object({
+export const QuotaTypeCreateSchema = z.object({
     name: z.string()
-        .min(2, { message: 'Organisation name is too short' })
-        .max(50, { message: 'Organisation name is too long' })
+        .min(2, { message: 'username is too short' })
+        .max(30, { message: 'username is too long' }),
+    description: z.string()
 })
 
 
-function OrganisationCreate() {
+function QuotaTypeCreateOne() {
     const navigate = useNavigate()
 
     const { toast } = useToast()
 
-    const form = useForm<z.infer<typeof OrganisationCreateSchema>>({
-        resolver: zodResolver(OrganisationCreateSchema),
-        defaultValues: { name: "" },
+    const form = useForm<z.infer<typeof QuotaTypeCreateSchema>>({
+        resolver: zodResolver(QuotaTypeCreateSchema),
+        defaultValues: { name: "", description: ""},
     })
 
-    const onSubmit = async (values: z.infer<typeof OrganisationCreateSchema>) => {
+    const onSubmit = async (values: z.infer<typeof QuotaTypeCreateSchema>) => {
         try {
-            const organisation = await createOne(values.name)
+            const entr = await createOne(values)
             toast({
-                title: "Successfully created an organisation!",
+                title: "Successfully created a quota type!",
                 description: "Redirecting in a second."
             })
             queryClient.invalidateQueries(getAll)
-            navigate(`../details/${organisation.UUID}`)
+            navigate(`../details/${entr.UUID}`)
         } catch (e) {
             toast({
-                title: "Failed to create an organisation!",
+                title: "Failed to create a quota type!",
                 description: "Something went wrong.",
                 variant: "destructive"
             })
@@ -61,9 +62,9 @@ function OrganisationCreate() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Create an Organisation</CardTitle>
+                <CardTitle>Create Quota Type</CardTitle>
                 <CardDescription>
-                    Enter the name for the new organisation
+                    Enter quota type information
                 </CardDescription>
             </CardHeader>
             <Form {...form}>
@@ -72,8 +73,14 @@ function OrganisationCreate() {
                         <CustomizedFormField
                             control={form.control}
                             name="name"
-                            label="Organisation Name"
-                            inputProps={{ placeholder: "Example Organisation" }}
+                            label="Name"
+                            inputProps={{ placeholder: "Example Name" }}
+                        />
+                        <CustomizedFormField
+                            control={form.control}
+                            name="description"
+                            label="Description"
+                            inputProps={{ placeholder: "A brief description"}}
                         />
                     </CardContent>
                     <CardFooter>
@@ -86,35 +93,39 @@ function OrganisationCreate() {
 }
 
 
-export const OrganisationCreateManySchema = z.object({
-    names_csv: z.string()
+export const QuotaTypeCreateManySchema = z.object({
+    data_csv: z.string()
 })
 
 
-function OrganisationCreateMany() {
+function QuotaTypeCreateMany() {
     const navigate = useNavigate()
 
     const { toast } = useToast()
 
-    const form = useForm<z.infer<typeof OrganisationCreateManySchema>>({
-        resolver: zodResolver(OrganisationCreateManySchema),
-        defaultValues: { names_csv: "" },
+    const form = useForm<z.infer<typeof QuotaTypeCreateManySchema>>({
+        resolver: zodResolver(QuotaTypeCreateManySchema),
+        defaultValues: { data_csv: "" },
     })
 
-    const onSubmit = async (values: z.infer<typeof OrganisationCreateManySchema>) => {
+    const onSubmit = async (values: z.infer<typeof QuotaTypeCreateManySchema>) => {
         // console.log(values)
-        const names = values.names_csv.split(',')
+        const userlist = values.data_csv.trim().split(';')
+        const createQuotaTypesData = userlist.map((e) => {
+            const splitres = e.split(',')
+            return {name: splitres[0], description: splitres[1]}
+        })
         try {
-            const organisations = await createMany(names)
+            const entries = await createMany(createQuotaTypesData)
             toast({
-                title: "Successfully created multiple organisation!",
-                description: `Created organisation UUIDs=${organisations.map((org) => org.UUID)}`
+                title: "Successfully created multiple quota types!",
+                description: `Created quota types UUIDs=${entries.map((entr) => entr.UUID)}`
             })
             queryClient.invalidateQueries(getAll)
             navigate(`../`)
         } catch (e) {
             toast({
-                title: "Failed to create organisations!",
+                title: "Failed to create quota types!",
                 description: "Something went wrong.",
                 variant: "destructive"
             })
@@ -124,9 +135,9 @@ function OrganisationCreateMany() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Create Multiple Organisations</CardTitle>
+                <CardTitle>Create Multiple Quota Types</CardTitle>
                 <CardDescription>
-                    Enter the names for the new organisations, with a comma seperated format (csv-like) without its header.
+                    Enter the data for the new quota types, with a comma seperated format (csv-like) without its header.
                 </CardDescription>
             </CardHeader>
             <Form {...form}>
@@ -134,9 +145,9 @@ function OrganisationCreateMany() {
                     <CardContent className="space-y-2">
                         <CustomizedFormTextAreaField
                             control={form.control}
-                            name="names_csv"
-                            label="Organisation Name"
-                            textAreaProps={{ placeholder: "Company 1,Company 2,Company 3,Company 4" }}
+                            name="data_csv"
+                            label="User Entries"
+                            textAreaProps={{ placeholder: "name1,description1;\nname2,description2;\n..." }}
                         />
                     </CardContent>
                     <CardFooter>
@@ -149,13 +160,12 @@ function OrganisationCreateMany() {
 }
 
 
-export function OrganisationCreatePage() {
-
+export function QuotaTypeCreatePage() {
     return (
         <TabsTemplate tabs={
             [
-                { id: 'Create One', tabContent: OrganisationCreate },
-                { id: 'Create Many', tabContent: OrganisationCreateMany },
+                { id: 'Create One', tabContent: QuotaTypeCreateOne },
+                { id: 'Create Many', tabContent: QuotaTypeCreateMany },
             ]
         } />
     )

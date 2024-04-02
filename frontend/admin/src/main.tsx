@@ -19,6 +19,7 @@ import { QuotaTypeDetails } from './pages/Dashboard/quotaType/details.tsx'
 import { Profile } from './pages/Dashboard/profile.tsx'
 import { OrganisationCreatePage } from './pages/Dashboard/organisation/create.tsx'
 import { UserCreatePage } from './pages/Dashboard/user/create.tsx'
+import { QuotaTypeCreatePage } from './pages/Dashboard/quotaType/create.tsx'
 
 configureAxios()
 
@@ -102,6 +103,10 @@ export const router = createBrowserRouter([
               {
                 path: 'details/:UUID',
                 element: <QuotaTypeDetails />
+              },
+              {
+                path: 'create',
+                element: <QuotaTypeCreatePage />
               }
             ]
           }

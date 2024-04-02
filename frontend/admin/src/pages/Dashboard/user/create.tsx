@@ -143,7 +143,7 @@ function UserCreateMany() {
     })
 
     const onSubmit = async (values: z.infer<typeof UserCreateManySchema>) => {
-        console.log(values)
+        // console.log(values)
         const userlist = values.data_csv.trim().split(';')
         const createUsersData: {username:string, password:string, role:number, organisationName:string}[] = userlist.map((e) => {
             const splitres = e.split(',')
