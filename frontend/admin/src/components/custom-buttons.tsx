@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { InvalidateQueryFilters, QueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { isFunction } from "@tanstack/react-table";
-import { TrashIcon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "lucide-react";
 
 export type QueriesInvalidatorType = () => [QueryClient, InvalidateQueryFilters[]] | Promise<void> | void;
 
@@ -214,3 +214,20 @@ export function GenericDetailsDeleteButton({
         }
     })
 }
+
+
+export function GenericIndexCreateButton() {
+    const navigate = useNavigate()
+    const handleNavigate = () => navigate('create')
+    return (
+        <div className="flex flex-col w-full">
+            <div className="place-self-end flex flex-row">
+                <Button variant={"outline"} size={"sm"} onClick={handleNavigate} className="ml-auto hidden h-8 lg:flex">
+                    <PlusIcon className="mr-2 h-4 w-4"/>
+                    Create
+                </Button>
+            </div>
+        </div>
+    )
+}
+
