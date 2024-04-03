@@ -27,7 +27,7 @@ export const OrganisationDeleteAction = () => DeleteDialogAction<Organisation>({
 
 
 export const OrganisationHeaderDeleteAction = () => HeaderDeleteDialogAction<Organisation>({
-    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
     queriesInvalidator: (rows) => {
         queryClient.invalidateQueries(getAll)
         rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
@@ -37,23 +37,23 @@ export const OrganisationHeaderDeleteAction = () => HeaderDeleteDialogAction<Org
 
 export const OrganisationEditNameAction = (): CellDialogAction<Organisation, { newName: string }> => ({
     actionType: "dialog",
-    actionId: "edit-organisation-name",
+    actionId: "quick-edit-item",
     triggerNode: (
         <>
             <PencilIcon className="mr-2 h-4 w-4" />
-            Edit item name
+            Edit organisation
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {
         return await updateOne(row.original.UUID, getDialogData?.().newName || "")
     },
     initializeDialogData: ({ row, setDialogData }) => { setDialogData({ newName: row.original.name }) },
-    queriesInvalidator: (row) => { [getAll, getOne(row.original.UUID)].map((query) => queryClient.invalidateQueries(query)) },
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
     dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
         return (
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Edit item</DialogTitle>
+                    <DialogTitle>Edit Organisaiton</DialogTitle>
                     <DialogDescription>
                         Make changes to the organisation here. Click save when you're done.
                     </DialogDescription>
@@ -68,7 +68,7 @@ export const OrganisationEditNameAction = (): CellDialogAction<Organisation, { n
                 </div>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant={"default"} type="submit" onClick={async () => await internalActionHandler({ actionId: 'edit-organisation', row })}>Save</Button>
+                        <Button variant={"default"} type="submit" onClick={async () => await internalActionHandler({ actionId: 'quick-edit-item', row })}>Save</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>
@@ -106,7 +106,7 @@ export function RemoveUserFromOrganisationAction({
         queriesInvalidator,
         dialogOptions: {
             title: "Confirm Removal",
-            description: ({row}) => `The user '${row.original.username}' is not going to be a part of '${organisation.name}' afterwards, instead they will be a part of your managed organisation( '${executorUser.organisationManaged?.name}' ). Are you sure you would like to proceed?`
+            description: ({ row }) => `The user '${row.original.username}' is not going to be a part of '${organisation.name}' afterwards, instead they will be a part of your managed organisation( '${executorUser.organisationManaged?.name}' ). Are you sure you would like to proceed?`
         },
         toasts: {
             onSuccess: ({ row }) => ({
