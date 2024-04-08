@@ -1,32 +1,58 @@
 
-import { getOne } from "@/lib/queries/user"
+import { getOne, getUserSelf } from "@/lib/queries/user"
 import { getOne as organisationGetOne } from "@/lib/queries/organisation"
 import { useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/api"
 import { RefreshDataButton } from "@/components/refresh-data-button"
-import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import useUser from "@/hooks/useUser"
 import { getOrganisationTableColumns } from "./organisation/columns"
+import { GenericDialogConfirmButton, QueriesInvalidatorType } from "@/components/custom-buttons"
+import { LogOutIcon } from "lucide-react"
 
+export interface LogoutButtonProps {
+    logoutHandler: () => boolean | Promise<boolean>,
+    queriesInvalidator?: QueriesInvalidatorType
+}
 
+export function LogoutButton({
+    logoutHandler,
+    queriesInvalidator
+}: LogoutButtonProps) {
+    return GenericDialogConfirmButton({
+        actionHandler: async () => await logoutHandler(),
+        triggerNode: (
+            <Button variant={"destructive"}>
+                <LogOutIcon className="h-4 w-4 mr-2" />
+                Logout
+            </Button>
+        ),
+        postSuccessActionHandler: ({ navigate }) => navigate('/login'),
+        queriesInvalidator,
+        dialogOptions: {
+            title: "Confirm Logout",
+            description: "Are you sure that you would like to be logged out?",
+        },
+        toasts: {
+            onSuccess: () => ({
+                title: "Logged Out!",
+                description: `Successfully logged out.`
+            }),
+            onFailure: () => ({
+                title: "Failed to log out",
+                variant: "destructive"
+            })
+        }
+    })
+}
 
 export const Profile = () => {
-    const navigate = useNavigate()
     const { user, logout } = useUser()
     const { data: organisation } = useQuery(organisationGetOne(user?.organisationManaged?.UUID as string), queryClient)
     if (user === undefined) return <></>
-
-    const handleLogout = async () => {
-        const success = await logout()
-        if (success) {
-            await queryClient.invalidateQueries({ queryKey: ['user', 'self'] })
-            navigate('/login')
-        }
-    }
 
     const organisationTableColumns = getOrganisationTableColumns({ 
         disableColumnsById: ['select'],
@@ -60,14 +86,13 @@ export const Profile = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3">
-                <div className="col-span-1">
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-1">
                     <RefreshDataButton queries={[getOne(user.UUID as string), organisationGetOne(user.organisationManaged?.UUID as string)]} />
                 </div>
-                <div className="col-span-1"></div>
-                <form onSubmit={(e) => { e.preventDefault(); handleLogout() }} className="flex justify-end flex-1 place-items-end">
-                    <Button type="submit" variant={"destructive"}>Logout</Button>
-                </form>
+                <div className="flex flex-1">
+                    <LogoutButton logoutHandler={logout} queriesInvalidator={() => [queryClient,[getUserSelf]]}/>
+                </div>
             </div>
         </div>
     )
