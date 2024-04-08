@@ -217,11 +217,13 @@ export const update = async (req: Request, res: Response) => {
 
     try {
         if (typeof newUsageQuota !== "number") return res.sendStatus(400)
-        const { organisationId: originalOrganisationId, usageQuota: originalUsageQuota } = await prismaClient.invitation.findUniqueOrThrow({
+        const { organisationId: originalOrganisationId, usageQuota: originalUsageQuota, usageLeft: originalUsageLeft } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID },
-            select: { organisationId: true, usageQuota: true }
+            select: { organisationId: true, usageQuota: true, usageLeft: true }
         })
         if (organisationId !== originalOrganisationId && !isAdmin(req.user)) return res.sendStatus(403)
+        
+        if (originalUsageQuota-newUsageQuota > originalUsageLeft) return res.sendStatus(400)
 
         newDefaults.forEach(element => { // prevents nested create
             if (typeof element.quotaTypeId !== "string") return res.sendStatus(400)
