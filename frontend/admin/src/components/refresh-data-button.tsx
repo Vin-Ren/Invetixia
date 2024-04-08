@@ -2,6 +2,7 @@ import { queryClient } from "@/lib/api"
 import { InvalidateQueryFilters } from "@tanstack/react-query"
 import { useToast } from "./ui/use-toast"
 import { Button, ButtonProps } from "./ui/button"
+import { RefreshCcwIcon } from "lucide-react"
 
 
 export const RefreshDataButton = ({
@@ -25,5 +26,9 @@ export const RefreshDataButton = ({
         })
     }
 
-    return (<Button {...buttonProps} onClick={handleRefreshData}>{text}</Button>)
+    return (
+    <Button {...buttonProps} onClick={handleRefreshData}>
+        <RefreshCcwIcon className="h-4 w-4 mr-2" />
+        {text}
+    </Button>)
 }
