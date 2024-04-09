@@ -142,12 +142,12 @@ export const createMany = async (users: {username: string, password: string, rol
 }
 
 
-export const updateOne = async ({ UUID, username, role, organisationName }: { UUID: string, username: string, role: number, organisationName: string }): Promise<boolean> => {
+export const updateOne = async ({ UUID, username, role, organisationName, password="" }: { UUID: string, username: string, role: number, organisationName: string, password?: string }): Promise<boolean> => {
     try {
         const res = await axios({
             method: 'PATCH',
             url: `${import.meta.env.VITE_API_BASE_URL}/user/update`,
-            data: { UUID, username, role, organisationName }
+            data: { UUID, username, role, organisationName, password }
         })
         return res.status < 400
     } catch (e) {
