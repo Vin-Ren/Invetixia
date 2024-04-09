@@ -2,7 +2,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { Toast, useToast } from "./ui/use-toast";
 import useDS from "@/hooks/useDS";
 import { Dialog, DialogContent, DialogClose, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { InvalidateQueryFilters, QueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { isFunction } from "@tanstack/react-table";
@@ -63,6 +63,7 @@ export function DialogButton<TDialogData = object>({
     const ds = useDS<TDialogData[]>();
     const dataGetter = ds.createGetter('')
     const dataSetter = ds.createSetter('')
+    const [initialized, setInitialized] = useState(false)
 
     const handleAction = async () => {
         const success = await actionHandler({ navigate, getDialogData: dataGetter })
@@ -77,10 +78,14 @@ export function DialogButton<TDialogData = object>({
         } else if (toasts?.onFailure) {
             toast(toasts?.onFailure?.({ getDialogData: dataGetter }))
         }
+
+        // reset data
+        initializeDialogData?.({ setDialogData: dataSetter })
     }
 
     useEffect(() => {
         initializeDialogData?.({ setDialogData: dataSetter })
+        setInitialized(true);
     }, [])
 
     return (
@@ -88,7 +93,7 @@ export function DialogButton<TDialogData = object>({
             <DialogTrigger>
                 {triggerNode}
             </DialogTrigger>
-            {dialogContent({ internalActionHandler: handleAction, getDialogData: dataGetter, setDialogData: dataSetter as never })}
+            {initialized && dialogContent({ internalActionHandler: handleAction, getDialogData: dataGetter, setDialogData: dataSetter as never })}
         </Dialog>
     )
 }
