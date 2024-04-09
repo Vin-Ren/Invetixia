@@ -77,7 +77,7 @@ export const EventSocialsCard = () => {
                         <CustomizedFormField
                             control={form.control}
                             name="x_twitter"
-                            label="X (formerly Twitter)"
+                            label="X (Formerly Twitter)"
                             inputProps={{ placeholder: "https://x.com" }}
                         />
                         <CustomizedFormField

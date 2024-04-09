@@ -60,7 +60,7 @@ export default function Ticket() {
                 <div className="max-w-lg flex flex-col items-center bg-base-200 px-4 py-4 rounded-2xl bg-opacity-75 backdrop-blur-sm">
                     <div className="self-center justify-center">
                         <p className="text-3xl font-bold whitespace-break-spaces">Hello 👋 {ticket.ownerName[0].toUpperCase() + ticket.ownerName.slice(1)}!</p>
-                        <p className="text-2xl font-bold whitespace-break-spaces">This link and QR is your ticket 🎫</p>
+                        <p className="text-2xl font-bold whitespace-break-spaces">This link and QR is your ticket for {event.name} 🎫</p>
                         <p className="text-base whitespace-break-spaces text-neutral-content">The ticket will also be sent to you on <a href="#eventStartTime"><span className="font-bold text-accent">D-Day</span></a></p>
                     </div>
                     <div className="divider divider-primary"></div>

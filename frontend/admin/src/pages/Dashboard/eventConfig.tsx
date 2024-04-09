@@ -23,7 +23,7 @@ export const loader = (queryClient: QueryClient) => {
 }
 
 
-export const EventPage = () => {
+export const EventConfigPage = () => {
     return (
         <div className="container py-4 flex flex-col gap-4">
             <div className="grid grid-cols-1 w-full">
