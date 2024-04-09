@@ -52,13 +52,17 @@ export const UserDetails = () => {
                 </div>
             </div>
 
-            <div className="flex flex-row gap-4">
-                <RefreshDataButton query={getOne(UUID)} />
-                <GenericDetailsDeleteButton
-                    UUID={UUID}
-                    deleteHandler={async () => await deleteOne(UUID)}
-                    queriesInvalidator={() => [queryClient, [getAll, getOne(UUID)]]}
-                />
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-1">
+                    <RefreshDataButton query={getOne(UUID)} />
+                </div>
+                <div className="flex flex-1">
+                    <GenericDetailsDeleteButton
+                        UUID={UUID}
+                        deleteHandler={async () => await deleteOne(UUID)}
+                        queriesInvalidator={() => [queryClient, [getAll, getOne(UUID)]]}
+                    />
+                </div>
             </div>
         </div>
     )

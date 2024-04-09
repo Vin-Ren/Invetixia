@@ -11,6 +11,7 @@ import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHead
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 
 export const QuotaTypeViewDetailsAction = () => ViewDetailsAction((row: Row<QuotaType>) => `/dashboard/quotaType/details/${row.original.UUID}`);
@@ -31,7 +32,7 @@ export const QuotaTypeEditAction = (): CellDialogAction<QuotaType, { newName?: s
     queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
     dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
         return (
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[625px]">
                 <DialogHeader>
                     <DialogTitle>Edit Quota Type</DialogTitle>
                     <DialogDescription>
@@ -45,9 +46,9 @@ export const QuotaTypeEditAction = (): CellDialogAction<QuotaType, { newName?: s
                             value={getDialogData?.().newName || ""}
                             onChange={(e) => setDialogData((data) => ({ ...data, newName: e.target.value }))}></Input>
                         <Label>Description</Label>
-                        <Input className="col-span-3"
+                        <Textarea className="col-span-3"
                             value={getDialogData?.().newDescription || ""}
-                            onChange={(e) => setDialogData((data) => ({ ...data, newDescription: e.target.value }))}></Input>
+                            onChange={(e) => setDialogData((data) => ({ ...data, newDescription: e.target.value }))}></Textarea>
                     </div>
                 </div>
                 <DialogFooter>
