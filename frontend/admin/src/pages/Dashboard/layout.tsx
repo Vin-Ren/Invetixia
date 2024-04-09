@@ -4,34 +4,24 @@ import { Outlet } from "react-router-dom"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import NavItem from "@/components/nav-item"
 import { CircleUserRound } from "lucide-react"
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
+import useUser from "@/hooks/useUser"
 
 
 export const Dashboard = () => {
+    const { user } = useUser()
     return (
         <ProtectedRoute>
             <div className="flex-1 flex">
                 <div className="flex flex-row w-fit">
                     <div className="flex flex-col">
-                        <div className="p-4 pr-0 pb-0 flex justify-center">
-                            <TooltipProvider delayDuration={250}>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <NavItem to={'/dashboard/profile'}><CircleUserRound /></NavItem>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>User Details</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
                         <ScrollArea>
                             <div className="p-4 pr-0 flex flex-col gap-4">
+                                <NavItem to={'/dashboard/profile'}><CircleUserRound /></NavItem>
                                 <NavItem to={'/dashboard/overview'}>Overview</NavItem>
-                                <NavItem to={'/dashboard/event'}>Event Config</NavItem>
-                                <NavItem to={'/dashboard/organisation'}>Organisation</NavItem>
-                                <NavItem to={'/dashboard/user'}>User</NavItem>
-                                <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>
+                                {(user.role||0) < 4 || <NavItem to={'/dashboard/eventConfig'}>Event Config</NavItem>}
+                                {(user.role||0) < 4 || <NavItem to={'/dashboard/organisation'}>Organisation</NavItem>}
+                                {(user.role||0) < 4 || <NavItem to={'/dashboard/user'}>User</NavItem>}
+                                {(user.role||0) < 4 || <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>}
                             </div>
                         </ScrollArea>
                     </div>
