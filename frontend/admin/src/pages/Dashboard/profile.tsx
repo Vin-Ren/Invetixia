@@ -11,22 +11,18 @@ import { Button } from "@/components/ui/button"
 import useUser from "@/hooks/useUser"
 import { getOrganisationTableColumns } from "./organisation/columns"
 import { DialogButton, GenericDialogConfirmButton, QueriesInvalidatorType } from "@/components/custom-buttons"
-import { LogOutIcon, PencilIcon } from "lucide-react"
+import { KeyRoundIcon, LogOutIcon } from "lucide-react"
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { changePassword } from "@/lib/api/user"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 
-export function ChangePasswordDialogButton({
-    queriesInvalidator = () => { },
-}: {
-    queriesInvalidator: QueriesInvalidatorType
-}) {
+export function ChangePasswordDialogButton() {
     return DialogButton<{password?: string, newPassword?: string, newPassword2?: string}>({
         triggerNode: (
             <Button variant={'secondary'}>
-                <PencilIcon className="mr-2 h-4 w-4" />
+                <KeyRoundIcon className="mr-2 h-4 w-4" />
                 Change Password
             </Button>
         ),
@@ -35,7 +31,7 @@ export function ChangePasswordDialogButton({
             if (getDialogData().newPassword2 != getDialogData().newPassword) return false;
             return await changePassword({password: "", newPassword: "", ...(getDialogData() || {})})
         },
-        queriesInvalidator,
+        queriesInvalidator: () => [queryClient, [getUserSelf]],
         dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
@@ -163,10 +159,10 @@ export const Profile = () => {
                     <RefreshDataButton queries={[getOne(user.UUID as string), organisationGetOne(user.organisationManaged?.UUID as string)]} />
                 </div>
                 <div className="flex flex-1">
-                    <ChangePasswordDialogButton queriesInvalidator={() => [queryClient, [getUserSelf]]}/>
+                    <ChangePasswordDialogButton />
                 </div>
                 <div className="flex flex-1">
-                    <LogoutButton logoutHandler={logout} queriesInvalidator={() => [queryClient, [getUserSelf]]}/>
+                    <LogoutButton logoutHandler={logout} queriesInvalidator={() => [queryClient, [getUserSelf]]} />
                 </div>
             </div>
         </div>
