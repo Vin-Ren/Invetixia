@@ -156,6 +156,20 @@ export const updateOne = async ({ UUID, username, role, organisationName }: { UU
 }
 
 
+export const changePassword = async ({ password, newPassword }: { password: string, newPassword: string }): Promise<boolean> => {
+    try {
+        const res = await axios({
+            method: 'PATCH',
+            url: `${import.meta.env.VITE_API_BASE_URL}/user/changePassword`,
+            data: { password, newPassword }
+        })
+        return res.status < 400
+    } catch (e) {
+        return false
+    }
+}
+
+
 export const deleteOne = async (UUID: string): Promise<boolean> => {
     try {
         const res = await axios({
