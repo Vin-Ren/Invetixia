@@ -29,10 +29,10 @@ export const refreshToken = async (req: Request, res: Response) => {
 
                 res.json({ accessToken });
             } catch (error) {
+                console.log(error)
                 if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
                     return res.sendStatus(500)
                 }
-                throw error
             }
         });
     } catch (error) {

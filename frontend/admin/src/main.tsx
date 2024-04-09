@@ -20,6 +20,7 @@ import { Profile } from './pages/Dashboard/profile.tsx'
 import { OrganisationCreatePage } from './pages/Dashboard/organisation/create.tsx'
 import { UserCreatePage } from './pages/Dashboard/user/create.tsx'
 import { QuotaTypeCreatePage } from './pages/Dashboard/quotaType/create.tsx'
+import { EventPage, loader as EventConfigLoader } from './pages/Dashboard/event.tsx'
 
 configureAxios()
 
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       {
         path: '/dashboard',
         element: <Dashboard />,
+        errorElement: <Error />,
         children: [
           {
             index: true,
@@ -54,6 +56,11 @@ export const router = createBrowserRouter([
           {
             path: 'overview',
             element: <OverviewDashboard />
+          },
+          {
+            path: 'eventConfig',
+            element: <EventPage />,
+            loader: EventConfigLoader(queryClient)
           },
 
           {

@@ -82,3 +82,22 @@ export enum userRole {
     ORGANISATION_MANAGER = 0b0010,
     OBSERVER = 0b0001
 }
+
+
+export interface EventInfo {
+    name: string,
+    description: string
+}
+
+export interface EventDetails {
+    locationName: string,
+    startTime: string
+}
+
+export interface EventSocials {
+    mainWebsite: string,
+    instagram: string,
+    youtube: string,
+    x_twitter: string,
+    email: string
+}

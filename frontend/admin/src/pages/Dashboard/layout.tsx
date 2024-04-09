@@ -28,6 +28,7 @@ export const Dashboard = () => {
                         <ScrollArea>
                             <div className="p-4 pr-0 flex flex-col gap-4">
                                 <NavItem to={'/dashboard/overview'}>Overview</NavItem>
+                                <NavItem to={'/dashboard/event'}>Event Config</NavItem>
                                 <NavItem to={'/dashboard/organisation'}>Organisation</NavItem>
                                 <NavItem to={'/dashboard/user'}>User</NavItem>
                                 <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>
