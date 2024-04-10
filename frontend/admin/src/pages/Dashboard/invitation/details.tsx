@@ -37,6 +37,8 @@ export const InvitationDetails = () => {
                         </CardHeader>
                         <CardContent>
                             <CardDescription>{`Object Signature - Invitation{${invitation.UUID}}`}</CardDescription>
+                            <CardDescription>{`Usage Quota - ${invitation.usageQuota}`}</CardDescription>
+                            <CardDescription>{`Usage Left - ${invitation.usageLeft}`}</CardDescription>
                             <CardDescription>{`Created Tickets Count - ${invitation.createdTicketCount}`}</CardDescription>
                         </CardContent>
                     </Card>
