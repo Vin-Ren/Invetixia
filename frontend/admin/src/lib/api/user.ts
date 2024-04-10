@@ -132,14 +132,7 @@ export const createOne = async ({ username, password, role, organisationName }: 
 }
 
 
-export const createMany = async (users: {username: string, password: string, role: number, organisationName: string}[] ): Promise<UserSanitized[]> => {
-    const resList = await Promise.all(users.map(({username, password, role, organisationName}) => axios({
-        method: 'POST',
-        url: `${import.meta.env.VITE_API_BASE_URL}/user/create`,
-        data: { username, password, role, organisationName }
-    })))
-    return sanitizeUsers(resList.map((e) => e.data.user))
-}
+export const createMany = async (users: {username: string, password: string, role: number, organisationName: string}[] ) => await Promise.all(users.map((user) => createOne(user)))
 
 
 export const updateOne = async ({ UUID, username, role, organisationName, password="" }: { UUID: string, username: string, role: number, organisationName: string, password?: string }): Promise<boolean> => {
