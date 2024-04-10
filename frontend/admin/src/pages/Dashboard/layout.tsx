@@ -22,6 +22,7 @@ export const Dashboard = () => {
                                 {(user.role||0) < 4 || <NavItem to={'/dashboard/organisation'}>Organisation</NavItem>}
                                 {(user.role||0) < 4 || <NavItem to={'/dashboard/user'}>User</NavItem>}
                                 {(user.role||0) < 4 || <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>}
+                                {(user.role||0) < 4 || <NavItem to={'/dashboard/invitation'}>Invitation</NavItem>}
                             </div>
                         </ScrollArea>
                     </div>

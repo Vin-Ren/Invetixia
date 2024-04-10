@@ -21,6 +21,8 @@ import { OrganisationCreatePage } from './pages/Dashboard/organisation/create.ts
 import { UserCreatePage } from './pages/Dashboard/user/create.tsx'
 import { QuotaTypeCreatePage } from './pages/Dashboard/quotaType/create.tsx'
 import { EventConfigPage, loader as EventConfigLoader } from './pages/Dashboard/eventConfig.tsx'
+import { InvitationDashboard } from './pages/Dashboard/invitation/index.tsx'
+import { InvitationDetails } from './pages/Dashboard/invitation/details.tsx'
 
 configureAxios()
 
@@ -99,7 +101,6 @@ export const router = createBrowserRouter([
             ]
           },
 
-
           {
             path: 'quotaType',
             children: [
@@ -114,6 +115,20 @@ export const router = createBrowserRouter([
               {
                 path: 'create',
                 element: <QuotaTypeCreatePage />
+              }
+            ]
+          },
+
+          {
+            path: 'invitation',
+            children: [
+              {
+                index: true,
+                element: <InvitationDashboard />
+              },
+              {
+                path: 'details/:UUID',
+                element: <InvitationDetails />
               }
             ]
           }

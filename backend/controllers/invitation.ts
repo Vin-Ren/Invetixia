@@ -208,22 +208,22 @@ export const create = async (req: Request, res: Response) => {
 // Patch
 export const update = async (req: Request, res: Response) => {
     const {
-        UUID, name, organisationId, newUsageQuota, newDefaults = []
+        UUID, name, organisationId, usageQuota, newDefaults = []
     }: {
-        UUID: string, name: string, organisationId: string, newUsageQuota: number, newDefaults: DefaultQuotaInput[]
+        UUID: string, name: string, organisationId: string, usageQuota: number, newDefaults: DefaultQuotaInput[]
     } = req.body
     if (!isOrganisationManager(req.user, organisationId)) return res.sendStatus(403)
-    if ((typeof UUID !== "string") || !name || !organisationId || !newUsageQuota) return res.sendStatus(400)
+    if ((typeof UUID !== "string") || !name || !organisationId || !usageQuota) return res.sendStatus(400)
 
     try {
-        if (typeof newUsageQuota !== "number") return res.sendStatus(400)
+        if (typeof usageQuota !== "number") return res.sendStatus(400)
         const { organisationId: originalOrganisationId, usageQuota: originalUsageQuota, usageLeft: originalUsageLeft } = await prismaClient.invitation.findUniqueOrThrow({
             where: { UUID: UUID },
             select: { organisationId: true, usageQuota: true, usageLeft: true }
         })
         if (organisationId !== originalOrganisationId && !isAdmin(req.user)) return res.sendStatus(403)
         
-        if (originalUsageQuota-newUsageQuota > originalUsageLeft) return res.sendStatus(400)
+        if (originalUsageQuota-usageQuota > originalUsageLeft) return res.sendStatus(400)
 
         newDefaults.forEach(element => { // prevents nested create
             if (typeof element.quotaTypeId !== "string") return res.sendStatus(400)
@@ -237,8 +237,8 @@ export const update = async (req: Request, res: Response) => {
             data: {
                 name: name,
                 organisationId: organisationId,
-                usageQuota: { increment: newUsageQuota - originalUsageQuota },
-                usageLeft: { increment: newUsageQuota - originalUsageQuota }
+                usageQuota: { increment: usageQuota - originalUsageQuota },
+                usageLeft: { increment: usageQuota - originalUsageQuota }
             },
             include: {
                 defaultQuotas: {

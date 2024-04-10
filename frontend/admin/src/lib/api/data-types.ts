@@ -38,6 +38,7 @@ export interface Invitation {
     organisationId: string,
     usageQuota: number,
     usageLeft: number,
+    createdTicketCount?: number,
     createdTickets?: Ticket[],
     defaultQuotas?: DefaultQuota[]
 }
