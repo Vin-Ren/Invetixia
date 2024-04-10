@@ -201,6 +201,7 @@ export const create = async (req: Request, res: Response) => {
             return res.sendStatus(500)
         }
         console.log(e)
+        res.sendStatus(500)
     }
 }
 

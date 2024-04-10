@@ -23,6 +23,7 @@ import { QuotaTypeCreatePage } from './pages/Dashboard/quotaType/create.tsx'
 import { EventConfigPage, loader as EventConfigLoader } from './pages/Dashboard/eventConfig.tsx'
 import { InvitationDashboard } from './pages/Dashboard/invitation/index.tsx'
 import { InvitationDetails } from './pages/Dashboard/invitation/details.tsx'
+import { InvitationCreatePage } from './pages/Dashboard/invitation/create.tsx'
 
 configureAxios()
 
@@ -129,6 +130,10 @@ export const router = createBrowserRouter([
               {
                 path: 'details/:UUID',
                 element: <InvitationDetails />
+              },
+              {
+                path: 'create',
+                element: <InvitationCreatePage />
               }
             ]
           }
