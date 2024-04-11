@@ -24,6 +24,9 @@ import { EventConfigPage, loader as EventConfigLoader } from './pages/Dashboard/
 import { InvitationDashboard } from './pages/Dashboard/invitation/index.tsx'
 import { InvitationDetails } from './pages/Dashboard/invitation/details.tsx'
 import { InvitationCreatePage } from './pages/Dashboard/invitation/create.tsx'
+import { QuotaDashboard } from './pages/Dashboard/quota/index.tsx'
+import { QuotaDetails } from './pages/Dashboard/quota/details.tsx'
+import { QuotaCreatePage } from './pages/Dashboard/quota/create.tsx'
 
 configureAxios()
 
@@ -134,6 +137,24 @@ export const router = createBrowserRouter([
               {
                 path: 'create',
                 element: <InvitationCreatePage />
+              }
+            ]
+          },
+
+          {
+            path: 'quota',
+            children: [
+              {
+                index: true,
+                element: <QuotaDashboard />
+              },
+              {
+                path: 'details/:UUID',
+                element: <QuotaDetails />
+              },
+              {
+                path: 'create',
+                element: <QuotaCreatePage />
               }
             ]
           }

@@ -3,7 +3,7 @@ import ProtectedRoute from "@/components/protected-route"
 import { Outlet } from "react-router-dom"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import NavItem from "@/components/nav-item"
-import { AreaChart, ArrowDownToLineIcon, ArrowLeftFromLineIcon, ArrowRightFromLineIcon, ArrowUpFromLine, Building, CircleUserRound, Settings, Tags, TicketSlash, User } from "lucide-react"
+import { AreaChart, ArrowDownToLineIcon, ArrowLeftFromLineIcon, ArrowRightFromLineIcon, ArrowUpFromLine, Building, CircleUserRound, Settings, Tags, TicketPercent, TicketSlash, User } from "lucide-react"
 import useUser from "@/hooks/useUser"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,7 @@ export const Dashboard = () => {
                                         {(user.role||0) < 4 || <NavItem to={'/dashboard/organisation'}>Organisation</NavItem>}
                                         {(user.role||0) < 4 || <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>}
                                         {(user.role||0) < 4 || <NavItem to={'/dashboard/invitation'}>Invitation</NavItem>}
+                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/quota'}>Quota</NavItem>}
                                     </>
                                     )
                                     : (
@@ -51,6 +52,7 @@ export const Dashboard = () => {
                                             {(user.role||0) < 4 || <NavItem to={'/dashboard/organisation'}> <Building /> </NavItem>}
                                             {(user.role||0) < 4 || <NavItem to={'/dashboard/quotaType'}> <Tags /> </NavItem>}
                                             {(user.role||0) < 4 || <NavItem to={'/dashboard/invitation'}> <TicketSlash /> </NavItem>}
+                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/quota'}> <TicketPercent /> </NavItem>}
                                         </div>
                                     </>
                                     )
