@@ -30,7 +30,7 @@ export const EventDetailsCard = () => {
         if (res) {
             toast({
                 title: "Successfully updated event!",
-                description: "Updated general event information."
+                description: "Updated detailed event information."
             })
             queryClient.invalidateQueries(getEventDetails)
         } else {
