@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { z } from "zod"
 import { Form } from "@/components/ui/form"
-import { CustomizedFormField, CustomizedFormTextAreaField } from "@/components/customized-form"
+import { CustomizedFormField } from "@/components/customized-form"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "@/components/ui/use-toast"
@@ -26,7 +26,10 @@ export const EventDetailsCard = () => {
     })
 
     const onSubmit = async (values: z.infer<typeof EventDetailsSchema>) => {
-        const res = await updateEventDetails(values)
+        let res = false
+        if (!isNaN((new Date(values.startTime)).getDate())) {
+            res = await updateEventDetails(values)
+        }
         if (res) {
             toast({
                 title: "Successfully updated event!",
