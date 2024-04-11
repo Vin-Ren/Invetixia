@@ -23,7 +23,7 @@ export const InvitationDetails = () => {
             `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`, 
             { errorCorrectionLevel: 'Q', scale:8, margin:2 }
         ).then((res: string) => setQr(res))
-    }, [])
+    }, [UUID])
     if (invitation === undefined) return <></>
 
     return (
