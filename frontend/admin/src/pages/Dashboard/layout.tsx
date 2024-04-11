@@ -50,12 +50,18 @@ export const Dashboard = () => {
                     <Separator orientation="vertical" className="ml-4 my-4 place-self-end self-center max-md:hidden" />
                     <Separator orientation="horizontal" className="mx-4 my-2 place-self-end self-center md:hidden" />
                 </div>
-
-                <ScrollArea className="flex-1 max-h-[90vh] max-w-full">
-                    <Outlet />
-                    <ScrollBar orientation="vertical" />
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                
+                {
+                    window.innerWidth < 768 
+                    ? <Outlet />
+                    : (
+                        <ScrollArea className="flex-1 max-h-[90vh] max-w-full">
+                            <Outlet />
+                            <ScrollBar orientation="vertical" />
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                    )
+                }
             </div>
         </ProtectedRoute>
     )
