@@ -63,7 +63,7 @@ export interface CustomizedFormFieldProps<
     control: Control<TFieldValues>,
     name: TName,
     label: string,
-    inputProps: InputProps & React.RefAttributes<HTMLInputElement>,
+    inputProps?: InputProps & React.RefAttributes<HTMLInputElement>,
     description?: string | ReactNode,
 }
 
@@ -75,7 +75,7 @@ export const CustomizedFormField = <
     control,
     name,
     label,
-    inputProps,
+    inputProps = {},
     description = ""
 }: CustomizedFormFieldProps<TFieldValues, TName>) => {
     return (
