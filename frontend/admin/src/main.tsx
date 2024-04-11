@@ -27,6 +27,9 @@ import { InvitationCreatePage } from './pages/Dashboard/invitation/create.tsx'
 import { QuotaDashboard } from './pages/Dashboard/quota/index.tsx'
 import { QuotaDetails } from './pages/Dashboard/quota/details.tsx'
 import { QuotaCreatePage } from './pages/Dashboard/quota/create.tsx'
+import { TicketDashboard } from './pages/Dashboard/ticket/index.tsx'
+import { TicketDetails } from './pages/Dashboard/ticket/details.tsx'
+import { TicketCreatePage } from './pages/Dashboard/ticket/create.tsx'
 
 configureAxios()
 
@@ -155,6 +158,24 @@ export const router = createBrowserRouter([
               {
                 path: 'create',
                 element: <QuotaCreatePage />
+              }
+            ]
+          },
+
+          {
+            path: 'ticket',
+            children: [
+              {
+                index: true,
+                element: <TicketDashboard />
+              },
+              {
+                path: 'details/:UUID',
+                element: <TicketDetails />
+              },
+              {
+                path: 'create',
+                element: <TicketCreatePage />
               }
             ]
           }
