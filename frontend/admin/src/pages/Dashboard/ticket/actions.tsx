@@ -3,18 +3,40 @@ import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/ticket";
 import { queryClient } from "@/lib/api";
 import { deleteOne, deleteMany, updateOne } from "@/lib/api/ticket";
-import { DeleteDialogAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
+import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { PencilIcon } from "lucide-react";
+import { Building2, PencilIcon, TicketSlash } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FormDescription } from "@/components/ui/form";
 
 
 export const TicketViewDetailsAction = () => ViewDetailsAction((row: Row<Ticket>) => `/dashboard/ticket/details/${row.original.UUID}`);
+
+export const TicketViewOrganisationAction = () => GenericNavigatorButtonAction({
+    actionId: "view_ticket_organisation",
+    getTo: (row: Row<Ticket>) => `/dashboard/organisation/details/${row.original.ownerAffiliationId}`,
+    triggerNode: (
+        <>
+            <Building2 className="mr-2 w-4 h-4" />
+            View ticket's organisation details
+        </>
+    )
+});
+
+export const TicketViewInvitationAction = () => GenericNavigatorButtonAction({
+    actionId: "view_ticket_invitation",
+    getTo: (row: Row<Ticket>) => `/dashboard/invitation/details/${row.original.invitationId}`,
+    triggerNode: (
+        <>
+            <TicketSlash className="mr-2 w-4 h-4" />
+            View ticket's invitation details
+        </>
+    )
+});
+
 
 export const TicketEditAction = (): CellDialogAction<Ticket, {ownerName?:string, ownerContacts?: {email:string, phone_number:string}}> => ({
     actionType: "dialog",

@@ -3,10 +3,10 @@ import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/quota";
 import { queryClient } from "@/lib/api";
 import { deleteOne, deleteMany, updateOne } from "@/lib/api/quota";
-import { DeleteDialogAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
+import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, Tags, Ticket } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,29 @@ import { Button } from "@/components/ui/button";
 
 
 export const QuotaViewDetailsAction = () => ViewDetailsAction((row: Row<Quota>) => `/dashboard/quota/details/${row.original.UUID}`);
+
+export const QuotaViewQuotaTypeAction = () => GenericNavigatorButtonAction({
+    actionId: "view_quota_quotaType",
+    getTo: (row: Row<Quota>) => `/dashboard/quotaType/details/${row.original.quotaTypeId}`,
+    triggerNode: (
+        <>
+            <Tags className="mr-2 w-4 h-4" />
+            View quota's type details
+        </>
+    )
+});
+
+export const QuotaViewTicketAction = () => GenericNavigatorButtonAction({
+    actionId: "view_quota_ticket",
+    getTo: (row: Row<Quota>) => `/dashboard/ticket/details/${row.original.ticketId}`,
+    triggerNode: (
+        <>
+            <Ticket className="mr-2 w-4 h-4" />
+            View quota's ticket details
+        </>
+    )
+});
+
 
 export const QuotaEditAction = (): CellDialogAction<Quota, { quotaTypeId?: string, usageLeft?: number }> => ({
     actionType: "dialog",

@@ -3,10 +3,10 @@ import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/invitation";
 import { queryClient } from "@/lib/api";
 import { deleteOne, deleteMany, updateOne } from "@/lib/api/invitation";
-import { DeleteDialogAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
+import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { PencilIcon } from "lucide-react";
+import { Building2, PencilIcon } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,18 @@ import { Button } from "@/components/ui/button";
 
 
 export const InvitationViewDetailsAction = () => ViewDetailsAction((row: Row<Invitation>) => `/dashboard/invitation/details/${row.original.UUID}`);
+
+export const InvitationViewOrganisationAction = () => GenericNavigatorButtonAction({
+    actionId: "view_invitation_organisation",
+    getTo: (row: Row<Invitation>) => `/dashboard/organisation/details/${row.original.organisationId}`,
+    triggerNode: (
+        <>
+            <Building2 className="mr-2 w-4 h-4" />
+            View ticket's invitation details
+        </>
+    )
+});
+
 
 export const InvitationEditAction = (): CellDialogAction<Invitation, { name?: string, organisationId?: string, usageQuota?: number }> => ({
     actionType: "dialog",

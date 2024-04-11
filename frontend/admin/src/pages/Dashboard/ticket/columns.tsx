@@ -4,7 +4,7 @@ import { getGenericTableColumns } from "@/components/data-table-custom-columns";
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
-import { TicketViewDetailsAction, TicketDeleteAction, TicketHeaderDeleteAction, TicketEditAction } from "./actions";
+import { TicketViewDetailsAction, TicketDeleteAction, TicketHeaderDeleteAction, TicketEditAction, TicketViewOrganisationAction, TicketViewInvitationAction } from "./actions";
 
 
 export const getTicketTableColumns = getGenericTableColumns<Ticket>(
@@ -49,6 +49,8 @@ export const getTicketTableColumns = getGenericTableColumns<Ticket>(
                         row={row}
                         actions={[
                             TicketViewDetailsAction(),
+                            TicketViewOrganisationAction(),
+                            TicketViewInvitationAction(),
                             TicketEditAction(),
                             TicketDeleteAction()
                         ]}
