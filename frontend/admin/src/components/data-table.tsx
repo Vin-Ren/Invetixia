@@ -186,7 +186,7 @@ export function DataTableFilter<TData>({
             </Select>
             <Input
                 placeholder={`Filter ${filteredColumn}...`}
-                value={(table.getColumn(filteredColumn)?.getFilterValue() as string)}
+                value={(filteredColumn ? table.getColumn(filteredColumn)?.getFilterValue() as string: '')}
                 onChange={(event) => table.getColumn(filteredColumn)?.setFilterValue(event.target.value)}
                 disabled={!(filteredColumn.length > 0)}
                 className="max-w-sm"
