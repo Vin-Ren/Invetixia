@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/api"
 import { RefreshDataButton } from "@/components/refresh-data-button"
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { GenericDetailsDeleteButton } from "@/components/custom-buttons"
 import { deleteOne } from "@/lib/api/invitation"
@@ -21,7 +21,7 @@ export const InvitationDetails = () => {
     useEffect(() => {
         QRCode.toDataURL(
             `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`, 
-            { errorCorrectionLevel: 'Q', scale:10, margin:4 }
+            { errorCorrectionLevel: 'Q', scale:8, margin:2 }
         ).then((res: string) => setQr(res))
     }, [])
     if (invitation === undefined) return <></>
@@ -47,11 +47,11 @@ export const InvitationDetails = () => {
                             <CardTitle>{`Invitation QR Code`}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <img src={qr}></img>
+                            <img src={qr} className="rounded-lg mb-2"></img>
                             <Button asChild variant={'link'}>
-                                <Link to={{ pathname: `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`}} target="_blank" className="text-wrap">
+                                <a href={`${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`} target="_blank" className="text-wrap">
                                     {`${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`}
-                                </Link>
+                                </a>
                             </Button>
                         </CardContent>
                     </Card>
