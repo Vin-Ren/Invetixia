@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button"
 export const Dashboard = () => {
     const { user } = useUser()
     const [sidebarOpen, setSidebarOpen] = useState(true)
-    
+
     return (
         <ProtectedRoute>
             <div className="flex-1 flex md:flex-row max-md:flex-col">
@@ -20,43 +20,29 @@ export const Dashboard = () => {
                     <div className="flex flex-col">
                         <ScrollArea>
                             <div className="p-4 lg:pr-0 flex flex-col gap-4">
-                                {
-                                    sidebarOpen 
-                                    ? ( 
-                                    <>
-                                        <Button onClick={() => setSidebarOpen((prv) => !prv)} variant={'ghost'} className="md:place-self-end">
-                                            <ArrowLeftFromLineIcon className="max-md:hidden"/>
-                                            <ArrowUpFromLine className="md:hidden"/>
-                                        </Button>
-                                        <NavItem to={'/dashboard/profile'}>Profile</NavItem>
-                                        <NavItem to={'/dashboard/overview'}>Overview</NavItem>
-                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/eventConfig'}>Event Config</NavItem>}
-                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/user'}>User</NavItem>}
-                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/organisation'}>Organisation</NavItem>}
-                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/quotaType'}>Quota Type</NavItem>}
-                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/invitation'}>Invitation</NavItem>}
-                                        {(user.role||0) < 4 || <NavItem to={'/dashboard/quota'}>Quota</NavItem>}
-                                    </>
-                                    )
-                                    : (
-                                    <>
-                                        <Button onClick={() => setSidebarOpen((prv) => !prv)} variant={'ghost'}>
-                                            <ArrowRightFromLineIcon className="max-md:hidden"/>
-                                            <ArrowDownToLineIcon className="md:hidden"/>
-                                        </Button>
-                                        <div className="max-md:hidden w-min flex flex-col gap-4">
-                                            <NavItem to={'/dashboard/profile'}> <CircleUserRound /> </NavItem>
-                                            <NavItem to={'/dashboard/overview'}> <AreaChart /> </NavItem>
-                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/eventConfig'}> <Settings /> </NavItem>}
-                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/user'}> <User /> </NavItem>}
-                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/organisation'}> <Building /> </NavItem>}
-                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/quotaType'}> <Tags /> </NavItem>}
-                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/invitation'}> <TicketSlash /> </NavItem>}
-                                            {(user.role||0) < 4 || <NavItem to={'/dashboard/quota'}> <TicketPercent /> </NavItem>}
-                                        </div>
-                                    </>
-                                    )
-                                }
+                                <Button onClick={() => setSidebarOpen((prv) => !prv)} variant={'ghost'} className={sidebarOpen ? `md:place-self-end` : ``}>
+                                    {
+                                        sidebarOpen
+                                            ? <>
+                                                <ArrowLeftFromLineIcon className="max-md:hidden" />
+                                                <ArrowUpFromLine className="md:hidden" />
+                                            </>
+                                            : <>
+                                                <ArrowRightFromLineIcon className="max-md:hidden" />
+                                                <ArrowDownToLineIcon className="md:hidden" />
+                                            </>
+                                    }
+                                </Button>
+                                <div className={`w-full flex flex-col gap-4 ${sidebarOpen ? ' ' : 'max-md:hidden'}`}>
+                                    <NavItem to={'/dashboard/profile'}> {sidebarOpen ? 'Profile' : <CircleUserRound />} </NavItem>
+                                    <NavItem to={'/dashboard/overview'}> {sidebarOpen ? 'Overview' : <AreaChart />} </NavItem>
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/eventConfig'}> {sidebarOpen ? 'Event Config' : <Settings />} </NavItem>}
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/user'}> {sidebarOpen ? 'User' : <User />} </NavItem>}
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/organisation'}> {sidebarOpen ? 'Organisation' : <Building />} </NavItem>}
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/quotaType'}> {sidebarOpen ? 'Quota Type' : <Tags />} </NavItem>}
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/invitation'}> {sidebarOpen ? 'Invitation' : <TicketSlash />} </NavItem>}
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/quota'}> {sidebarOpen ? 'Quota' : <TicketPercent />} </NavItem>}
+                                </div>
                             </div>
                         </ScrollArea>
                     </div>
