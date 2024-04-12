@@ -19,19 +19,13 @@ export const OrganisationViewDetailsAction = () => ViewDetailsAction((row: Row<O
 
 export const OrganisationDeleteAction = () => DeleteDialogAction<Organisation>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
-    queriesInvalidator: (row) => {
-        queryClient.invalidateQueries(getAll)
-        queryClient.invalidateQueries(getOne(row.original.UUID))
-    }
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]])
 });
 
 
 export const OrganisationHeaderDeleteAction = () => HeaderDeleteDialogAction<Organisation>({
     deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
-    queriesInvalidator: (rows) => {
-        queryClient.invalidateQueries(getAll)
-        rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-    }
+    queriesInvalidator: (rows) => ([queryClient,[getAll, ...rows.map((row) => getOne(row.original.UUID))]])
 })
 
 

@@ -6,6 +6,7 @@ import { DataTableActionsHeader } from "@/components/data-table-custom-columns/a
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { Row, Table } from "@tanstack/react-table";
 import { UserViewDetailsAction, UserViewOrganisationAction, UserDeleteAction, UserHeaderDeleteAction, UserEditAction } from "./actions";
+import { Link } from "react-router-dom";
 
 
 export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
@@ -14,7 +15,8 @@ export const getUserTableColumns = getGenericTableColumns<UserSanitized>(
         {
             id: "UUID",
             accessorKey: "UUID",
-            header: DataTableColumnHeader
+            header: DataTableColumnHeader,
+            cell: ({row}) => (<Link to={`/dashboard/user/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Username",

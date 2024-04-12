@@ -5,7 +5,7 @@ import { DataTableActionsCell } from "@/components/data-table-custom-columns/act
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { Row, Table } from "@tanstack/react-table";
-import { DefaultQuotaDeleteAction, DefaultQuotaEditAction, DefaultQuotaViewInvitationAction, DefaultQuotaViewQuotaTypeAction } from "./actions";
+import { DefaultQuotaDeleteAction, DefaultQuotaEditAction, DefaultQuotaHeaderDeleteAction, DefaultQuotaViewInvitationAction, DefaultQuotaViewQuotaTypeAction } from "./actions";
 // import { UserViewDetailsAction, UserViewOrganisationAction, UserDeleteAction, UserHeaderDeleteAction, UserEditAction } from "./actions";
 
 
@@ -39,7 +39,7 @@ export const getDefaultQuotaTable = getGenericTableColumns<DefaultQuota>(
                     <DataTableActionsHeader
                         table={table}
                         actions={[
-                            // UserHeaderDeleteAction()
+                            DefaultQuotaHeaderDeleteAction()
                         ]}
                         {...actionsHeaderProps}
                     />

@@ -1,6 +1,7 @@
 import { UserSanitized } from "@/lib/api/data-types";
 import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/user";
+import { getOne as organisationGetOne } from "@/lib/queries/organisation";
 import { queryClient } from "@/lib/api";
 import { deleteMany, deleteOne, updateOne } from "@/lib/api/user";
 import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
@@ -94,16 +95,13 @@ export const UserEditAction = (): CellDialogAction<UserSanitized, { UUID?: strin
 
 export const UserDeleteAction = () => DeleteDialogAction<UserSanitized>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
-    queriesInvalidator: (row) => {
-        queryClient.invalidateQueries(getAll);
-        queryClient.invalidateQueries(getOne(row.original.UUID));
-    }
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID), organisationGetOne(row.original.organisationId)]])
 });
 
 export const UserHeaderDeleteAction = () => HeaderDeleteDialogAction<UserSanitized>({
     deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
-    queriesInvalidator: (rows) => {
-        queryClient.invalidateQueries(getAll)
-        rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-    }
+    queriesInvalidator: (rows) => ([queryClient, [getAll, ...(rows.map((row) => [
+        getOne(row.original.UUID), organisationGetOne(row.original.organisationId)
+        ]).flatMap((e)=>e))
+    ]])
 })

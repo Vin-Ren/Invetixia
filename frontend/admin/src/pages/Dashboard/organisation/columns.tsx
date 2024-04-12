@@ -8,6 +8,7 @@ import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-col
 import { OrganisationHeaderDeleteAction, OrganisationViewDetailsAction } from "./actions"
 import { OrganisationDeleteAction } from "./actions"
 import { OrganisationEditNameAction } from "./actions"
+import { Link } from "react-router-dom"
 
 
 export const getOrganisationTableColumns = getGenericTableColumns<Organisation>(
@@ -16,7 +17,8 @@ export const getOrganisationTableColumns = getGenericTableColumns<Organisation>(
         {
             id: "UUID",
             accessorKey: "UUID",
-            header: DataTableColumnHeader
+            header: DataTableColumnHeader,
+            cell: ({row}) => (<Link to={`/dashboard/organisation/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Name",

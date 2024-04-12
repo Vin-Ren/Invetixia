@@ -72,16 +72,10 @@ export const QuotaTypeEditAction = (): CellDialogAction<QuotaType, { newName?: s
 
 export const QuotaTypeDeleteAction = () => DeleteDialogAction<QuotaType>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
-    queriesInvalidator: (row) => {
-        queryClient.invalidateQueries(getAll);
-        queryClient.invalidateQueries(getOne(row.original.UUID));
-    }
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]])
 });
 
 export const QuotaTypeHeaderDeleteAction = () => HeaderDeleteDialogAction<QuotaType>({
     deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
-    queriesInvalidator: (rows) => {
-        queryClient.invalidateQueries(getAll)
-        rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-    }
+    queriesInvalidator: (rows) => ([queryClient, [getAll, ...rows.map((row) => getOne(row.original.UUID))]])
 })

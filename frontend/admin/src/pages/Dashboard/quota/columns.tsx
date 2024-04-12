@@ -5,6 +5,7 @@ import { DataTableActionsCell } from "@/components/data-table-custom-columns/act
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { QuotaViewDetailsAction, QuotaDeleteAction, QuotaHeaderDeleteAction, QuotaEditAction, QuotaViewQuotaTypeAction, QuotaViewTicketAction } from "./actions";
+import { Link } from "react-router-dom";
 
 
 export const getQuotaTableColumns = getGenericTableColumns<Quota>(
@@ -13,7 +14,8 @@ export const getQuotaTableColumns = getGenericTableColumns<Quota>(
         {
             id: "UUID",
             accessorKey: "UUID",
-            header: DataTableColumnHeader
+            header: DataTableColumnHeader,
+            cell: ({row}) => (<Link to={`/dashboard/quota/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Quota Type",

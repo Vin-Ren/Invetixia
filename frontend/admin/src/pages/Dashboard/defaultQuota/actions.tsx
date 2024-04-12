@@ -1,7 +1,9 @@
 import { DefaultQuota } from "@/lib/api/data-types";
 import { getOne } from "@/lib/queries/defaultQuota";
+import { getOne as invitationGetOne } from "@/lib/queries/invitation";
+import { getOne as quotaTypeGetOne } from "@/lib/queries/quotaType";
 import { queryClient } from "@/lib/api";
-import { deleteOne, updateOne } from "@/lib/api/defaultQuota";
+import { deleteMany, deleteOne, updateOne } from "@/lib/api/defaultQuota";
 import { DeleteDialogAction, GenericNavigatorButtonAction } from "@/components/data-table-custom-columns/cell-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
 import { PencilIcon, Tags, TicketSlash } from "lucide-react";
@@ -10,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Row } from "@tanstack/react-table";
+import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 
 
 export const DefaultQuotaViewQuotaTypeAction = () => GenericNavigatorButtonAction({
@@ -92,15 +95,19 @@ export const DefaultQuotaEditAction = (): CellDialogAction<DefaultQuota, { quota
 
 export const DefaultQuotaDeleteAction = () => DeleteDialogAction<DefaultQuota>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
-    queriesInvalidator: (row) => {
-        queryClient.invalidateQueries(getOne(row.original.UUID));
-    }
+    queriesInvalidator: (row) => ([queryClient, [
+        getOne(row.original.UUID), 
+        invitationGetOne(row.original.invitationId), 
+        quotaTypeGetOne(row.original.quotaTypeId)
+    ]])
 });
 
-// export const DefaultQuotaHeaderDeleteAction = () => HeaderDeleteDialogAction<DefaultQuota>({
-//     deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
-//     queriesInvalidator: (rows) => {
-//         queryClient.invalidateQueries(getAll)
-//         rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-//     }
-// })
+export const DefaultQuotaHeaderDeleteAction = () => HeaderDeleteDialogAction<DefaultQuota>({
+    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    queriesInvalidator: (rows) => ([queryClient, 
+        (rows.map((row) => [
+            getOne(row.original.UUID), 
+            invitationGetOne(row.original.invitationId), 
+            quotaTypeGetOne(row.original.quotaTypeId)]).flatMap((e) => e))
+    ])
+})

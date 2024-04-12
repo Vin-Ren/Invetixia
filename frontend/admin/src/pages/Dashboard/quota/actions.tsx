@@ -1,6 +1,8 @@
 import { Quota } from "@/lib/api/data-types";
 import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/quota";
+import { getOne as ticketGetOne } from "@/lib/queries/ticket";
+import { getOne as quotaTypeGetOne } from "@/lib/queries/quotaType";
 import { queryClient } from "@/lib/api";
 import { deleteOne, deleteMany, updateOne } from "@/lib/api/quota";
 import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
@@ -51,7 +53,7 @@ export const QuotaEditAction = (): CellDialogAction<Quota, { quotaTypeId?: strin
         return await updateOne({UUID: row.original.UUID, quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: 0, ...(getDialogData?.() || {})})
     },
     initializeDialogData: ({ row, setDialogData }) => { setDialogData({ quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: (row.original.usageLeft || 0) }) },
-    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID), ticketGetOne(row.original.ticketId), quotaTypeGetOne(row.original.quotaTypeId)]]),
     dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
         return (
             <DialogContent className="sm:max-w-[625px]">
@@ -94,16 +96,13 @@ export const QuotaEditAction = (): CellDialogAction<Quota, { quotaTypeId?: strin
 
 export const QuotaDeleteAction = () => DeleteDialogAction<Quota>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
-    queriesInvalidator: (row) => {
-        queryClient.invalidateQueries(getAll);
-        queryClient.invalidateQueries(getOne(row.original.UUID));
-    }
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID), ticketGetOne(row.original.ticketId), quotaTypeGetOne(row.original.quotaTypeId)]])
 });
 
 export const QuotaHeaderDeleteAction = () => HeaderDeleteDialogAction<Quota>({
     deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
-    queriesInvalidator: (rows) => {
-        queryClient.invalidateQueries(getAll)
-        rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-    }
+    queriesInvalidator: (rows) => ([queryClient, [getAll, ...(rows.map((row) => [
+        getOne(row.original.UUID), ticketGetOne(row.original.ticketId), quotaTypeGetOne(row.original.quotaTypeId)
+        ]).flatMap((e)=>e))
+    ]])
 })

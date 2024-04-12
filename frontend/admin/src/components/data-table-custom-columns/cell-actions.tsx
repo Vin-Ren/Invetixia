@@ -133,7 +133,7 @@ export function DeleteDialogAction<
     queriesInvalidator
 }: {
     deleteHandler: (props: { row: Row<TData> }) => Promise<boolean>,
-    queriesInvalidator: (row: Row<TData>) => void
+    queriesInvalidator: QueriesInvalidatorType<TData>
 }): CellDialogAction<TData> {
     return GenericDialogConfirmAction({
         actionId: 'delete',

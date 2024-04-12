@@ -1,6 +1,7 @@
 import { Ticket } from "@/lib/api/data-types";
 import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/ticket";
+import { getOne as invitationGetOne } from "@/lib/queries/invitation";
 import { queryClient } from "@/lib/api";
 import { deleteOne, deleteMany, updateOne } from "@/lib/api/ticket";
 import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
@@ -100,16 +101,13 @@ export const TicketEditAction = (): CellDialogAction<Ticket, {ownerName?:string,
 
 export const TicketDeleteAction = () => DeleteDialogAction<Ticket>({
     deleteHandler: async ({ row }) => await deleteOne(row.original.UUID),
-    queriesInvalidator: (row) => {
-        queryClient.invalidateQueries(getAll);
-        queryClient.invalidateQueries(getOne(row.original.UUID));
-    }
+    queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID), invitationGetOne(row.original.invitationId)]])
 });
 
 export const TicketHeaderDeleteAction = () => HeaderDeleteDialogAction<Ticket>({
     deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
-    queriesInvalidator: (rows) => {
-        queryClient.invalidateQueries(getAll)
-        rows.map((row) => queryClient.invalidateQueries(getOne(row.original.UUID)))
-    }
+    queriesInvalidator: (rows) => ([queryClient, [getAll, ...(rows.map((row) => [
+        getOne(row.original.UUID), invitationGetOne(row.original.invitationId)
+        ]).flatMap((e)=>e))
+    ]])
 })

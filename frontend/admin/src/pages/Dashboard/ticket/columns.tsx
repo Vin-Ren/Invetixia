@@ -5,6 +5,7 @@ import { DataTableActionsCell } from "@/components/data-table-custom-columns/act
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { TicketViewDetailsAction, TicketDeleteAction, TicketHeaderDeleteAction, TicketEditAction, TicketViewOrganisationAction, TicketViewInvitationAction } from "./actions";
+import { Link } from "react-router-dom";
 
 
 export const getTicketTableColumns = getGenericTableColumns<Ticket>(
@@ -13,7 +14,8 @@ export const getTicketTableColumns = getGenericTableColumns<Ticket>(
         {
             id: "UUID",
             accessorKey: "UUID",
-            header: DataTableColumnHeader
+            header: DataTableColumnHeader,
+            cell: ({row}) => (<Link to={`/dashboard/ticket/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Owner Name",

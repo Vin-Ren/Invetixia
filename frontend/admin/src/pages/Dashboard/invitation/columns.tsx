@@ -5,6 +5,7 @@ import { DataTableActionsCell } from "@/components/data-table-custom-columns/act
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
 import { InvitationViewDetailsAction, InvitationDeleteAction, InvitationHeaderDeleteAction, InvitationEditAction, InvitationViewOrganisationAction } from "./actions";
+import { Link } from "react-router-dom";
 
 
 export const getInvitationTableColumns = getGenericTableColumns<Invitation>(
@@ -13,7 +14,8 @@ export const getInvitationTableColumns = getGenericTableColumns<Invitation>(
         {
             id: "UUID",
             accessorKey: "UUID",
-            header: DataTableColumnHeader
+            header: DataTableColumnHeader,
+            cell: ({row}) => (<Link to={`/dashboard/invitation/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Name",
