@@ -60,7 +60,8 @@ export const getOne = async (req: Request, res: Response) => {
                         quotaType: {
                             select: { UUID: true, name: true }
                         },
-                        usageLeft: true
+                        usageLeft: true,
+                        quotaTypeId: true
                     }
                 }
             }

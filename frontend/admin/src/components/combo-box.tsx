@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button, ButtonProps } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -17,9 +17,21 @@ import {
 import { useEffect, useState } from "react"
 
 
-export function Combobox({ options, onChange }: { options: { value: string, label: string }[], onChange: (value: string) => void }) {
+export function Combobox({ 
+    label = 'item', 
+    initialValue='', 
+    options, 
+    onChange, 
+    buttonProps = {}
+}: { 
+    label?: string, 
+    initialValue?: string, 
+    options: { value: string, label: string }[], 
+    onChange: (value: string) => void, 
+    buttonProps?: ButtonProps 
+}) {
     const [open, setOpen] = useState(false)
-    const [value, setValue] = useState("")
+    const [value, setValue] = useState(initialValue)
 
     useEffect(() => {
         onChange(value)
@@ -32,19 +44,20 @@ export function Combobox({ options, onChange }: { options: { value: string, labe
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[200px] justify-between"
+                    className="w-full max-w-xs justify-between"
+                    {...buttonProps}
                 >
                     {value
                         ? options.find((option) => option.value === value)?.label
-                        : "Select item..."}
+                        : `Select ${label}...`}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-full max-w-xs p-0">
                 <Command>
-                    <CommandInput placeholder="Search item..." />
+                    <CommandInput placeholder={`Search ${label}...`} />
                     <CommandList>
-                        <CommandEmpty>No item found.</CommandEmpty>
+                        <CommandEmpty>No {`${label}`} found.</CommandEmpty>
                         <CommandGroup>
                             {options.map((option) => (
                                 <CommandItem

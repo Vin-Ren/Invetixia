@@ -3,9 +3,14 @@ import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
 function getSavedValue<T>(key: string, initialValue: T) {
   const jsonValue = localStorage.getItem(key)
-  if (jsonValue != null) return JSON.parse(jsonValue)
-  if (initialValue instanceof Function) return initialValue()
-  return initialValue
+  try {
+    if (jsonValue) return JSON.parse(jsonValue)
+    if (initialValue instanceof Function) return initialValue()
+    return initialValue
+  } catch (e) {
+    if (initialValue instanceof Function) return initialValue()
+    return initialValue
+  }
 }
 
 

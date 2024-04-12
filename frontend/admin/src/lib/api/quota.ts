@@ -53,8 +53,8 @@ export const updateOne = async (data: {UUID: string, quotaTypeId: string, usageL
 export const consumeOne = async (UUID: string): Promise<boolean> => {
     try {
         const res = await axios({
-            method: 'PATCH',
-            url: `${import.meta.env.VITE_API_BASE_URL}/quota/update`,
+            method: 'POST',
+            url: `${import.meta.env.VITE_API_BASE_URL}/quota/consume`,
             data: { UUID },
         })
         return res.status < 400
