@@ -46,7 +46,11 @@ function InvitationCreate() {
     const onSubmit = async (values: z.infer<typeof InvitationCreateSchema>) => {
         try {
             const defaultQuotas = values.defaultQuotas.trim().split(';').map((s) => ({quotaTypeId: s.split(',')[0].trim(), value: parseInt(s.split(',')[1])}))
-            const invitation = await createOne({...values, defaultQuotas })
+            const defaultQuotasToUse: {quotaTypeId: string, value: number}[] = []
+            defaultQuotas.forEach((e: {quotaTypeId: string, value: number}) => {
+                if (e.quotaTypeId && e.value) defaultQuotasToUse.push(e)
+            })
+            const invitation = await createOne({...values, defaultQuotas: defaultQuotasToUse })
             toast({
                 title: "Successfully created an invitation!",
                 description: "Redirecting in a second."
