@@ -30,6 +30,7 @@ import { QuotaCreatePage } from './pages/Dashboard/quota/create.tsx'
 import { TicketDashboard } from './pages/Dashboard/ticket/index.tsx'
 import { TicketDetails } from './pages/Dashboard/ticket/details.tsx'
 import { TicketCreatePage } from './pages/Dashboard/ticket/create.tsx'
+import { ScannerPage } from './pages/Dashboard/scanner.tsx'
 
 configureAxios()
 
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
             path: 'eventConfig',
             element: <EventConfigPage />,
             loader: EventConfigLoader(queryClient)
+          },
+          {
+            path: 'scanner',
+            element: <ScannerPage />
           },
 
           {
