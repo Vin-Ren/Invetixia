@@ -1,5 +1,6 @@
 
 import { getAll, getOne } from "@/lib/queries/ticket"
+import { getOne as invitationGetOne } from "@/lib/queries/invitation"
 import { useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/api"
@@ -11,12 +12,30 @@ import { deleteOne } from "@/lib/api/ticket"
 import { useEffect, useState } from "react"
 import QRCode from 'qrcode'
 import { Button } from "@/components/ui/button"
+import { getInvitationTableColumns } from "../invitation/columns"
+import { getQuotaTableColumns } from "../quota/columns"
+import { DataTable } from "@/components/data-table"
 
 
 export const TicketDetails = () => {
     const { UUID = '' } = useParams()
     const { data: ticket } = useQuery(getOne(UUID), queryClient)
+    const { data: invitation } = useQuery(invitationGetOne(ticket?.invitationId as string), queryClient)
     const [qr, setQr] = useState("");
+
+    const invitationTableColumns = getInvitationTableColumns({
+        disableColumnsById: ['select'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
+
+    const quotaTableColumns = getQuotaTableColumns({
+        disableColumnsById: ['Ticket Owner'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
 
     useEffect(() => {
         QRCode.toDataURL(
@@ -24,11 +43,12 @@ export const TicketDetails = () => {
             { errorCorrectionLevel: 'Q', scale:8, margin:2 }
         ).then((res: string) => setQr(res))
     }, [UUID])
-    if (ticket === undefined) return <></>
+
+    if (!(ticket && invitation)) return <></>
 
     return (
         <div className="container py-4 flex flex-col gap-4">
-            <div className="grid max-xl:grid-cols-1 xl:grid-cols-2 w-full">
+            <div className="grid w-full">
                 <div className="flex flex-col w-full gap-4">
                     <Card>
                         <CardHeader>
@@ -41,6 +61,7 @@ export const TicketDetails = () => {
                             <CardDescription>{`Qoutas Count - ${ticket.quotas?.length}`}</CardDescription>
                         </CardContent>
                     </Card>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>{`Ticket QR Code`}</CardTitle>
@@ -52,6 +73,25 @@ export const TicketDetails = () => {
                                     {`${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_TICKET_URL}/${UUID}`}
                                 </a>
                             </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Quotas</CardTitle>
+                            <CardDescription>{ticket.quotas?.length} Quota(s)</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={quotaTableColumns} data={ticket.quotas || []} />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Invitation</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={invitationTableColumns} data={[invitation]} options={{enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false}}/>
                         </CardContent>
                     </Card>
                 </div>

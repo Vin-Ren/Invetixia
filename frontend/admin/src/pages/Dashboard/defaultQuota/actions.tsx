@@ -2,14 +2,38 @@ import { DefaultQuota } from "@/lib/api/data-types";
 import { getOne } from "@/lib/queries/defaultQuota";
 import { queryClient } from "@/lib/api";
 import { deleteOne, updateOne } from "@/lib/api/defaultQuota";
-import { DeleteDialogAction } from "@/components/data-table-custom-columns/cell-actions";
+import { DeleteDialogAction, GenericNavigatorButtonAction } from "@/components/data-table-custom-columns/cell-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, Tags, TicketSlash } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Row } from "@tanstack/react-table";
+
+
+export const DefaultQuotaViewQuotaTypeAction = () => GenericNavigatorButtonAction({
+    actionId: "view_defaultQuota_quotaType",
+    getTo: (row: Row<DefaultQuota>) => `/dashboard/quotaType/details/${row.original.quotaTypeId}`,
+    triggerNode: (
+        <>
+            <Tags className="mr-2 w-4 h-4" />
+            View default quota's type details
+        </>
+    )
+});
+
+
+export const DefaultQuotaViewInvitationAction = () => GenericNavigatorButtonAction({
+    actionId: "view_defaultQuota_invitation",
+    getTo: (row: Row<DefaultQuota>) => `/dashboard/invitation/details/${row.original.invitationId}`,
+    triggerNode: (
+        <>
+            <TicketSlash className="mr-2 w-4 h-4" />
+            View default quota's invitation details
+        </>
+    )
+});
 
 
 export const DefaultQuotaEditAction = (): CellDialogAction<DefaultQuota, { quotaTypeId?: string, value?: number }> => ({
@@ -41,10 +65,10 @@ export const DefaultQuotaEditAction = (): CellDialogAction<DefaultQuota, { quota
                         <Input className="col-span-3"
                             value={getDialogData?.().quotaTypeId || ""}
                             onChange={(e) => setDialogData((data) => ({ ...data, newName: e.target.value }))}></Input>
-                        <Label>Description</Label>
-                        <Textarea className="col-span-3"
+                        <Label>Value</Label>
+                        <Input className="col-span-3"
                             value={(getDialogData?.().value) ? (getDialogData?.().value)?.toString() : ''}
-                            onChange={(e) => setDialogData((data) => ({ ...data, value: parseInt(e.target.value || '0') }))}></Textarea>
+                            onChange={(e) => setDialogData((data) => ({ ...data, value: parseInt(e.target.value || '0') }))}></Input>
                     </div>
                 </div>
                 <DialogFooter>

@@ -42,7 +42,9 @@ export const getOne = async (req: Request, res: Response) => {
                         }
                     }
                 },
-                defaultQuotas: true
+                defaultQuotas: {
+                    include: { quotaType: true }
+                }
             }
         });
         if (!isOrganisationManager(req.user, invitation.publisher.UUID)) return res.sendStatus(403)

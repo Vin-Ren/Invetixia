@@ -15,6 +15,8 @@ import useUser from "@/hooks/useUser"
 import { RemoveUserFromOrganisationAction } from "./actions"
 import { deleteOne } from "@/lib/api/organisation"
 import { GenericDetailsDeleteButton } from "@/components/custom-buttons"
+import { getInvitationTableColumns } from "../invitation/columns"
+import { getTicketTableColumns } from "../ticket/columns"
 
 
 export const OrganisationDetails = () => {
@@ -48,9 +50,23 @@ export const OrganisationDetails = () => {
         }
     })
 
+    const invitationTableColumns = getInvitationTableColumns({
+        disableColumnsById: ['Publisher Organisation'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
+
+    const ticketTableColumns = getTicketTableColumns({
+        disableColumnsById: ['Affiliated Organisation'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
+
     return (
         <div className="container py-4 flex flex-col gap-4">
-            <div className="grid max-xl:grid-cols-1 xl:grid-cols-2 w-full">
+            <div className="grid w-full gap-4">
                 <div className="flex flex-col w-full gap-4">
                     <Card>
                         <CardHeader>
@@ -63,6 +79,7 @@ export const OrganisationDetails = () => {
                             <CardDescription>Created ticket count - {organisation.createdTicketCount || '0'}</CardDescription>
                         </CardContent>
                     </Card>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>Managers</CardTitle>
@@ -70,6 +87,26 @@ export const OrganisationDetails = () => {
                         </CardHeader>
                         <CardContent>
                             <DataTable columns={userTableColumns} data={sanitizeUsers(organisation.managers || [])} />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Invitations</CardTitle>
+                            <CardDescription>{organisation.publishedInvitations?.length} Invitation(s)</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={invitationTableColumns} data={organisation.publishedInvitations || []} />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Tickets</CardTitle>
+                            <CardDescription>{organisation.createdTickets?.length} Ticket(s)</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={ticketTableColumns} data={organisation.createdTickets || []} />
                         </CardContent>
                     </Card>
                 </div>

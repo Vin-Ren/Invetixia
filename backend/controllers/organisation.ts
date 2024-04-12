@@ -52,8 +52,14 @@ export const getOne = async (req: Request, res: Response) => {
                     }
                 },
                 publishedInvitations: true,
-                createdTickets: { // by default get 10 most recent tickets
-                    take: -(parseInt(limitTickets as string) || 10)
+                createdTickets: {
+                    include: {
+                        invitation: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
                 }
             }
         });

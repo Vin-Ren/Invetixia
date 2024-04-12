@@ -13,6 +13,7 @@ export const getAll = async (req: Request, res: Response) => {
         const quotas = await prismaClient.quota.findMany({
             select: {
                 UUID: true,
+                quotaTypeId: true,
                 quotaType: {
                     select: { name: true }
                 },

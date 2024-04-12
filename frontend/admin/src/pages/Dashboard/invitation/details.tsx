@@ -1,5 +1,5 @@
 
-import { getAll, getOne } from "@/lib/queries/invitation"
+import { getAll, getOne, getTickets } from "@/lib/queries/invitation"
 import { useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/api"
@@ -11,12 +11,38 @@ import { deleteOne } from "@/lib/api/invitation"
 import { useEffect, useState } from "react"
 import QRCode from 'qrcode'
 import { Button } from "@/components/ui/button"
+import { getTicketTableColumns } from "../ticket/columns"
+import { DataTable } from "@/components/data-table"
+import { getDefaultQuotaTable } from "../defaultQuota/columns"
+import { getOrganisationTableColumns } from "../organisation/columns"
 
 
 export const InvitationDetails = () => {
     const { UUID = '' } = useParams()
     const { data: invitation } = useQuery(getOne(UUID), queryClient)
+    const { data: tickets } = useQuery(getTickets(UUID), queryClient)
     const [qr, setQr] = useState("");
+
+    const defaultQuotaTableColumns = getDefaultQuotaTable({
+        disableColumnsById: ['Invitation'],
+        actionsHeaderProps: {
+            actions: []
+        },
+    })
+
+    const ticketTableColumns = getTicketTableColumns({
+        disableColumnsById: ['Invited with'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
+
+    const organisationTableColumns = getOrganisationTableColumns({
+        disableColumnsById: ['select'],
+        actionsHeaderProps: {
+            actions: []
+        }
+    })
 
     useEffect(() => {
         QRCode.toDataURL(
@@ -28,7 +54,7 @@ export const InvitationDetails = () => {
 
     return (
         <div className="container py-4 flex flex-col gap-4">
-            <div className="grid max-xl:grid-cols-1 xl:grid-cols-2 w-full">
+            <div className="grid w-full">
                 <div className="flex flex-col w-full gap-4">
                     <Card>
                         <CardHeader>
@@ -42,6 +68,7 @@ export const InvitationDetails = () => {
                             <CardDescription>{`Created Tickets Count - ${invitation.createdTicketCount}`}</CardDescription>
                         </CardContent>
                     </Card>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>{`Invitation QR Code`}</CardTitle>
@@ -53,6 +80,35 @@ export const InvitationDetails = () => {
                                     {`${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`}
                                 </a>
                             </Button>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Default Quotas</CardTitle>
+                            <CardDescription>{invitation.defaultQuotas?.length} Default Quota(s)</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={defaultQuotaTableColumns} data={invitation.defaultQuotas || []} />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Tickets</CardTitle>
+                            <CardDescription>{tickets?.length} Ticket(s)</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={ticketTableColumns} data={tickets || []} />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Organisation</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <DataTable columns={organisationTableColumns} data={invitation.publisher ? [invitation.publisher] : []} options={{enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false}}/>
                         </CardContent>
                     </Card>
                 </div>

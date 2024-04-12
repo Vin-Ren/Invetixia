@@ -48,9 +48,9 @@ export const QuotaEditAction = (): CellDialogAction<Quota, { quotaTypeId?: strin
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {
-        return await updateOne({UUID: row.original.UUID, quotaTypeId: row.original.quotaTypeId, usageLeft: 0, ...(getDialogData?.() || {})})
+        return await updateOne({UUID: row.original.UUID, quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: 0, ...(getDialogData?.() || {})})
     },
-    initializeDialogData: ({ row, setDialogData }) => { setDialogData({ quotaTypeId: row.original.quotaTypeId, usageLeft: (row.original.usageLeft || 0) }) },
+    initializeDialogData: ({ row, setDialogData }) => {console.log(row.original); setDialogData({ quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: (row.original.usageLeft || 0) }) },
     queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
     dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
         return (
