@@ -1,29 +1,15 @@
-
-import { QueryClient } from "@tanstack/react-query"
 import { getConfig } from "@/lib/queries/config"
 import { EventInfoCard } from "./components/eventInfoCard"
 import { EventSocialsCard } from "./components/eventSocialsCard"
 import { EventDetailsCard } from "./components/eventDetailsCard"
+import { createLoader } from "@/lib/queries/_loader"
 
 
 
-export const loader = (queryClient: QueryClient) => {
-    return async () => {
-        if (!queryClient.getQueryData(getConfig('event_info').queryKey)) {
-            await queryClient.fetchQuery(getConfig('event_info'))
-        }
-        if (!queryClient.getQueryData(getConfig('event_socials').queryKey)) {
-            await queryClient.fetchQuery(getConfig('event_socials'))
-        }
-        if (!queryClient.getQueryData(getConfig('event_details').queryKey)) {
-            await queryClient.fetchQuery(getConfig('event_details'))
-        }
-        return null
-    }
-}
+export const loader = createLoader({queries:[getConfig('event_info'), getConfig('event_socials'), getConfig('event_details')]})
 
 
-export const EventConfigPage = () => {
+export const ConfigPage = () => {
     return (
         <div className="container py-4 flex flex-col gap-4">
             <div className="grid grid-cols-1 w-full">

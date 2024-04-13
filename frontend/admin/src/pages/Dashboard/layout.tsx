@@ -36,7 +36,7 @@ export const Dashboard = () => {
                                 <div className={`w-full flex flex-col gap-4 ${sidebarOpen ? ' ' : 'max-md:hidden'}`}>
                                     <NavItem to={'/dashboard/profile'}> {sidebarOpen ? 'Profile' : <CircleUserRound />} </NavItem>
                                     <NavItem to={'/dashboard/overview'}> {sidebarOpen ? 'Overview' : <AreaChart />} </NavItem>
-                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/eventConfig'}> {sidebarOpen ? 'Event Config' : <Settings />} </NavItem>}
+                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/config'}> {sidebarOpen ? 'Event Config' : <Settings />} </NavItem>}
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/scanner'}> {sidebarOpen ? 'Scanner' : <ScanBarcode />} </NavItem>}
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/user'}> {sidebarOpen ? 'User' : <User />} </NavItem>}
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/organisation'}> {sidebarOpen ? 'Organisation' : <Building />} </NavItem>}

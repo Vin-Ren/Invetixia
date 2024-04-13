@@ -20,7 +20,7 @@ import { Profile } from './pages/Dashboard/profile.tsx'
 import { OrganisationCreatePage } from './pages/Dashboard/organisation/create.tsx'
 import { UserCreatePage } from './pages/Dashboard/user/create.tsx'
 import { QuotaTypeCreatePage } from './pages/Dashboard/quotaType/create.tsx'
-import { EventConfigPage, loader as EventConfigLoader } from './pages/Dashboard/eventConfig.tsx'
+import { ConfigPage, loader as ConfigLoader } from './pages/Dashboard/config.tsx'
 import { InvitationDashboard } from './pages/Dashboard/invitation/index.tsx'
 import { InvitationDetails } from './pages/Dashboard/invitation/details.tsx'
 import { InvitationCreatePage } from './pages/Dashboard/invitation/create.tsx'
@@ -68,9 +68,9 @@ export const router = createBrowserRouter([
             element: <OverviewDashboard />
           },
           {
-            path: 'eventConfig',
-            element: <EventConfigPage />,
-            loader: EventConfigLoader(queryClient)
+            path: 'config',
+            element: <ConfigPage />,
+            loader: ConfigLoader(queryClient)
           },
           {
             path: 'scanner',

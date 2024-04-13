@@ -6,18 +6,11 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
-import { QueryClient } from "@tanstack/react-query";
 import { getUserSelf } from "./lib/queries/user";
+import { createLoader } from "./lib/queries/_loader";
 
 
-export const loader = (queryClient: QueryClient) => {
-  return async () => {
-      if (!queryClient.getQueryData(getUserSelf.queryKey)) {
-          await queryClient.fetchQuery(getUserSelf)
-      }
-      return null
-  }
-}
+export const loader = createLoader({queries:[getUserSelf]}) 
 
 
 export default function Layout() {
