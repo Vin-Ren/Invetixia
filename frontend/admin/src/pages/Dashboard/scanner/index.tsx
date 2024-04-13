@@ -130,13 +130,13 @@ export function DeleteScanHistoryButton({deleteHandler}: {deleteHandler: ()=>Pro
         triggerNode: (
             <Button variant={"destructive"}>
                 <TrashIcon className="h-4 w-4 mr-2" />
-                Delete Scan History
+                Delete Local Scan History
             </Button>
         ),
         queriesInvalidator: ()=>{},
         dialogOptions: {
             title: "Confirm Deletion",
-            description: "The deleted history is not going to be recoverable afterwards. Are you sure you would like to proceed?",
+            description: "The deleted history is not going to be recoverable afterwards.\nAre you sure you would like to proceed?",
         },
         toasts: {
             onSuccess: () => ({
@@ -175,6 +175,7 @@ export function ScannerPage() {
 
     const onSuccess = async (decoded: string) => {
         const expectedUUID = decoded.split('/').pop() || ""
+        console.log(expectedUUID)
         try {
             const ticket = await ticketGetOne(expectedUUID)
             setDetectedTicket(ticket);
@@ -185,6 +186,7 @@ export function ScannerPage() {
     }
 
     const onConsume = async () => {
+        console.log(validTicket, detectedTicket)
         if (detectedTicket===undefined) return;
         if ((detectedTicket.quotas||[]).filter((e)=>e.quotaTypeId===chosenQuotaTypeId).length) {
             const quota = (detectedTicket.quotas||[]).filter((e)=>e.quotaTypeId===chosenQuotaTypeId)[0];
@@ -196,12 +198,12 @@ export function ScannerPage() {
                     quotaTypeName: quota.quotaType?.name || "", 
                     ticketId:detectedTicket.UUID, 
                     ticketOwnerName: detectedTicket.ownerName}, ...scanHistory])
-                    toast({title:"Successfully scanned a ticket!"})
+                    toast({title:"Successfully scanned ticket, consumed a quota ✔"})
             } else {
-                toast({title:"Failed to scan a ticket!", variant:'destructive'})
+                toast({title:"Failed to scan ticket, something went wrong", variant:'destructive'})
             }
         } else {
-            toast({title:"Failed to scan a ticket!", variant:'destructive'})
+            toast({title:"Failed to scan ticket, something went wrong", variant:'destructive'})
         }
         setDetectedTicket(undefined);
         setValidTicket(false);
@@ -228,7 +230,7 @@ export function ScannerPage() {
     useEffect(() => {
         try {
             Html5Qrcode.getCameras().then((res) => {
-                if (res.length) setSelectedCamera(res[0].id);
+                // if (res.length) setSelectedCamera(res[0].id);
                 setCameraDevices(res.map((e) => ({ value: e.id, label: e.label })))
             }, () => { })
             // when component mounts
@@ -249,7 +251,8 @@ export function ScannerPage() {
             switch (scannerRef.current?.getState()) {
                 case Html5QrcodeScannerState.UNKNOWN:
                 case Html5QrcodeScannerState.NOT_STARTED:
-                    scannerRef.current?.start({ deviceId: selectedCamera }, { qrbox: qrboxSizeCalculator, fps: 10 }, onSuccess, () => { })
+                    if (selectedCamera) scannerRef.current?.start({ deviceId: selectedCamera }, { qrbox: qrboxSizeCalculator, fps: 10 }, onSuccess, () => { })
+                    else scannerRef.current?.start({ facingMode:'environment' }, { qrbox: qrboxSizeCalculator, fps: 10 }, onSuccess, () => { })
                     break;
                 case Html5QrcodeScannerState.PAUSED:
                     scannerRef.current?.resume()
@@ -265,7 +268,12 @@ export function ScannerPage() {
                     break;
             }
         }
-    }, [scannerState, dummy])
+    }, [scannerState, dummy, cameraDevices])
+
+    useEffect(() => {
+        if (validTicket) scannerRef.current?.pause();
+        else scannerRef.current?.resume();
+    }, [validTicket])
 
     if (quotaTypes === undefined) return <></>
 
@@ -323,12 +331,15 @@ export function ScannerPage() {
                         Quota Type - {chosenQuotaTypeId && (quotaTypes || []).filter((e)=>e.UUID===chosenQuotaTypeId)[0].name}
                     </div>
                     <div className="text-base mx-4 text-accent-foreground">
-                        Quota Usage left - { (detectedTicket!==undefined && ((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId)).length) ? 
-                        ((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId))[0].usageLeft : 0
+                        Quota Usage left - { 
+                        (detectedTicket!==undefined 
+                            && ((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId)).length) 
+                            && ((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId))[0].usageLeft 
+                        ? `${((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId))[0].usageLeft} ✅`  : `0 ❌`
                         }
                     </div>
                     <DrawerFooter>
-                    <Button onClick={onConsume}>Confirm</Button>
+                    <Button onClick={onConsume} disabled={!(detectedTicket!==undefined && ((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId)).length && ((detectedTicket?.quotas || []).filter((e) => e.quotaTypeId==chosenQuotaTypeId))[0].usageLeft)}>Confirm</Button>
                     <DrawerClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DrawerClose>
