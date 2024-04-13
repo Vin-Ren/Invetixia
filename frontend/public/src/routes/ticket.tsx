@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Countdown } from "../components/countdown"
 import { format } from "date-fns"
 import { Params, useNavigate, useParams } from "react-router-dom"
-import { IoWarning } from "react-icons/io5";
+import { IoInformationCircle, IoWarning } from "react-icons/io5";
 import QRCode from 'qrcode'
 import { Helmet } from "react-helmet-async"
 
@@ -61,9 +61,18 @@ export default function Ticket() {
                     <div className="self-center justify-center">
                         <p className="text-3xl font-bold whitespace-break-spaces">Hello 👋 {ticket.ownerName[0].toUpperCase() + ticket.ownerName.slice(1)}!</p>
                         <p className="text-2xl font-bold whitespace-break-spaces">This link and QR is your ticket for {event.name} 🎫</p>
-                        <p className="text-base whitespace-break-spaces text-neutral-content">The ticket will also be sent to you on <a href="#eventStartTime"><span className="font-bold text-accent">D-Day</span></a></p>
+                        <p className="text-base whitespace-break-spaces text-neutral-content">This ticket will also be sent to you near <a href="#eventStartTime"><span className="font-bold text-accent">D-Day</span></a> through the provided contacts</p>
                     </div>
                     <div className="divider divider-primary"></div>
+                    { event_details?.note
+                    ?   <div className="alert alert-info mb-2">
+                            <div>
+                                <span className="font-bold flex flex-row items-center gap-2 mb-0"><i><IoInformationCircle  size='1.25rem'/></i> <span>Information</span></span>
+                                <span className="whitespace-break-spaces">{event_details?.note}</span>
+                            </div>
+                        </div>
+                    : null
+                    }
                     <div className="mb-4 self-center flex flex-col">
                         <img 
                             className={`rounded-3xl self-center max-md:max-h-52 md:max-w-xs p-4 ${qrVisible ? 'animate-unblur' : 'animate-blur'}`} 
