@@ -157,6 +157,10 @@ export function DataTableActionsCell<
         } else if (!success && action.toasts?.onFailure !== undefined) {
             toast(action.toasts?.onFailure?.({ row, getDialogData: ds.createGetter(action.actionId) }) || {});
         }
+
+        if (action.actionType === 'dialog') { // Re initialize dialog data
+            action.initializeDialogData?.({ row, setDialogData: ds.createSetter(action.actionId) });
+        }
     };
 
     if (actions.length === 0 && !options.enableCopyUUID) return null

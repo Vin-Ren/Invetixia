@@ -168,7 +168,7 @@ export const update = async (req: Request, res: Response) => {
     const errors = {name: '', contacts: ''}
     if (!parsedName.success) errors['name'] = parsedName.error.message
     if (!parsedContacts.success) errors['contacts'] = parsedContacts.error.message
-    
+    // console.log({parsedContacts, errors, UUID, ownerName, ownerContacts })
     if (!parsedName.success || !parsedContacts.success || (typeof UUID !== "string")) return res.status(400).json({errors})
 
     try {
@@ -176,7 +176,8 @@ export const update = async (req: Request, res: Response) => {
             where: { UUID: UUID },
             data: {
                 ownerName: ownerName,
-                ownerContacts: ownerContacts
+                ownerContacts: ownerContacts,
+                sentEmail: "", // Resets sentEmail
             }
         })
 

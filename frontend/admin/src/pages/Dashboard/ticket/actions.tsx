@@ -4,14 +4,15 @@ import { getAll, getOne } from "@/lib/queries/ticket";
 import { getOne as invitationGetOne } from "@/lib/queries/invitation";
 import { queryClient } from "@/lib/api";
 import { deleteOne, deleteMany, updateOne } from "@/lib/api/ticket";
-import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
+import { DeleteDialogAction, GenericDialogConfirmAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { Building2, PencilIcon, TicketSlash } from "lucide-react";
+import { Building2, Mail, PencilIcon, TicketSlash } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { sendTicket } from "@/lib/api/email";
 
 
 export const TicketViewDetailsAction = () => ViewDetailsAction((row: Row<Ticket>) => `/dashboard/ticket/details/${row.original.UUID}`);
@@ -37,6 +38,35 @@ export const TicketViewInvitationAction = () => GenericNavigatorButtonAction({
         </>
     )
 });
+
+
+export const SendEmailDialogAction = (): CellDialogAction<Ticket> => {
+    return GenericDialogConfirmAction<Ticket>({
+        actionId: 'send-email',
+        triggerNode: (
+            <>
+                <Mail className="mr-2 h-4 w-4" />
+                Send ticket email
+            </>
+        ),
+        actionHandler: async ({row}) => await sendTicket({UUID: row.original.UUID}),
+        dialogOptions: {
+            title: "Confirm action",
+            description: ({ row }) => `Are you sure you would like to send an email to the owner of this ticket(email: ${row.original.ownerContacts.email})?`,
+            confirmButtonVariant: 'default'
+        },
+        toasts: {
+            onSuccess: ({ row }) => ({
+                title: "Sent an email!",
+                description: `Successfully sent an email to ${row.original.ownerContacts.email}.`
+            }),
+            onFailure: () => ({
+                title: "Failed to send an email.",
+                variant: "destructive"
+            }),
+        }
+    })
+}
 
 
 export const TicketEditAction = (): CellDialogAction<Ticket, {ownerName?:string, ownerContacts?: {email:string, phone_number:string}}> => ({

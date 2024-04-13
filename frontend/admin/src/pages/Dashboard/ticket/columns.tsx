@@ -4,7 +4,7 @@ import { getGenericTableColumns } from "@/components/data-table-custom-columns";
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
 import { getDataTableSelectRowsColumn } from "@/components/data-table-custom-columns/select-rows-column";
-import { TicketViewDetailsAction, TicketDeleteAction, TicketHeaderDeleteAction, TicketEditAction, TicketViewOrganisationAction, TicketViewInvitationAction } from "./actions";
+import { TicketViewDetailsAction, TicketDeleteAction, TicketHeaderDeleteAction, TicketEditAction, TicketViewOrganisationAction, TicketViewInvitationAction, SendEmailDialogAction } from "./actions";
 import { Link } from "react-router-dom";
 
 
@@ -33,6 +33,11 @@ export const getTicketTableColumns = getGenericTableColumns<Ticket>(
             header: DataTableColumnHeader
         },
         {
+            id: "Sent Email ID",
+            accessorKey: "sentEmail",
+            header: DataTableColumnHeader
+        },
+        {
             id: "actions",
             header: ({ table }) => {
                 return (
@@ -53,6 +58,7 @@ export const getTicketTableColumns = getGenericTableColumns<Ticket>(
                             TicketViewDetailsAction(),
                             TicketViewOrganisationAction(),
                             TicketViewInvitationAction(),
+                            SendEmailDialogAction(),
                             TicketEditAction(),
                             TicketDeleteAction()
                         ]}

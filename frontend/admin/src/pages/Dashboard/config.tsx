@@ -3,6 +3,7 @@ import { EventInfoCard } from "./components/eventInfoCard"
 import { EventSocialsCard } from "./components/eventSocialsCard"
 import { EventDetailsCard } from "./components/eventDetailsCard"
 import { createLoader } from "@/lib/queries/_loader"
+import { ResendAPIConfigCard } from "./components/resendApiConfigCard"
 
 
 
@@ -17,6 +18,7 @@ export const ConfigPage = () => {
                     <EventInfoCard />
                     <EventSocialsCard />
                     <EventDetailsCard />
+                    <ResendAPIConfigCard />
                 </div>
             </div>
 

@@ -6,11 +6,12 @@ import { deleteOne, deleteMany, updateOne } from "@/lib/api/invitation";
 import { DeleteDialogAction, GenericNavigatorButtonAction, ViewDetailsAction } from "@/components/data-table-custom-columns/cell-actions";
 import { HeaderDeleteDialogAction } from "@/components/data-table-custom-columns/header-actions";
 import { CellDialogAction } from "@/components/data-table-custom-columns/actions-cell";
-import { Building2, PencilIcon } from "lucide-react";
+import { Building2, Mail, PencilIcon, Plus } from "lucide-react";
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { sendInvitation } from "@/lib/api/email";
 
 
 export const InvitationViewDetailsAction = () => ViewDetailsAction((row: Row<Invitation>) => `/dashboard/invitation/details/${row.original.UUID}`);
@@ -25,6 +26,74 @@ export const InvitationViewOrganisationAction = () => GenericNavigatorButtonActi
         </>
     )
 });
+
+
+export const InvitationSendEmailAction = (): CellDialogAction<Invitation, { to: {recipient: string, idx:number}[] }> => ({
+    actionType: "dialog",
+    actionId: "quick-email-item",
+    triggerNode: (
+        <>
+            <Mail className="mr-2 h-4 w-4" />
+            Send invitation email
+        </>
+    ),
+    actionHandler: async ({ row, getDialogData }) => {
+        return await sendInvitation({UUID: row.original.UUID, to: (getDialogData?.().to.map((e)=>(e.recipient))?.flatMap((e)=>e).filter((e) => e.includes('@')))||[] })
+    },
+    initializeDialogData: ({ setDialogData }) => { setDialogData({ to: [] }) },
+    queriesInvalidator: () => {},
+    dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
+        return (
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>Send invitation email</DialogTitle>
+                    <DialogDescription>
+                        Send an email containing this invitation.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label>Recipients</Label>
+                        <div className="col-span-3 grid grid-flow-row gap-2">
+                        {
+                            getDialogData?.().to?.map((toe) => (
+                                <Input className="col-span-3"
+                                value={toe.recipient}
+                                onChange={(e) => setDialogData((data) => ({ 
+                                    ...data, to: [...(data?.to?.filter((e)=>e.idx<toe.idx) || []), 
+                                    {idx:toe.idx, recipient: e.target.value}, 
+                                    ...(data?.to?.filter((e)=>e.idx>toe.idx) || [])] 
+                                }))}></Input>
+                            )
+                        )
+                        }
+                        <Button variant={'secondary'} className="w-full" onClick={() => setDialogData((data) => {
+                            return {...data, to: [...(data?.to || []), {idx: data?.to?.length || 0, recipient: ""}]}
+                        })}>
+                            <Plus />
+                            Add Recipient
+                        </Button>
+                        </div>
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant={"default"} type="submit" onClick={async () => await internalActionHandler({ actionId: 'quick-email-item', row })}>Send</Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        )
+    },
+    toasts: {
+        onSuccess: () => ({
+            title: "Successfully sent the email!"
+        }),
+        onFailure: () => ({
+            title: "Failed to sent the email!",
+            variant: "destructive"
+        })
+    }
+})
 
 
 export const InvitationEditAction = (): CellDialogAction<Invitation, { name?: string, organisationId?: string, usageQuota?: number }> => ({

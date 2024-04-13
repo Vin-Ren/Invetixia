@@ -23,6 +23,7 @@ model Ticket {
   lastUpdated        DateTime     @updatedAt
   invitation         Invitation   @relation(fields: [invitationId], references: [UUID], onUpdate: Cascade, onDelete: Cascade)
   invitationId       String
+  sentEmail          String          @default("")
 
   @@index([invitationId])
 }

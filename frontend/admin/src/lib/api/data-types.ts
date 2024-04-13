@@ -11,7 +11,8 @@ export interface Ticket {
     ownerAffiliationId: string,
     quotas?: Quota[],
     invitation?: Invitation,
-    invitationId: string
+    invitationId: string,
+    sentEmail: string
 }
 
 export interface Quota {
