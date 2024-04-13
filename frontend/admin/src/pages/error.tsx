@@ -12,6 +12,7 @@ export default function Error() {
         <div className="flex self-center items-center gap-4 align-middle flex-1 flex-row">
             Unknown Error
             <Button onClick={() => navigate('../')}>Go back</Button>
+            <Button onClick={() => navigate(0)}>Refresh</Button>
         </div>
     )
 }

@@ -216,10 +216,14 @@ export function ScannerPage() {
             // cleanup function when component will unmount
             return () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                switch (scannerRef.current?.getState()) {
-                    case Html5QrcodeScannerState.SCANNING:
-                        scannerRef.current?.stop().catch((e) => console.log(e));
-                        break;
+                try {
+                    switch (scanner.getState()) {
+                        case Html5QrcodeScannerState.SCANNING:
+                            scanner.stop().catch((e) => console.log(e));
+                            break;
+                    }
+                } catch (e) {
+                    console.log(e)
                 }
             };
         } catch (e) {
@@ -243,9 +247,9 @@ export function ScannerPage() {
     useEffect(() => {
         // console.log(scannerState, scannerRef.current?.getState())
         if (scannerRef.current === undefined) {
-            createScanner()
+            const cleaner = createScanner()
             setDummy((e) => !e);
-            return;
+            return cleaner;
         }
         if (scannerState) {
             switch (scannerRef.current?.getState()) {

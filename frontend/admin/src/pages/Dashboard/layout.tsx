@@ -15,7 +15,7 @@ export const Dashboard = () => {
 
     return (
         <ProtectedRoute>
-            <div className="flex-1 flex md:flex-row max-md:flex-col">
+            <div className="w-full flex-1 flex md:flex-row max-md:flex-col">
                 <div className="flex max-md:flex-col md:flex-row w-fit max-md:w-full">
                     <div className="flex flex-col">
                         <ScrollArea>
