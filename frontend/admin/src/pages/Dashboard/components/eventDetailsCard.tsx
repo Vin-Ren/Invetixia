@@ -15,7 +15,8 @@ import { updateEventDetails } from "@/lib/api/config"
 
 export const EventDetailsSchema = z.object({
     locationName: z.string(),
-    startTime: z.string()
+    startTime: z.string(),
+    note: z.string()
 })
 
 export const EventDetailsCard = () => {
@@ -68,6 +69,12 @@ export const EventDetailsCard = () => {
                             label="Start Time"
                             description="In ISO format"
                             inputProps={{ placeholder: "YYYY-MM-DDT00:00:00.000Z" }}
+                        />
+                        <CustomizedFormField
+                            control={form.control}
+                            name="note"
+                            label="Note"
+                            description="An optional note to show on the participants tickets"
                         />
                     </CardContent>
                     <CardFooter>

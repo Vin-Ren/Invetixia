@@ -92,7 +92,8 @@ export interface EventInfo {
 
 export interface EventDetails {
     locationName: string,
-    startTime: string
+    startTime: string,
+    note: string
 }
 
 export interface EventSocials {

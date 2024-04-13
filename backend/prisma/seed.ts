@@ -23,6 +23,7 @@ function initialize() {
                 value: {
                     locationName: "a Zoom meeting",
                     startTime: new Date("2024-05-15T00:00:00.000+00:00"),
+                    note: ""
                 }
             },
             {
