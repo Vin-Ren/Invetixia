@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "@/components/ui/use-toast"
 import { getEventDetails } from "@/lib/queries/config"
 import { updateEventDetails } from "@/lib/api/config"
+import { useEffect } from "react"
 
 export const EventDetailsSchema = z.object({
     locationName: z.string(),
@@ -46,7 +47,13 @@ export const EventDetailsCard = () => {
         }
     }
 
-    if (event_details===undefined) return <></>
+    useEffect(()=> {
+        form.setValue('locationName', event_details?.locationName || '')
+        form.setValue('startTime', event_details?.startTime || '')
+        form.setValue('note', event_details?.note || '')
+    }, [event_details])
+
+    if (!(event_details)) return <></>
 
     return (
         <Card>

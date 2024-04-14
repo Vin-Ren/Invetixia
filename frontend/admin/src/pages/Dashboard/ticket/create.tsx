@@ -124,7 +124,7 @@ function TicketCreateMany() {
         const ticketlist = values.data_csv.trim().split(';')
         const createTicketsData: {invitationId:string, ownerName:string, ownerContacts: {email:string, phone_number:string}}[] = ticketlist.map((e) => {
             const splitres = e.split(',')
-            return {invitationId: splitres[0], ownerName: splitres[1], ownerContacts: { email: splitres[2], phone_number: splitres[3]}}
+            return {invitationId: splitres[0].trim(), ownerName: splitres[1].trim(), ownerContacts: { email: splitres[2].trim(), phone_number: splitres[3].trim()}}
         })
         try {
             const tickets = await createMany(createTicketsData)

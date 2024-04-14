@@ -147,7 +147,7 @@ function UserCreateMany() {
         const userlist = values.data_csv.trim().split(';')
         const createUsersData: {username:string, password:string, role:number, organisationName:string}[] = userlist.map((e) => {
             const splitres = e.split(',')
-            return {username: splitres[0], password: splitres[1], role: parseInt(splitres[2]), organisationName: splitres[3]}
+            return {username: splitres[0].trim(), password: splitres[1].trim(), role: parseInt(splitres[2].trim()), organisationName: splitres[3].trim()}
         })
         try {
             const users = await createMany(createUsersData)

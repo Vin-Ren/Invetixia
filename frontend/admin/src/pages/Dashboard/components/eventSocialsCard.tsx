@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "@/components/ui/use-toast"
 import { getEventSocials } from "@/lib/queries/config"
 import { updateEventSocials } from "@/lib/api/config"
+import { useEffect } from "react"
 
 export const EventSocialsSchema = z.object({
     mainWebsite: z.string(),
@@ -22,10 +23,10 @@ export const EventSocialsSchema = z.object({
 })
 
 export const EventSocialsCard = () => {
-    const { data: event_details } = useQuery(getEventSocials, queryClient)
+    const { data: event_socials } = useQuery(getEventSocials, queryClient)
     const form = useForm<z.infer<typeof EventSocialsSchema>>({
         resolver: zodResolver(EventSocialsSchema),
-        defaultValues: { mainWebsite: "", instagram: "", youtube: "", x_twitter: "", email: "", ...event_details},
+        defaultValues: { mainWebsite: "", instagram: "", youtube: "", x_twitter: "", email: "", ...event_socials},
     })
 
     const onSubmit = async (values: z.infer<typeof EventSocialsSchema>) => {
@@ -45,7 +46,15 @@ export const EventSocialsCard = () => {
         }
     }
 
-    if (event_details===undefined) return <></>
+    useEffect(()=> {
+        form.setValue('mainWebsite', event_socials?.mainWebsite || '')
+        form.setValue('instagram', event_socials?.instagram || '')
+        form.setValue('youtube', event_socials?.youtube || '')
+        form.setValue('x_twitter', event_socials?.x_twitter || '')
+        form.setValue('email', event_socials?.email || '')
+    }, [event_socials])
+
+    if (!(event_socials)) return <></>
 
     return (
         <Card>
