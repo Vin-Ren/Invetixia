@@ -42,5 +42,8 @@
     "react-email": "2.1.1",
     "resend": "^3.2.0",
     "zod": "^3.22.4"
+  },
+  "resolutions": {
+    "string-width": "4.2.3"
   }
 }
