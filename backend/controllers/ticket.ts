@@ -11,7 +11,7 @@ const nameValidator = z.string()
     .max(50, { message: 'Name must be at most 50 characters' })
 const contactsValidator = z.object({
     email: z.string().email({ message: 'Invalid email' }).nullable(),
-    number: z.string().regex(/\d{11,13}$/, { message: 'Invalid number' })
+    phone_number: z.string().regex(/\d{11,13}$/, { message: 'Invalid phone number' }).nullable()
 })
 
 
@@ -58,9 +58,10 @@ export const getOne = async (req: Request, res: Response) => {
                     select: {
                         UUID: true,
                         quotaType: {
-                            select: { name: true }
+                            select: { UUID: true, name: true }
                         },
-                        usageLeft: true
+                        usageLeft: true,
+                        quotaTypeId: true
                     }
                 }
             }
@@ -82,8 +83,8 @@ export const create = async (req: Request, res: Response) => {
     const errors = {name: '', contacts: ''}
     if (!parsedName.success) errors['name'] = parsedName.error.message
     if (!parsedContacts.success) errors['contacts'] = parsedContacts.error.message
-    
-    if (!parsedName.success || !parsedContacts.success || !(typeof invitationId !== "string")) return res.status(400).json({errors})
+
+    if (!parsedName.success || !parsedContacts.success || (typeof invitationId !== "string")) return res.status(400).json({errors})
 
 
     try {
@@ -167,7 +168,7 @@ export const update = async (req: Request, res: Response) => {
     const errors = {name: '', contacts: ''}
     if (!parsedName.success) errors['name'] = parsedName.error.message
     if (!parsedContacts.success) errors['contacts'] = parsedContacts.error.message
-    
+    // console.log({parsedContacts, errors, UUID, ownerName, ownerContacts })
     if (!parsedName.success || !parsedContacts.success || (typeof UUID !== "string")) return res.status(400).json({errors})
 
     try {
@@ -175,7 +176,8 @@ export const update = async (req: Request, res: Response) => {
             where: { UUID: UUID },
             data: {
                 ownerName: ownerName,
-                ownerContacts: ownerContacts
+                ownerContacts: ownerContacts,
+                sentEmail: "", // Resets sentEmail
             }
         })
 

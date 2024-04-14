@@ -2,6 +2,7 @@ import { env } from "process";
 import { Request, Response } from "../types";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "../services/database";
+import { Prisma } from "@prisma/client";
 
 const { REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET, ACCESS_TOKEN_LIFETIME } = env;
 
@@ -28,7 +29,10 @@ export const refreshToken = async (req: Request, res: Response) => {
 
                 res.json({ accessToken });
             } catch (error) {
-                throw error
+                console.log(error)
+                if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+                    return res.sendStatus(500)
+                }
             }
         });
     } catch (error) {

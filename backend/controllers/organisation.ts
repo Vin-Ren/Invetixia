@@ -52,13 +52,23 @@ export const getOne = async (req: Request, res: Response) => {
                     }
                 },
                 publishedInvitations: true,
-                createdTickets: { // by default get 10 most recent tickets
-                    take: -(parseInt(limitTickets as string) || 10)
+                createdTickets: {
+                    include: {
+                        invitation: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
                 }
             }
         });
 
-        return res.json({ organisation })
+        const createdTicketCount = await prismaClient.ticket.count({
+            where: { ownerAffiliationId: UUID as string }
+        })
+
+        return res.json({ organisation: { ...organisation, createdTicketCount } })
     } catch (e) {
         console.log(e)
     }
@@ -178,6 +188,38 @@ export const create = async (req: Request, res: Response) => {
 }
 
 
+// Post
+export const createMany = async (req: Request, res: Response) => {
+    const { names }: { names: string[] } = req.body
+    if (!isAdmin(req.user)) return res.sendStatus(403)
+
+    let permitted = 1;
+    names.forEach((name) => {
+        if (!name || typeof name !== 'string') permitted = 0
+    })
+
+    if (!permitted) return res.sendStatus(400)
+
+    try {
+        // const organisations = await prismaClient.organisation.createMany({
+        //     data: names.map((name) => ({ name })),
+
+        // });
+
+        const organisations = await prismaClient.$transaction(
+            names.map((name) => (
+                prismaClient.organisation.create({ data: { name } })))
+        )
+
+        await logEvent({ event: "CREATE", summary: `Create Many Organisation`, description: `Created ${organisations.length} organisations named=${names} [UUIDs=${organisations.map((org) => org.UUID)}]` })
+        return res.json({ organisations })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+
 // Patch
 export const update = async (req: Request, res: Response) => {
     const { UUID, newName } = req.body
@@ -221,6 +263,31 @@ export const deleteOne = async (req: Request, res: Response) => {
         })
 
         await logEvent({ event: "DELETE", summary: `Delete Organisation`, description: `Deleted organisation named=${deletedOrganisation.name} [UUID=${UUID}]` })
+        return res.sendStatus(201)
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+
+// Delete
+export const deleteMany = async (req: Request, res: Response) => {
+    const { UUIDs = [] }: { UUIDs: string[] } = req.body;
+    if (!isAdmin(req.user)) return res.sendStatus(403)
+
+    let permitted = true
+    UUIDs.forEach(UUID => { permitted &&= (UUID != 'default') && (typeof UUID === "string") });
+
+    if (!permitted) return res.sendStatus(403)
+
+    try {
+        const deletedOrganisations = await prismaClient.organisation.deleteMany({
+            where: {
+                UUID: { in: UUIDs }
+            }
+        })
+
+        await logEvent({ event: "DELETE", summary: `Delete Organisations`, description: `Deleted organisations [UUIDs=${UUIDs}]` })
         return res.sendStatus(201)
     } catch (e) {
         console.log(e)

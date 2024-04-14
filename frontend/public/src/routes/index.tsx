@@ -3,7 +3,6 @@ import { eventQuery } from "../queries"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
 
 
 export default function Index() {
@@ -34,17 +33,13 @@ export default function Index() {
 
     return (
         <div className="hero min-h-screen bg-base-200 bg-opacity-50">
-            <Helmet>
-                <title>{event.name}</title>
-            </Helmet>
-
-            <div className="hero-content items-start flex-col lg:flex-row bg-base-200 p-6 rounded-xl bg-opacity-75 backdrop-blur-sm m-4">
+            <div className="hero-content items-start flex flex-col lg:flex-row bg-base-200 p-6 rounded-xl bg-opacity-75 backdrop-blur-sm m-4">
                 <img src={import.meta.env.VITE_EVENT_POSTER_IMAGE} alt="Event Poster Background" className="max-w-sm rounded-lg shadow-2xl h-auto w-[98%]" />
-                <div>
+                <div className="flex-1 w-full flex flex-col">
                     {event?.name ? <h1 className="text-5xl font-bold">{event.name}</h1> : null}
                     {event?.description ? <p className="max-md:pb-2 md:pb-6 md:pt-2 font-medium pl-[3px]">{event.description}</p> : null}
-                    <form className="join" onSubmit={(e) => { e.preventDefault(); handleSubmit() }}>
-                        <input type="text" className="input join-item" name="invitationId" placeholder="Invitation Id" value={invitationId} onChange={(e) => setInvitationId(e.target.value.toLowerCase())} disabled={status === 'loading'} />
+                    <form className="join w-full place-self-end" onSubmit={(e) => { e.preventDefault(); handleSubmit() }}>
+                        <input type="text" className="input join-item w-full" name="invitationId" placeholder="Invitation Id" value={invitationId} onChange={(e) => setInvitationId(e.target.value.toLowerCase())} disabled={status === 'loading'} />
                         <button type="submit" className="btn btn-primary join-item" disabled={status === 'loading'}>Register</button>
                     </form>
                     <div className={'label ' + (!err ? 'invisible' : '')}>

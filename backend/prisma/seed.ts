@@ -5,10 +5,46 @@ import { Prisma } from '@prisma/client'
 import { prismaClient, userRole, logAction } from "../services/database";
 
 
-const { QUOTA_TYPES, SUPERUSER_PASSWORD, SEED_LOG_TABLE } = env;
+const { QUOTA_TYPES, SUPERUSER_PASSWORD } = env;
 
 
 function initialize() {
+    prismaClient.iNTERNALS_InvetixiaConfig.createMany({
+        data: [
+            {
+                name: 'event_info',
+                value: {
+                    name: "Invetixia", // title on hero
+                    description: "Invetixia launching event", // description on hero
+                }
+            },
+            {
+                name: 'event_details',
+                value: {
+                    locationName: "a Zoom meeting",
+                    startTime: new Date("2024-05-15T00:00:00.000+00:00"),
+                    note: ""
+                }
+            },
+            {
+                name: 'event_socials',
+                value: {
+                    mainWebsite: "https://example.com",
+                    instagram: "https://instagram.com/instagram",
+                    youtube: "https://youtube.com/youtube",
+                    x_twitter: "https://x.com/",
+                    email: "example@mail.com"
+                }
+            }
+        ]
+    }).catch((err)=> {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            if (err.code == 'P2002') return
+        } else {
+            console.log(err)
+        }
+    })
+
     const logActions = Object.values(logAction)
     logActions.forEach(act => {
         prismaClient.logAction.create({ data: { name: act } }).catch((err) => {
@@ -19,34 +55,6 @@ function initialize() {
             }
         })
     });
-
-    const rng = (max: number) => Math.floor(Math.random()*max)
-
-    if (parseInt(SEED_LOG_TABLE as string)) {
-        console.log(`Seeding log table with size=${SEED_LOG_TABLE}`)
-        let K = logActions.length
-        for (let i = 0; i < parseInt(SEED_LOG_TABLE as string); i++) {
-            let crA = rng(K-1)+1;
-            prismaClient.log.create({
-                data: {
-                    logAction: {
-                        connect: {
-                            id: crA
-                        }
-                    },
-                    summary: `${logActions[crA-1]} ${randomBytes(rng(8)+1).toString('hex')}`,
-                    description: randomBytes(rng(20)+4).toString('hex')
-                },
-                select: {}
-            }).catch((err) => {
-                if (err instanceof Prisma.PrismaClientKnownRequestError) {
-                    if (err.code == 'P2002') return
-                } else {
-                    console.log(err)
-                }
-            })
-        }
-    }
 
     const quotaTypes = (QUOTA_TYPES !== undefined ?
         QUOTA_TYPES : "ENTRY").split(",")

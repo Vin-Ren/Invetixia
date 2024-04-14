@@ -153,7 +153,7 @@ def test_update_username(all_sessions, superuser, users_store, subtests):
                 target_original_role = commons.Role(target['role'])
                 
                 jsonData = target.copy()
-                jsonData['username'] = commons.generate_random_hex(prefix='upd-', randomLength=16)
+                jsonData['username'] = commons.FAKE.unique.name()
                 res = Test.update.x(_with=client, json=jsonData)
                 
                 if client_role < commons.Role.ADMIN or client_role <= target_original_role:
@@ -196,7 +196,7 @@ def test_update_organisation(all_sessions, superuser, users_store, subtests):
                 target_original_role = commons.Role(target['role'])
                 
                 jsonData = target.copy()
-                jsonData['organisationName'] = commons.generate_random_hex(prefix='upd-', randomLength=16)
+                jsonData['organisationName'] = commons.FAKE.unique.company()
                 res = Test.update.x(_with=client, json=jsonData)
                 
                 if client_role < commons.Role.ADMIN or client_role <= target_original_role:

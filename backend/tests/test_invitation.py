@@ -80,7 +80,9 @@ def tickets_generator(superuser):
     def _creator(invitationId, count=1):
         ress = []
         for _ in range(count):
-            jsonData = {'ownerName': commons.generate_random_hex(randomLength=8), 'ownerContacts': [commons.generate_random_hex(randomLength=8)], 'invitationId': invitationId}
+            jsonData = {'ownerName': commons.FAKE.unique.name(), 
+                        'ownerContacts': {'email': commons.FAKE.unique.email(), 'phone_number': commons.FAKE.unique.msisdn()}, 
+                        'invitationId': invitationId}
             res = ticket_create_route.x(_with=superuser, json=jsonData)
             if res.ok:
                 created_tickets.append(res.json()['ticket'])

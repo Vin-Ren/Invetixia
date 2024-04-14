@@ -30,14 +30,14 @@ export default function Invitation() {
     const [status, setStatus] = useState<'idle' | 'loading'>('idle')
     const params = useParams()
     const navigate = useNavigate()
-    const { data, isError } = useQuery(invitationQuery(params.UUID || ''))
+    const { data: { invitation = {}}, isError } = useQuery(invitationQuery(params.UUID || ''))
     const { data: { event = {} } } = useQuery(eventQuery)
     if (isError) navigate('/')
 
     const [ownerName, setOwnerName] = useState('')
     const [ownerEmail, setOwnerEmail] = useState('')
     const [ownerNumber, setOwnerNumber] = useState('')
-    const [ownerOrganisation] = useState(data.invitation.publisher.name)
+    const [ownerOrganisation] = useState(invitation.publisher.name)
 
     const handleGoBack = async () => {
         navigate('/')
@@ -69,21 +69,25 @@ export default function Invitation() {
         if (errors.name || errors.email || errors.number) {
             await setErrors(errors)
         } else {
-            const res = await axios.request({
-                method: 'POST',
-                url: `${import.meta.env.VITE_API_BASE_URL}/ticket/create`,
-                data: {
-                    ownerName: (ownerName as string).toLowerCase(),
-                    ownerContacts: {
-                        email: ownerEmail.toLowerCase(), 
-                        number: ownerNumber.toLowerCase()
+            try {
+                const res = await axios.request({
+                    method: 'POST',
+                    url: `${import.meta.env.VITE_API_BASE_URL}/ticket/create`,
+                    data: {
+                        ownerName: (ownerName as string).toLowerCase(),
+                        ownerContacts: {
+                            email: ownerEmail.toLowerCase(), 
+                            phone_number: ownerNumber.toLowerCase()
+                        },
+                        invitationId: invitation.UUID
                     },
-                    invitationId: data.invitation.UUID
-                },
-                validateStatus: () => true
-            })
-            
-            navigate(`/ticket/${res.data.ticket.UUID}`, {replace: true})
+                    validateStatus: () => true
+                })
+                
+                navigate(`/ticket/${res.data.ticket.UUID}`, {replace: true})
+            } catch (e) {
+                console.log("Error", e)
+            }
         }
         setStatus('idle')
     }
@@ -91,7 +95,7 @@ export default function Invitation() {
     return (
         <div className="hero min-h-screen bg-base-200 bg-opacity-60">
             <Helmet>
-                <title>Register - {event.name}</title>
+                <title>Register ({invitation.name}) - {event.name}</title>
             </Helmet>
             
             <div className="hero-content justify-center">

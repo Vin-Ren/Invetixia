@@ -28,15 +28,19 @@ export const getOne = async (req: Request, res: Response) => {
             where: { UUID: UUID },
             include: {
                 quotas: {
-                    select: {
-                        UUID: true,
+                    include: {
                         ticket: {
                             select: { ownerName: true }
-                        },
-                        usageLeft: true
+                        }
                     }
                 },
-                defaultQuotas: true
+                defaultQuotas: {
+                    include: {
+                        invitation: {
+                            select: { name: true }
+                        }
+                    }
+                }
             }
         })
 

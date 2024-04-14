@@ -12,6 +12,8 @@ import invitationDefaultRouter from "./routes/invitationDefaultQuota";
 import ticketRouter from "./routes/ticket";
 import quotaRouter from "./routes/quota";
 import quotaTypeRouter from "./routes/quotaType";
+import renderRouter from "./routes/render";
+import emailRouter from "./routes/email";
 
 const app = express()
 
@@ -28,5 +30,7 @@ app.use('/invitationDefaultQuota', invitationDefaultRouter)
 app.use('/ticket', ticketRouter)
 app.use('/quota', quotaRouter)
 app.use('/quotaType', quotaTypeRouter)
+app.use('/render', renderRouter)
+app.use('/email', emailRouter)
 
 export default app

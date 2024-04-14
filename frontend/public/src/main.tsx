@@ -1,29 +1,21 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import Root, { loader as EventInfoLoader } from './routes/root.tsx'
+import Layout, { loader as EventInfoLoader } from './layout.tsx'
 import ErrorPage from './errorPage.tsx'
 import Index from './routes/index.tsx'
 import Invitation, { loader as InvitationLoader } from './routes/invitation.tsx'
-import Ticket from './routes/ticket.tsx'
-import EditTicket, {loader as TicketLoader} from './routes/editTicket.tsx'
-import CountdownPage from './routes/countdown.tsx'
+import Ticket, { loader as TicketLoader } from './routes/ticket.tsx'
+import EditTicket, { loader as EditTicketLoader } from './routes/editTicket.tsx'
 import { HelmetProvider } from 'react-helmet-async'
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: import.meta.env.VITE_QUERY_STALE_TIME_AND_REFRESH_INTERVAL,
-    },
-  },
-})
+import { queryClient } from './lib/api/index.ts'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
+    element: <Layout />,
     errorElement: <ErrorPage />,
     loader: EventInfoLoader(queryClient),
     children: [
@@ -44,12 +36,7 @@ const router = createBrowserRouter([
       {
         path: '/ticket/:UUID/edit',
         element: <EditTicket />,
-        loader: TicketLoader(queryClient)
-      },
-      {
-        path: '/countdown',
-        element: <CountdownPage />,
-        loader: EventInfoLoader(queryClient)
+        loader: EditTicketLoader(queryClient)
       },
       {
         path: '*',

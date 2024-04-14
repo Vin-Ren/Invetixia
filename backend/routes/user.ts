@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { refreshToken } from "../controllers/refreshToken";
-import { getRoles, getAll, getOne, getSelf, create, login, changePassword, update, logout, deleteOne } from "../controllers/user";
+import { getRoles, getAll, getOne, getSelf, create, login, changePassword, update, logout, deleteOne, deleteMany } from "../controllers/user";
 import verifyToken from "../middlewares/verifyToken";
 
 
@@ -16,6 +16,7 @@ userRouter.patch('/changePassword', verifyToken, changePassword)
 userRouter.patch('/update', verifyToken, update)
 userRouter.post('/logout', verifyToken, logout)
 userRouter.delete('/delete', verifyToken, deleteOne)
+userRouter.delete('/deleteMany', verifyToken, deleteMany)
 
 userRouter.get('/refreshToken', refreshToken)
 userRouter.get('/roles', getRoles)
