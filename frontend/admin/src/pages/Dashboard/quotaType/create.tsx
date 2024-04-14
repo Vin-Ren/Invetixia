@@ -113,7 +113,7 @@ function QuotaTypeCreateMany() {
         const userlist = values.data_csv.trim().split(';')
         const createQuotaTypesData = userlist.map((e) => {
             const splitres = e.split(',')
-            return {name: splitres[0], description: splitres[1]}
+            return {name: splitres[0].trim(), description: splitres[1].trim()}
         })
         try {
             const entries = await createMany(createQuotaTypesData)
