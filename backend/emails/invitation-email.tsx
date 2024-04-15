@@ -59,7 +59,7 @@ export const InvitationEmail = ({
                                         textAlign: "center",
                                     }}
                                 >
-                                    Hello there!,
+                                    Hello there!
                                 </Heading>
                                 <Heading
                                     as="h2"
@@ -86,6 +86,9 @@ export const InvitationEmail = ({
                                 />
                                 <Text style={{ ...paragraph, marginTop: -5 }}>
                                     You can also register by clicking the button below.
+                                </Text>
+                                <Text style={{ ...paragraph, marginTop: -5 }}>
+                                    If clicking the button does not work, try copying this link into your browser: {invitationLink}
                                 </Text>
                             </Column>
                         </Row>
