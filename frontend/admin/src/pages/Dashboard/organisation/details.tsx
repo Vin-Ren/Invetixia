@@ -154,17 +154,11 @@ export const OrganisationDetails = () => {
     })
 
     const invitationTableColumns = getInvitationTableColumns({
-        disableColumnsById: ['Publisher Organisation'],
-        actionsHeaderProps: {
-            actions: []
-        }
+        disableColumnsById: ['Publisher Organisation']
     })
 
     const ticketTableColumns = getTicketTableColumns({
-        disableColumnsById: ['Affiliated Organisation'],
-        actionsHeaderProps: {
-            actions: []
-        }
+        disableColumnsById: ['Affiliated Organisation']
     })
 
     return (

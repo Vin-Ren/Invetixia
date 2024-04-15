@@ -157,17 +157,11 @@ export const InvitationDetails = () => {
     const [qr, setQr] = useState("");
 
     const defaultQuotaTableColumns = getDefaultQuotaTable({
-        disableColumnsById: ['Invitation'],
-        actionsHeaderProps: {
-            actions: []
-        },
+        disableColumnsById: ['Invitation']
     })
 
     const ticketTableColumns = getTicketTableColumns({
-        disableColumnsById: ['Invited with'],
-        actionsHeaderProps: {
-            actions: []
-        }
+        disableColumnsById: ['Invited with']
     })
 
     const organisationTableColumns = getOrganisationTableColumns({

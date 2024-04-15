@@ -8,9 +8,45 @@ import { useParams } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { GenericDetailsDeleteButton } from "@/components/custom-buttons"
 import { deleteOne } from "@/lib/api/quotaType"
-import { getQuotaTableColumns } from "../quota/columns"
+import { getQuotaFilteredByOrganisationAndQuotaTypeTableColumns, getQuotaTableColumns } from "../quota/columns"
 import { DataTable } from "@/components/data-table"
 import { getDefaultQuotaTable } from "../defaultQuota/columns"
+import { useEffect, useState } from "react"
+import { QuotaWithTicketOrganisationInfo } from "@/lib/api/data-types"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+
+
+const FilteredQuotasByQuotaTypeAndOrganisationCard = ({quotas}:{quotas:QuotaWithTicketOrganisationInfo[]}) => {
+    const [filteredQuotas, setFilteredQuotas] = useState<QuotaWithTicketOrganisationInfo[]>([])
+    const [organisationName, setOrganisationName] = useState("")
+
+    const quotaFilteredTableColumns = getQuotaFilteredByOrganisationAndQuotaTypeTableColumns({
+        disableColumnsById: ['Quota Type']
+    })
+
+    useEffect(() => {
+        setFilteredQuotas(quotas.filter((quota)=> quota.ticket?.ownerAffiliation.name.includes(organisationName)))
+    }, [quotas, organisationName])
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Quotas Filtered by Organisation</CardTitle>
+                <CardDescription>Search for quotas with this quota type and a certain organisation name.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="grid grid-rows-2 items-center mb-4">
+                    <Label>Organisation Name</Label>
+                    <Input className="w-fit"
+                        value={organisationName}
+                        onChange={(e) => setOrganisationName(e.target.value)}></Input>
+                </div>
+                <DataTable columns={quotaFilteredTableColumns} data={filteredQuotas} />
+            </CardContent>
+        </Card>
+    )
+}
 
 
 export const QuotaTypeDetails = () => {
@@ -18,17 +54,11 @@ export const QuotaTypeDetails = () => {
     const { data: quotaType } = useQuery(getOne(UUID), queryClient)
 
     const defaultQuotaTableColumn = getDefaultQuotaTable({
-        disableColumnsById: ['Quota Type'],
-        actionsHeaderProps: {
-            actions: []
-        }
+        disableColumnsById: ['Quota Type']
     })
 
     const quotaTableColumns = getQuotaTableColumns({
-        disableColumnsById: ['Quota Type'],
-        actionsHeaderProps: {
-            actions: []
-        }
+        disableColumnsById: ['Quota Type']
     })
 
     if (quotaType === undefined) return <></>
@@ -66,6 +96,8 @@ export const QuotaTypeDetails = () => {
                             <DataTable columns={quotaTableColumns} data={quotaType.quotas || []} />
                         </CardContent>
                     </Card>
+
+                    <FilteredQuotasByQuotaTypeAndOrganisationCard quotas={quotaType.quotas || []}/>
                 </div>
             </div>
 

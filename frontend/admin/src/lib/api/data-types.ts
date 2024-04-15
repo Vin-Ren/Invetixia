@@ -24,11 +24,15 @@ export interface Quota {
     ticketId: string
 }
 
+export interface QuotaWithTicketOrganisationInfo extends Quota {
+    ticket?: Ticket & {ownerAffiliation: {UUID: string, name: string}};
+}
+
 export interface QuotaType {
     UUID: string,
     name: string,
     description: string,
-    quotas?: Quota[],
+    quotas?: QuotaWithTicketOrganisationInfo[],
     defaultQuotas?: DefaultQuota[]
 }
 

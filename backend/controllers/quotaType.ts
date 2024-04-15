@@ -30,7 +30,15 @@ export const getOne = async (req: Request, res: Response) => {
                 quotas: {
                     include: {
                         ticket: {
-                            select: { ownerName: true }
+                            select: { 
+                                ownerName: true,
+                                    ownerAffiliation: { 
+                                        select: {
+                                            UUID: true, 
+                                            name: true
+                                        }
+                                }
+                            }
                         }
                     }
                 },

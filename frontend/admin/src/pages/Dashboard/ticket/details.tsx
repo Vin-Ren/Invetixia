@@ -97,10 +97,7 @@ export const TicketDetails = () => {
     })
 
     const quotaTableColumns = getQuotaTableColumns({
-        disableColumnsById: ['Ticket Owner'],
-        actionsHeaderProps: {
-            actions: []
-        }
+        disableColumnsById: ['Ticket Owner']
     })
 
     useEffect(() => {

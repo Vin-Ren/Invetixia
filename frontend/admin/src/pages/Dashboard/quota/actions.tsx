@@ -1,4 +1,4 @@
-import { Quota } from "@/lib/api/data-types";
+import { Quota as OriginalQuota, QuotaWithTicketOrganisationInfo } from "@/lib/api/data-types";
 import { Row } from "@tanstack/react-table";
 import { getAll, getOne } from "@/lib/queries/quota";
 import { getOne as ticketGetOne } from "@/lib/queries/ticket";
@@ -13,6 +13,9 @@ import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHead
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+
+type Quota = OriginalQuota | QuotaWithTicketOrganisationInfo;
 
 
 export const QuotaViewDetailsAction = () => ViewDetailsAction((row: Row<Quota>) => `/dashboard/quota/details/${row.original.UUID}`);
