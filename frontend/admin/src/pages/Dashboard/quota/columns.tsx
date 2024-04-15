@@ -1,5 +1,5 @@
 import { DataTableColumnHeader } from "@/components/data-table";
-import { Quota, QuotaWithTicketOrganisationInfo, Ticket } from "@/lib/api/data-types";
+import { Quota as OriginalQuota, QuotaWithTicketOrganisationInfo } from "@/lib/api/data-types";
 import { getGenericTableColumns } from "@/components/data-table-custom-columns";
 import { DataTableActionsCell } from "@/components/data-table-custom-columns/actions-cell";
 import { DataTableActionsHeader } from "@/components/data-table-custom-columns/actions-header";
@@ -8,7 +8,10 @@ import { QuotaViewDetailsAction, QuotaDeleteAction, QuotaHeaderDeleteAction, Quo
 import { Link } from "react-router-dom";
 
 
-export const getQuotaTableColumns = getGenericTableColumns<Quota>(
+type Quota = OriginalQuota | QuotaWithTicketOrganisationInfo;
+
+
+export const getQuotaTableColumns = getGenericTableColumns<Quota>( // Will never be QuotaWithTicketOrganisationInfo, but typechecking sucks
     ({ actionsHeaderProps, actionsCellProps }) => ([
         getDataTableSelectRowsColumn(),
         {
@@ -67,7 +70,7 @@ export const getQuotaTableColumns = getGenericTableColumns<Quota>(
 )
 
 
-export const getQuotaFilteredByOrganisationAndQuotaTypeTableColumns = getGenericTableColumns<QuotaWithTicketOrganisationInfo>(
+export const getQuotaFilteredByOrganisationAndQuotaTypeTableColumns = getGenericTableColumns<Quota>( // Will never be OriginalQuota, but typechecking sucks
     ({ actionsHeaderProps, actionsCellProps }) => ([
         getDataTableSelectRowsColumn(),
         {
