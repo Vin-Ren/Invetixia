@@ -56,7 +56,7 @@ export const ResendAPIConfigCard = () => {
                         <CustomizedFormField
                             control={form.control}
                             name="domain"
-                            label="Start Time"
+                            label="Domain"
                             description="Leave empty to automatically choose"
                             inputProps={{ placeholder: "example.com" }}
                         />
