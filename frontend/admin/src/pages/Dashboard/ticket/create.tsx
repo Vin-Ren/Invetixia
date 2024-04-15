@@ -42,7 +42,7 @@ function TicketCreate() {
 
     const onSubmit = async (values: z.infer<typeof TicketCreateSchema>) => {
         try {
-            const ticket = await createOne({...values, ownerContacts: {email: values.ownerEmail, phone_number: values.ownerPhoneNumber} })
+            const ticket = await createOne({ ...values, ownerContacts: { email: values.ownerEmail, phone_number: values.ownerPhoneNumber } })
             toast({
                 title: "Successfully created an ticket!",
                 description: "Redirecting in a second."
@@ -122,9 +122,9 @@ function TicketCreateMany() {
     const onSubmit = async (values: z.infer<typeof TicketCreateManySchema>) => {
         // console.log(values)
         const ticketlist = values.data_csv.trim().split(';')
-        const createTicketsData: {invitationId:string, ownerName:string, ownerContacts: {email:string, phone_number:string}}[] = ticketlist.map((e) => {
+        const createTicketsData: { invitationId: string, ownerName: string, ownerContacts: { email: string, phone_number: string } }[] = ticketlist.map((e) => {
             const splitres = e.split(',')
-            return {invitationId: splitres[0].trim(), ownerName: splitres[1].trim(), ownerContacts: { email: splitres[2].trim(), phone_number: splitres[3].trim()}}
+            return { invitationId: splitres[0].trim(), ownerName: splitres[1].trim(), ownerContacts: { email: splitres[2].trim(), phone_number: splitres[3].trim() } }
         })
         try {
             const tickets = await createMany(createTicketsData)

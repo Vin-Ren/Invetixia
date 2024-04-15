@@ -14,9 +14,9 @@ export const OrganisationDashboard = () => {
 
     return (
         <div className="container mx-auto py-10">
-            <GenericIndexCreateButton/>
-            <DataTable columns={getOrganisationTableColumns()} data={data}/>
-            <RefreshDataButton query={getAll}/>
+            <GenericIndexCreateButton />
+            <DataTable columns={getOrganisationTableColumns()} data={data} />
+            <RefreshDataButton query={getAll} />
         </div>
     )
 }

@@ -8,5 +8,5 @@ export default function NavItem(props: _NavLinkProps) {
         to: '/',
         className: ({ isActive }: { isActive: boolean }) => `w-full ${buttonVariants({ variant: isActive ? 'default' : 'ghost' })}`,
         ...props
-    }}/>
+    }} />
 }

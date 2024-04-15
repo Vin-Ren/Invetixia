@@ -38,7 +38,7 @@ function QuotaTypeCreateOne() {
 
     const form = useForm<z.infer<typeof QuotaTypeCreateSchema>>({
         resolver: zodResolver(QuotaTypeCreateSchema),
-        defaultValues: { name: "", description: ""},
+        defaultValues: { name: "", description: "" },
     })
 
     const onSubmit = async (values: z.infer<typeof QuotaTypeCreateSchema>) => {
@@ -80,7 +80,7 @@ function QuotaTypeCreateOne() {
                             control={form.control}
                             name="description"
                             label="Description"
-                            inputProps={{ placeholder: "A brief description"}}
+                            inputProps={{ placeholder: "A brief description" }}
                         />
                     </CardContent>
                     <CardFooter>
@@ -113,7 +113,7 @@ function QuotaTypeCreateMany() {
         const userlist = values.data_csv.trim().split(';')
         const createQuotaTypesData = userlist.map((e) => {
             const splitres = e.split(',')
-            return {name: splitres[0].trim(), description: splitres[1].trim()}
+            return { name: splitres[0].trim(), description: splitres[1].trim() }
         })
         try {
             const entries = await createMany(createQuotaTypesData)

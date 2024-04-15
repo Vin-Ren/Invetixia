@@ -29,19 +29,20 @@ import { Combobox } from "@/components/combo-box"
 
 
 
-export function CreateInvitationDialogButton({organisationId, quotaTypes} : {organisationId: string, quotaTypes: {value: string, label: string}[]}) {
-    return DialogButton<{name?: string, usageQuota?: number, defaultQuotas?: {idx: number, quotaTypeId: string, value: number}[]}>({
+export function CreateInvitationDialogButton({ organisationId, quotaTypes }: { organisationId: string, quotaTypes: { value: string, label: string }[] }) {
+    return DialogButton<{ name?: string, usageQuota?: number, defaultQuotas?: { idx: number, quotaTypeId: string, value: number }[] }>({
         triggerNode: (
             <Button variant={'outline'}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Invitation
             </Button>
         ),
-        initializeDialogData: ({ setDialogData }) => { setDialogData({ name: "", usageQuota:1 }) },
+        initializeDialogData: ({ setDialogData }) => { setDialogData({ name: "", usageQuota: 1 }) },
         actionHandler: async ({ navigate, getDialogData }) => {
             const invitation = await createOne({
-                organisationId, name: "", usageQuota: 0, ...(getDialogData() || {}), 
-                defaultQuotas: (getDialogData?.().defaultQuotas?.map(({quotaTypeId, value}) => ({quotaTypeId, value}))) || []});
+                organisationId, name: "", usageQuota: 0, ...(getDialogData() || {}),
+                defaultQuotas: (getDialogData?.().defaultQuotas?.map(({ quotaTypeId, value }) => ({ quotaTypeId, value }))) || []
+            });
             if (invitation) {
                 navigate(`/dashboard/invitation/details/${invitation.UUID}`)
                 return true;
@@ -49,7 +50,7 @@ export function CreateInvitationDialogButton({organisationId, quotaTypes} : {org
             return false;
         },
         queriesInvalidator: () => [queryClient, [invitationGetAll, getOne(organisationId)]],
-        dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
+        dialogContent: ({ internalActionHandler, getDialogData, setDialogData }) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
                     <DialogHeader>
@@ -66,33 +67,33 @@ export function CreateInvitationDialogButton({organisationId, quotaTypes} : {org
                                 onChange={(e) => setDialogData((data) => ({ ...data, name: e.target.value }))} />
                             <Label>Usage Quota</Label>
                             <Input className="col-span-3"
-                            value={(getDialogData?.().usageQuota) ? (getDialogData?.().usageQuota)?.toString() : ''}
-                            onChange={(e) => setDialogData((data) => ({ ...data, usageQuota: parseInt(e.target.value || '0') }))}></Input>
+                                value={(getDialogData?.().usageQuota) ? (getDialogData?.().usageQuota)?.toString() : ''}
+                                onChange={(e) => setDialogData((data) => ({ ...data, usageQuota: parseInt(e.target.value || '0') }))}></Input>
                             <Label className="col-span-4 align-middle justify-center">Default Quotas</Label>
                             <div className="col-span-4 grid grid-flow-row gap-2">
                                 {
                                     getDialogData?.().defaultQuotas?.map((defaultQuota) => (
-                                    <div className="grid grid-cols-4">
-                                        <div className="col-span-2">
-                                            <Combobox options={quotaTypes} onChange={(e) => setDialogData((data) => ({ 
-                                                ...data, defaultQuotas: [...(data?.defaultQuotas?.filter((e)=>e.idx<defaultQuota.idx) || []), 
-                                                {idx:defaultQuota.idx, quotaTypeId: e, value:defaultQuota.value}, 
-                                                ...(data?.defaultQuotas?.filter((e)=>e.idx>defaultQuota.idx) || [])] 
-                                            }))}/>
+                                        <div className="grid grid-cols-4">
+                                            <div className="col-span-2">
+                                                <Combobox options={quotaTypes} onChange={(e) => setDialogData((data) => ({
+                                                    ...data, defaultQuotas: [...(data?.defaultQuotas?.filter((e) => e.idx < defaultQuota.idx) || []),
+                                                    { idx: defaultQuota.idx, quotaTypeId: e, value: defaultQuota.value },
+                                                    ...(data?.defaultQuotas?.filter((e) => e.idx > defaultQuota.idx) || [])]
+                                                }))} />
+                                            </div>
+                                            <Input className="col-span-2"
+                                                value={(defaultQuota.value) ? (defaultQuota.value)?.toString() : ''}
+                                                onChange={(e) => setDialogData((data) => ({
+                                                    ...data, defaultQuotas: [...(data?.defaultQuotas?.filter((e) => e.idx < defaultQuota.idx) || []),
+                                                    { idx: defaultQuota.idx, quotaTypeId: defaultQuota.quotaTypeId, value: parseInt(e.target.value) },
+                                                    ...(data?.defaultQuotas?.filter((e) => e.idx > defaultQuota.idx) || [])]
+                                                }))}></Input>
                                         </div>
-                                        <Input className="col-span-2"
-                                        value={(defaultQuota.value) ? (defaultQuota.value)?.toString() : ''}
-                                        onChange={(e) => setDialogData((data) => ({ 
-                                            ...data, defaultQuotas: [...(data?.defaultQuotas?.filter((e)=>e.idx<defaultQuota.idx) || []), 
-                                            {idx:defaultQuota.idx, quotaTypeId: defaultQuota.quotaTypeId, value:parseInt(e.target.value)}, 
-                                            ...(data?.defaultQuotas?.filter((e)=>e.idx>defaultQuota.idx) || [])] 
-                                        }))}></Input>
-                                    </div>
                                     )
-                                )
+                                    )
                                 }
                                 <Button variant={'secondary'} onClick={() => setDialogData((data) => {
-                                    return {...data, defaultQuotas: [...(data?.defaultQuotas || []), {idx: data?.defaultQuotas?.length || 0, quotaTypeId:'', value:0}]}
+                                    return { ...data, defaultQuotas: [...(data?.defaultQuotas || []), { idx: data?.defaultQuotas?.length || 0, quotaTypeId: '', value: 0 }] }
                                 })}>
                                     <Plus />
                                     Add Default Quota
@@ -125,7 +126,7 @@ export const OrganisationDetails = () => {
     const { user } = useUser()
     const { UUID = '' } = useParams()
     const { data: organisation } = useQuery(getOne(UUID), queryClient)
-    const {data: quotaTypes = []} = useQuery(quotaTypeGetAll, queryClient);
+    const { data: quotaTypes = [] } = useQuery(quotaTypeGetAll, queryClient);
     if (!(organisation)) return <></>
 
     const userTableColumns = getUserTableColumns({
@@ -193,7 +194,7 @@ export const OrganisationDetails = () => {
                             <CardDescription>{organisation.publishedInvitations?.length} Invitation(s)</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <CreateInvitationDialogButton organisationId={UUID} quotaTypes={quotaTypes.map((e)=>({value:e.UUID, label:e.name}))}/>
+                            <CreateInvitationDialogButton organisationId={UUID} quotaTypes={quotaTypes.map((e) => ({ value: e.UUID, label: e.name }))} />
                             <DataTable columns={invitationTableColumns} data={organisation.publishedInvitations || []} />
                         </CardContent>
                     </Card>

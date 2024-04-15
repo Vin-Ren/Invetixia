@@ -14,9 +14,9 @@ export const QuotaDashboard = () => {
 
     return (
         <div className="container mx-auto py-10">
-            <GenericIndexCreateButton/>
+            <GenericIndexCreateButton />
             <DataTable columns={getQuotaTableColumns()} data={data} />
-            <RefreshDataButton query={getAll}/>
+            <RefreshDataButton query={getAll} />
         </div>
     )
 }

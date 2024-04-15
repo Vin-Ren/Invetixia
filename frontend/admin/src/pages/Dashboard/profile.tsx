@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label"
 
 
 export function ChangePasswordDialogButton() {
-    return DialogButton<{password?: string, newPassword?: string, newPassword2?: string}>({
+    return DialogButton<{ password?: string, newPassword?: string, newPassword2?: string }>({
         triggerNode: (
             <Button variant={'secondary'}>
                 <KeyRoundIcon className="mr-2 h-4 w-4" />
@@ -29,10 +29,10 @@ export function ChangePasswordDialogButton() {
         initializeDialogData: ({ setDialogData }) => { setDialogData({ password: "", newPassword: "", newPassword2: "" }) },
         actionHandler: async ({ getDialogData }) => {
             if (getDialogData().newPassword2 != getDialogData().newPassword) return false;
-            return await changePassword({password: "", newPassword: "", ...(getDialogData() || {})})
+            return await changePassword({ password: "", newPassword: "", ...(getDialogData() || {}) })
         },
         queriesInvalidator: () => [queryClient, [getUserSelf]],
-        dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
+        dialogContent: ({ internalActionHandler, getDialogData, setDialogData }) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
                     <DialogHeader>
@@ -122,7 +122,7 @@ export const Profile = () => {
     const { data: organisation } = useQuery(organisationGetOne(user?.organisationManaged?.UUID as string), queryClient)
     if (user === undefined) return <></>
 
-    const organisationTableColumns = getOrganisationTableColumns({ 
+    const organisationTableColumns = getOrganisationTableColumns({
         disableColumnsById: ['select'],
         actionsHeaderProps: {
             actions: []
@@ -148,7 +148,7 @@ export const Profile = () => {
                             <CardTitle>Organisation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={organisationTableColumns} data={organisation ? [organisation]: []} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
+                            <DataTable columns={organisationTableColumns} data={organisation ? [organisation] : []} options={{ enableFilters: false, enableViewColumnCheckbox: false, enablePagination: false }} />
                         </CardContent>
                     </Card>
                 </div>

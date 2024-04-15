@@ -5,17 +5,17 @@ export const getAll = {
     queryFn: apiGetAll
 }
 
-export const getOne = (UUID:string) => ({
+export const getOne = (UUID: string) => ({
     queryKey: ['invitation', 'info', UUID],
     queryFn: () => apiGetOne(UUID)
 })
 
-export const getTickets = (UUID:string) => ({
+export const getTickets = (UUID: string) => ({
     queryKey: ['invitation', 'info', UUID, 'tickets'],
     queryFn: () => apiGetTickets(UUID)
 })
 
-export const getDefaultQuotas = (UUID:string) => ({
+export const getDefaultQuotas = (UUID: string) => ({
     queryKey: ['invitation', 'info', UUID, 'defaultQuotas'],
     queryFn: () => apiGetDefaultQuotas(UUID)
 })

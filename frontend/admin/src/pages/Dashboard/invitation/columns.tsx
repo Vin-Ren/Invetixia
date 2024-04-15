@@ -15,7 +15,7 @@ export const getInvitationTableColumns = getGenericTableColumns<Invitation>(
             id: "UUID",
             accessorKey: "UUID",
             header: DataTableColumnHeader,
-            cell: ({row}) => (<Link to={`/dashboard/invitation/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
+            cell: ({ row }) => (<Link to={`/dashboard/invitation/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Name",

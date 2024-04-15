@@ -3,7 +3,7 @@ import { EventDetails, EventInfo, EventSocials } from "./data-types"
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getConfig = async (name:string): Promise<any> => {
+export const getConfig = async (name: string): Promise<any> => {
     const res = await axios({
         method: 'GET',
         url: `${import.meta.env.VITE_API_BASE_URL}/event/get`,
@@ -12,7 +12,7 @@ export const getConfig = async (name:string): Promise<any> => {
     return res.data.config
 }
 
-export const updateConfig = async (name:string, value: object): Promise<boolean> => {
+export const updateConfig = async (name: string, value: object): Promise<boolean> => {
     try {
         const res = await axios({
             method: 'PATCH',

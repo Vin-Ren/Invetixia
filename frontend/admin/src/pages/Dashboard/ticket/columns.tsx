@@ -15,7 +15,7 @@ export const getTicketTableColumns = getGenericTableColumns<Ticket>(
             id: "UUID",
             accessorKey: "UUID",
             header: DataTableColumnHeader,
-            cell: ({row}) => (<Link to={`/dashboard/ticket/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
+            cell: ({ row }) => (<Link to={`/dashboard/ticket/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Owner Name",

@@ -24,7 +24,7 @@ export const EventDetailsCard = () => {
     const { data: event_details } = useQuery(getEventDetails, queryClient)
     const form = useForm<z.infer<typeof EventDetailsSchema>>({
         resolver: zodResolver(EventDetailsSchema),
-        defaultValues: { locationName: "", startTime: "", ...event_details},
+        defaultValues: { locationName: "", startTime: "", ...event_details },
     })
 
     const onSubmit = async (values: z.infer<typeof EventDetailsSchema>) => {
@@ -47,7 +47,7 @@ export const EventDetailsCard = () => {
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         form.setValue('locationName', event_details?.locationName || '')
         form.setValue('startTime', event_details?.startTime || '')
         form.setValue('note', event_details?.note || '')

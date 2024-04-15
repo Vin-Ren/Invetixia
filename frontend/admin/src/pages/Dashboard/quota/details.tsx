@@ -58,7 +58,7 @@ export const QuotaDetails = () => {
                             <CardTitle>Ticket</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={ticketTableColumns} data={[ticket] || []} options={{enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false}} />
+                            <DataTable columns={ticketTableColumns} data={[ticket] || []} options={{ enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false }} />
                         </CardContent>
                     </Card>
 
@@ -67,7 +67,7 @@ export const QuotaDetails = () => {
                             <CardTitle>Quota Type</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={quotaTypeTableColumns} data={[quotaType] || []} options={{enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false}} />
+                            <DataTable columns={quotaTypeTableColumns} data={[quotaType] || []} options={{ enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false }} />
                         </CardContent>
                     </Card>
                 </div>

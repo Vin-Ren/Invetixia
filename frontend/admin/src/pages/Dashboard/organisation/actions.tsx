@@ -25,7 +25,7 @@ export const OrganisationDeleteAction = () => DeleteDialogAction<Organisation>({
 
 export const OrganisationHeaderDeleteAction = () => HeaderDeleteDialogAction<Organisation>({
     deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
-    queriesInvalidator: (rows) => ([queryClient,[getAll, ...rows.map((row) => getOne(row.original.UUID))]])
+    queriesInvalidator: (rows) => ([queryClient, [getAll, ...rows.map((row) => getOne(row.original.UUID))]])
 })
 
 

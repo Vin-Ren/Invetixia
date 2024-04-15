@@ -13,14 +13,14 @@ export interface CustomizedGeneralFormFieldProps<
     name: TName,
     label: string,
     description?: string | ReactNode,
-    render: ({ 
-        field, 
-        fieldState, 
-        formState 
-    }: { 
-        field: ControllerRenderProps<TFieldValues, TName>, 
-        fieldState: ControllerFieldState, 
-        formState: UseFormStateReturn<TFieldValues> 
+    render: ({
+        field,
+        fieldState,
+        formState
+    }: {
+        field: ControllerRenderProps<TFieldValues, TName>,
+        fieldState: ControllerFieldState,
+        formState: UseFormStateReturn<TFieldValues>
     }) => React.ReactNode
 }
 
@@ -51,7 +51,7 @@ export const CustomizedGeneralFormField = <
                     <FormMessage />
                 </FormItem>
             )
-        } />
+            } />
     )
 }
 
@@ -84,7 +84,7 @@ export const CustomizedFormField = <
             name={name}
             label={label}
             description={description}
-            render={({field}) => (<Input {...inputProps} {...field} />)}
+            render={({ field }) => (<Input {...inputProps} {...field} />)}
         />
     )
 }
@@ -117,7 +117,7 @@ export const CustomizedFormTextAreaField = <
             name={name}
             label={label}
             description={description}
-            render={({field}) => (<Textarea {...textAreaProps} {...field} />)}
+            render={({ field }) => (<Textarea {...textAreaProps} {...field} />)}
         />
     )
 }

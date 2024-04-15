@@ -20,7 +20,7 @@ export const UserDetails = () => {
     const { data: organisation } = useQuery(organisationGetOne(user?.organisationId as string), queryClient)
     if (user === undefined || organisation === undefined) return <></>
 
-    const organisationTableColumns = getOrganisationTableColumns({ 
+    const organisationTableColumns = getOrganisationTableColumns({
         disableColumnsById: ['select'],
         actionsHeaderProps: {
             actions: []

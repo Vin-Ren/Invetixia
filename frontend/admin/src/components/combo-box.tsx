@@ -17,18 +17,18 @@ import {
 import { useEffect, useState } from "react"
 
 
-export function Combobox({ 
-    label = 'item', 
-    initialValue='', 
-    options, 
-    onChange, 
+export function Combobox({
+    label = 'item',
+    initialValue = '',
+    options,
+    onChange,
     buttonProps = {}
-}: { 
-    label?: string, 
-    initialValue?: string, 
-    options: { value: string, label: string }[], 
-    onChange: (value: string) => void, 
-    buttonProps?: ButtonProps 
+}: {
+    label?: string,
+    initialValue?: string,
+    options: { value: string, label: string }[],
+    onChange: (value: string) => void,
+    buttonProps?: ButtonProps
 }) {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState(initialValue)

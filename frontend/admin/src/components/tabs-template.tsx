@@ -20,14 +20,9 @@ export interface TabsTemplateProps {
 
 
 export function TabsTemplate({ tabs, defaultTabId = undefined }: TabsTemplateProps) {
-
-    if (defaultTabId === undefined) {
-        defaultTabId = tabs.at(0)?.id;
-    }
-
     return (
         <div className="container py-4 flex justify-center">
-            <Tabs defaultValue={defaultTabId} className="w-full">
+            <Tabs defaultValue={(defaultTabId===undefined) ? (tabs.at(0)?.id) : defaultTabId} className="w-full">
                 <TabsList className={`grid w-full grid-cols-${tabs.length}`}>
                     {
                         tabs.map(({ id, label = undefined }) => {

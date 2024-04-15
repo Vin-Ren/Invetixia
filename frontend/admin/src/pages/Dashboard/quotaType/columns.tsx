@@ -15,7 +15,7 @@ export const getQuotaTypeTableColumns = getGenericTableColumns<QuotaType>(
             id: "UUID",
             accessorKey: "UUID",
             header: DataTableColumnHeader,
-            cell: ({row}) => (<Link to={`/dashboard/quotaType/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
+            cell: ({ row }) => (<Link to={`/dashboard/quotaType/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Name",

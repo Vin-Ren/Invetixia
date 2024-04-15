@@ -26,21 +26,21 @@ import { Combobox } from "@/components/combo-box"
 import { ViewQRDialogButton } from "../components/viewQrDialogButton"
 
 
-export function CreateDefaultQuotaDialogButton({invitationId, quotaTypes} : {invitationId: string, quotaTypes: {value: string, label: string}[]}) {
-    return DialogButton<{quotaTypeId?: string, value?: number}>({
+export function CreateDefaultQuotaDialogButton({ invitationId, quotaTypes }: { invitationId: string, quotaTypes: { value: string, label: string }[] }) {
+    return DialogButton<{ quotaTypeId?: string, value?: number }>({
         triggerNode: (
             <Button variant={'outline'}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Default Quota
             </Button>
         ),
-        initializeDialogData: ({ setDialogData }) => { setDialogData({ quotaTypeId: "", value:1 }) },
+        initializeDialogData: ({ setDialogData }) => { setDialogData({ quotaTypeId: "", value: 1 }) },
         actionHandler: async ({ getDialogData }) => {
-            const defaultQuota = await defaultQuotaCreateOne({invitationId, quotaTypeId: "", value: 0, ...(getDialogData() || {})});
-            return (defaultQuota) ? true: false;
+            const defaultQuota = await defaultQuotaCreateOne({ invitationId, quotaTypeId: "", value: 0, ...(getDialogData() || {}) });
+            return (defaultQuota) ? true : false;
         },
         queriesInvalidator: () => [queryClient, [getOne(invitationId)]],
-        dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
+        dialogContent: ({ internalActionHandler, getDialogData, setDialogData }) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
                     <DialogHeader>
@@ -53,13 +53,13 @@ export function CreateDefaultQuotaDialogButton({invitationId, quotaTypes} : {inv
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label>Quota Type</Label>
                             <div className="col-span-3">
-                                <Combobox options={quotaTypes} onChange={(val) => setDialogData((data) => ({...data, quotaTypeId: val}))}
+                                <Combobox options={quotaTypes} onChange={(val) => setDialogData((data) => ({ ...data, quotaTypeId: val }))}
                                 />
                             </div>
                             <Label>Value</Label>
                             <Input className="col-span-3"
-                            value={(getDialogData?.().value) ? (getDialogData?.().value)?.toString() : ''}
-                            onChange={(e) => setDialogData((data) => ({ ...data, value: parseInt(e.target.value || '0') }))}></Input>
+                                value={(getDialogData?.().value) ? (getDialogData?.().value)?.toString() : ''}
+                                onChange={(e) => setDialogData((data) => ({ ...data, value: parseInt(e.target.value || '0') }))}></Input>
                         </div>
                     </div>
                     <DialogFooter>
@@ -83,8 +83,8 @@ export function CreateDefaultQuotaDialogButton({invitationId, quotaTypes} : {inv
 }
 
 
-export function CreateTicketDialogButton({invitationId} : {invitationId: string}) {
-    return DialogButton<{ownerName?: string, ownerEmail?: string, ownerPhoneNumber?: string}>({
+export function CreateTicketDialogButton({ invitationId }: { invitationId: string }) {
+    return DialogButton<{ ownerName?: string, ownerEmail?: string, ownerPhoneNumber?: string }>({
         triggerNode: (
             <Button variant={'outline'}>
                 <Plus className="mr-2 h-4 w-4" />
@@ -93,7 +93,7 @@ export function CreateTicketDialogButton({invitationId} : {invitationId: string}
         ),
         initializeDialogData: ({ setDialogData }) => { setDialogData({ ownerName: "", ownerEmail: "", ownerPhoneNumber: "" }) },
         actionHandler: async ({ navigate, getDialogData }) => {
-            const ticket = await ticketCreateOne({invitationId, ownerName: "", ...(getDialogData() || {}), ownerContacts: { email: getDialogData?.().ownerEmail || "", phone_number: getDialogData?.().ownerPhoneNumber || ""}});
+            const ticket = await ticketCreateOne({ invitationId, ownerName: "", ...(getDialogData() || {}), ownerContacts: { email: getDialogData?.().ownerEmail || "", phone_number: getDialogData?.().ownerPhoneNumber || "" } });
             if (ticket) {
                 navigate(`/dashboard/ticket/details/${ticket.UUID}`)
                 return true;
@@ -101,7 +101,7 @@ export function CreateTicketDialogButton({invitationId} : {invitationId: string}
             return false;
         },
         queriesInvalidator: () => [queryClient, [getOne(invitationId)]],
-        dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
+        dialogContent: ({ internalActionHandler, getDialogData, setDialogData }) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
                     <DialogHeader>
@@ -173,8 +173,8 @@ export const InvitationDetails = () => {
 
     useEffect(() => {
         QRCode.toDataURL(
-            `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`, 
-            { errorCorrectionLevel: 'Q', scale:8, margin:2 }
+            `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`,
+            { errorCorrectionLevel: 'Q', scale: 8, margin: 2 }
         ).then((res: string) => setQr(res))
     }, [UUID])
     if (invitation === undefined) return <></>
@@ -205,7 +205,7 @@ export const InvitationDetails = () => {
                             <CardDescription>{invitation.defaultQuotas?.length} Default Quota(s)</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <CreateDefaultQuotaDialogButton invitationId={UUID} quotaTypes={quotaTypes?.map((e)=>({value:e.UUID, label:e.name})) || []}/>
+                            <CreateDefaultQuotaDialogButton invitationId={UUID} quotaTypes={quotaTypes?.map((e) => ({ value: e.UUID, label: e.name })) || []} />
                             <DataTable columns={defaultQuotaTableColumns} data={invitation.defaultQuotas || []} />
                         </CardContent>
                     </Card>
@@ -226,7 +226,7 @@ export const InvitationDetails = () => {
                             <CardTitle>Organisation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={organisationTableColumns} data={invitation.publisher ? [invitation.publisher] : []} options={{enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false}}/>
+                            <DataTable columns={organisationTableColumns} data={invitation.publisher ? [invitation.publisher] : []} options={{ enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false }} />
                         </CardContent>
                     </Card>
                 </div>

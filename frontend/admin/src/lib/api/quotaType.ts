@@ -23,7 +23,7 @@ export const getOne = async (UUID: string): Promise<QuotaType> => {
 }
 
 
-export const createOne = async ({name, description}: {name:string, description:string}): Promise<QuotaType> => {
+export const createOne = async ({ name, description }: { name: string, description: string }): Promise<QuotaType> => {
     const res = await axios({
         method: 'POST',
         url: `${import.meta.env.VITE_API_BASE_URL}/quotaType/create`,
@@ -33,7 +33,7 @@ export const createOne = async ({name, description}: {name:string, description:s
 }
 
 
-export const createMany = async (quotaTypes: {name: string, description: string}[]) => await Promise.all(quotaTypes.map((quotaType) => createOne(quotaType)))
+export const createMany = async (quotaTypes: { name: string, description: string }[]) => await Promise.all(quotaTypes.map((quotaType) => createOne(quotaType)))
 
 
 export const updateOne = async (UUID: string, name: string, description: string): Promise<boolean> => {
@@ -65,5 +65,5 @@ export const deleteOne = async (UUID: string): Promise<boolean> => {
 
 
 export const deleteMany = async (UUIDs: string[]): Promise<boolean> => {
-    return (await Promise.all(UUIDs.map((UUID) => deleteOne(UUID)))).reduce((prv,cr) => prv && cr, true)
+    return (await Promise.all(UUIDs.map((UUID) => deleteOne(UUID)))).reduce((prv, cr) => prv && cr, true)
 }

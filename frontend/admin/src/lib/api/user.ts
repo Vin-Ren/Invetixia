@@ -132,10 +132,10 @@ export const createOne = async ({ username, password, role, organisationName }: 
 }
 
 
-export const createMany = async (users: {username: string, password: string, role: number, organisationName: string}[] ) => await Promise.all(users.map((user) => createOne(user)))
+export const createMany = async (users: { username: string, password: string, role: number, organisationName: string }[]) => await Promise.all(users.map((user) => createOne(user)))
 
 
-export const updateOne = async ({ UUID, username, role, organisationName, password="" }: { UUID: string, username: string, role: number, organisationName: string, password?: string }): Promise<boolean> => {
+export const updateOne = async ({ UUID, username, role, organisationName, password = "" }: { UUID: string, username: string, role: number, organisationName: string, password?: string }): Promise<boolean> => {
     try {
         const res = await axios({
             method: 'PATCH',

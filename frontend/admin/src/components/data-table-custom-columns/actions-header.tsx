@@ -42,7 +42,7 @@ export type DialogContentType<TData, TDialogData = object> = (props: DialogConte
 export interface BaseToastProps<TData> {
     rows: Row<TData>[]
 }
-export type BaseToast<TData> = (props:BaseToastProps<TData>) => Toast
+export type BaseToast<TData> = (props: BaseToastProps<TData>) => Toast
 
 export interface DialogToastProps<TData, TDialogData> extends BaseToastProps<TData> {
     getDialogData: () => TDialogData

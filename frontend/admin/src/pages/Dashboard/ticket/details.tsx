@@ -25,21 +25,21 @@ import { Combobox } from "@/components/combo-box"
 import { Input } from "@/components/ui/input"
 
 
-export function CreateQuotaDialogButton({ticketId, quotaTypes} : {ticketId: string, quotaTypes: {value: string, label: string}[]}) {
-    return DialogButton<{quotaTypeId?: string, usageLeft?: number}>({
+export function CreateQuotaDialogButton({ ticketId, quotaTypes }: { ticketId: string, quotaTypes: { value: string, label: string }[] }) {
+    return DialogButton<{ quotaTypeId?: string, usageLeft?: number }>({
         triggerNode: (
             <Button variant={'outline'}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Quota
             </Button>
         ),
-        initializeDialogData: ({ setDialogData }) => { setDialogData({ quotaTypeId: "", usageLeft:1 }) },
+        initializeDialogData: ({ setDialogData }) => { setDialogData({ quotaTypeId: "", usageLeft: 1 }) },
         actionHandler: async ({ getDialogData }) => {
-            const defaultQuota = await quotaCreateOne({ticketId, quotaTypeId: "", usageLeft: 0, ...(getDialogData() || {})});
-            return (defaultQuota) ? true: false;
+            const defaultQuota = await quotaCreateOne({ ticketId, quotaTypeId: "", usageLeft: 0, ...(getDialogData() || {}) });
+            return (defaultQuota) ? true : false;
         },
         queriesInvalidator: () => [queryClient, [getOne(ticketId)]],
-        dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
+        dialogContent: ({ internalActionHandler, getDialogData, setDialogData }) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
                     <DialogHeader>
@@ -52,13 +52,13 @@ export function CreateQuotaDialogButton({ticketId, quotaTypes} : {ticketId: stri
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label>Quota Type</Label>
                             <div className="col-span-3">
-                                <Combobox options={quotaTypes} onChange={(val) => setDialogData((data) => ({...data, quotaTypeId: val}))}
+                                <Combobox options={quotaTypes} onChange={(val) => setDialogData((data) => ({ ...data, quotaTypeId: val }))}
                                 />
                             </div>
                             <Label>Value</Label>
                             <Input className="col-span-3"
-                            value={(getDialogData?.().usageLeft) ? (getDialogData?.().usageLeft)?.toString() : ''}
-                            onChange={(e) => setDialogData((data) => ({ ...data, usageLeft: parseInt(e.target.value || '0') }))}></Input>
+                                value={(getDialogData?.().usageLeft) ? (getDialogData?.().usageLeft)?.toString() : ''}
+                                onChange={(e) => setDialogData((data) => ({ ...data, usageLeft: parseInt(e.target.value || '0') }))}></Input>
                         </div>
                     </div>
                     <DialogFooter>
@@ -102,8 +102,8 @@ export const TicketDetails = () => {
 
     useEffect(() => {
         QRCode.toDataURL(
-            `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_TICKET_URL}/${UUID}`, 
-            { errorCorrectionLevel: 'Q', scale:8, margin:2 }
+            `${import.meta.env.VITE_PUBLIC_FRONTEND_BASE_TICKET_URL}/${UUID}`,
+            { errorCorrectionLevel: 'Q', scale: 8, margin: 2 }
         ).then((res: string) => setQr(res))
     }, [UUID])
 
@@ -134,7 +134,7 @@ export const TicketDetails = () => {
                             <CardDescription>{ticket.quotas?.length} Quota(s)</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <CreateQuotaDialogButton ticketId={UUID} quotaTypes={quotaTypes?.map((e) => ({value:e.UUID, label:e.name})) || []}/>
+                            <CreateQuotaDialogButton ticketId={UUID} quotaTypes={quotaTypes?.map((e) => ({ value: e.UUID, label: e.name })) || []} />
                             <DataTable columns={quotaTableColumns} data={ticket.quotas || []} />
                         </CardContent>
                     </Card>
@@ -144,7 +144,7 @@ export const TicketDetails = () => {
                             <CardTitle>Invitation</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <DataTable columns={invitationTableColumns} data={[invitation]} options={{enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false}}/>
+                            <DataTable columns={invitationTableColumns} data={[invitation]} options={{ enablePagination: false, enableFilters: false, enableViewColumnCheckbox: false }} />
                         </CardContent>
                     </Card>
                 </div>

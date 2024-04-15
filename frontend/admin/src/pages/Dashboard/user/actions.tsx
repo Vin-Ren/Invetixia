@@ -39,7 +39,7 @@ export const UserEditAction = (): CellDialogAction<UserSanitized, { UUID?: strin
     actionHandler: async ({ row, getDialogData }) => {
         return await updateOne({ UUID: row.original.UUID, username: row.original.username, role: row.original.role, organisationName: row.original.organisationManaged?.name || "", password: "", ...(getDialogData?.() || {}) })
     },
-    initializeDialogData: ({ row, setDialogData }) => { setDialogData({ UUID: row.original.UUID, username: row.original.username, role: row.original.role, organisationName: row.original.organisationManaged?.name || "", password: ""}) },
+    initializeDialogData: ({ row, setDialogData }) => { setDialogData({ UUID: row.original.UUID, username: row.original.username, role: row.original.role, organisationName: row.original.organisationManaged?.name || "", password: "" }) },
     queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
     dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
         return (
@@ -99,9 +99,9 @@ export const UserDeleteAction = () => DeleteDialogAction<UserSanitized>({
 });
 
 export const UserHeaderDeleteAction = () => HeaderDeleteDialogAction<UserSanitized>({
-    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
     queriesInvalidator: (rows) => ([queryClient, [getAll, ...(rows.map((row) => [
         getOne(row.original.UUID), organisationGetOne(row.original.organisationId)
-        ]).flatMap((e)=>e))
+    ]).flatMap((e) => e))
     ]])
 })
