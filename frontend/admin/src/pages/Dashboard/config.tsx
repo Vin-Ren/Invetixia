@@ -6,8 +6,7 @@ import { createLoader } from "@/lib/queries/_loader"
 import { ResendAPIConfigCard } from "./components/resendApiConfigCard"
 
 
-
-export const loader = createLoader({queries:[getConfig('event_info'), getConfig('event_socials'), getConfig('event_details')]})
+export const loader = createLoader({ queries: [getConfig('event_info'), getConfig('event_socials'), getConfig('event_details')] })
 
 
 export const ConfigPage = () => {
@@ -21,9 +20,6 @@ export const ConfigPage = () => {
                     <ResendAPIConfigCard />
                 </div>
             </div>
-
-            {/* <div className="flex flex-col gap-4">
-            </div> */}
         </div>
     )
 }

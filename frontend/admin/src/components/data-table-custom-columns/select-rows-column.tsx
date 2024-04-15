@@ -2,7 +2,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
 
 
-
 export function getDataTableSelectRowsColumn<TData, TValue>(): ColumnDef<TData, TValue> {
     return (
         {

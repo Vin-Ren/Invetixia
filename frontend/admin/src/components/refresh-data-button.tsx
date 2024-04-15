@@ -6,18 +6,18 @@ import { RefreshCcwIcon } from "lucide-react"
 
 
 export const RefreshDataButton = ({
-    query = undefined, 
+    query = undefined,
     queries = [],
     text = "Refresh Data",
-    buttonProps = {variant: "secondary"}
-} : {
-    query?: InvalidateQueryFilters, 
+    buttonProps = { variant: "secondary" }
+}: {
+    query?: InvalidateQueryFilters,
     queries?: InvalidateQueryFilters[],
     text?: string,
     buttonProps?: Omit<ButtonProps, "onClick">
 }) => {
     if (query !== undefined) queries.push(query)
-    const {toast} = useToast()
+    const { toast } = useToast()
     const handleRefreshData = () => {
         queries.map((q) => queryClient.invalidateQueries(q))
         toast({
@@ -27,8 +27,9 @@ export const RefreshDataButton = ({
     }
 
     return (
-    <Button {...buttonProps} onClick={handleRefreshData}>
-        <RefreshCcwIcon className="h-4 w-4 mr-2" />
-        {text}
-    </Button>)
+        <Button {...buttonProps} onClick={handleRefreshData}>
+            <RefreshCcwIcon className="h-4 w-4 mr-2" />
+            {text}
+        </Button>
+    )
 }

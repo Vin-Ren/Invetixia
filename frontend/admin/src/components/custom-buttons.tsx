@@ -228,7 +228,7 @@ export function GenericIndexCreateButton() {
         <div className="flex flex-col w-full">
             <div className="place-self-end flex flex-row">
                 <Button variant={"outline"} size={"sm"} onClick={handleNavigate} className="ml-auto h-8 lg:flex">
-                    <PlusIcon className="mr-2 h-4 w-4"/>
+                    <PlusIcon className="mr-2 h-4 w-4" />
                     Create
                 </Button>
             </div>

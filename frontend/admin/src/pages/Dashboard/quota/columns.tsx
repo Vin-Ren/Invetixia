@@ -18,7 +18,7 @@ export const getQuotaTableColumns = getGenericTableColumns<Quota>( // Will never
             id: "UUID",
             accessorKey: "UUID",
             header: DataTableColumnHeader,
-            cell: ({row}) => (<Link to={`/dashboard/quota/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
+            cell: ({ row }) => (<Link to={`/dashboard/quota/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Quota Type",
@@ -77,7 +77,7 @@ export const getQuotaFilteredByOrganisationAndQuotaTypeTableColumns = getGeneric
             id: "UUID",
             accessorKey: "UUID",
             header: DataTableColumnHeader,
-            cell: ({row}) => (<Link to={`/dashboard/quota/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
+            cell: ({ row }) => (<Link to={`/dashboard/quota/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Ticket Owner",

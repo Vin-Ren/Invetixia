@@ -18,7 +18,7 @@ export const getOrganisationTableColumns = getGenericTableColumns<Organisation>(
             id: "UUID",
             accessorKey: "UUID",
             header: DataTableColumnHeader,
-            cell: ({row}) => (<Link to={`/dashboard/organisation/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
+            cell: ({ row }) => (<Link to={`/dashboard/organisation/details/${row.original.UUID}`}>{row.original.UUID}</Link>)
         },
         {
             id: "Name",

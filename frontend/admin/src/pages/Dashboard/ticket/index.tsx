@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 
-export function SendEmailsDialogButton(data: {sentCount: number, totalCount: number}) {
-    return DialogButton<{limit?: number}>({
+export function SendEmailsDialogButton(data: { sentCount: number, totalCount: number }) {
+    return DialogButton<{ limit?: number }>({
         triggerNode: (
             <Button variant={'secondary'}>
                 <Mail className="mr-2 h-4 w-4" />
@@ -24,10 +24,10 @@ export function SendEmailsDialogButton(data: {sentCount: number, totalCount: num
         ),
         initializeDialogData: ({ setDialogData }) => { setDialogData({ limit: 0 }) },
         actionHandler: async ({ getDialogData }) => {
-            return await sendTickets({limit: 0, ...(getDialogData() || {})})
+            return await sendTickets({ limit: 0, ...(getDialogData() || {}) })
         },
         queriesInvalidator: () => [queryClient, [getAll]],
-        dialogContent: ({internalActionHandler, getDialogData, setDialogData}) => {
+        dialogContent: ({ internalActionHandler, getDialogData, setDialogData }) => {
             return (
                 <DialogContent className="sm:max-w-[512px]">
                     <DialogHeader>
@@ -65,23 +65,23 @@ export function SendEmailsDialogButton(data: {sentCount: number, totalCount: num
 
 export const TicketDashboard = () => {
     const { data } = useQuery(getAll, queryClient)
-    const sentCount = data?.reduce((val, tick)=> {
-        if (tick.sentEmail.length!=0) return val+1;
+    const sentCount = data?.reduce((val, tick) => {
+        if (tick.sentEmail.length != 0) return val + 1;
         return val;
     }, 0)
     if (data === undefined) return <></>
 
     return (
         <div className="container mx-auto py-10">
-            <GenericIndexCreateButton/>
+            <GenericIndexCreateButton />
             <DataTable columns={getTicketTableColumns()} data={data} />
 
             <div className="flex flex-col gap-4">
                 <div className="flex flex-1">
-                    <RefreshDataButton query={getAll}/>
+                    <RefreshDataButton query={getAll} />
                 </div>
                 <div className="flex flex-1">
-                    <SendEmailsDialogButton sentCount={sentCount || 0} totalCount={data.length}/>
+                    <SendEmailsDialogButton sentCount={sentCount || 0} totalCount={data.length} />
                 </div>
             </div>
         </div>

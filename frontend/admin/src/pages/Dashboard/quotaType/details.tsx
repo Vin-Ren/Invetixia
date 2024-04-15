@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 
-const FilteredQuotasByQuotaTypeAndOrganisationCard = ({quotas}:{quotas:QuotaWithTicketOrganisationInfo[]}) => {
+const FilteredQuotasByQuotaTypeAndOrganisationCard = ({ quotas }: { quotas: QuotaWithTicketOrganisationInfo[] }) => {
     const [filteredQuotas, setFilteredQuotas] = useState<QuotaWithTicketOrganisationInfo[]>([])
     const [organisationName, setOrganisationName] = useState("")
 
@@ -26,7 +26,7 @@ const FilteredQuotasByQuotaTypeAndOrganisationCard = ({quotas}:{quotas:QuotaWith
     })
 
     useEffect(() => {
-        setFilteredQuotas(quotas.filter((quota)=> quota.ticket?.ownerAffiliation.name.includes(organisationName)))
+        setFilteredQuotas(quotas.filter((quota) => quota.ticket?.ownerAffiliation.name.includes(organisationName)))
     }, [quotas, organisationName])
 
     return (
@@ -97,7 +97,7 @@ export const QuotaTypeDetails = () => {
                         </CardContent>
                     </Card>
 
-                    <FilteredQuotasByQuotaTypeAndOrganisationCard quotas={quotaType.quotas || []}/>
+                    <FilteredQuotasByQuotaTypeAndOrganisationCard quotas={quotaType.quotas || []} />
                 </div>
             </div>
 

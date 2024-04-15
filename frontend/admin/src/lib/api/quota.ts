@@ -23,7 +23,7 @@ export const getOne = async (UUID: string): Promise<Quota> => {
 }
 
 
-export const createOne = async (data: {quotaTypeId:string, ticketId:string, usageLeft:number}): Promise<Quota> => {
+export const createOne = async (data: { quotaTypeId: string, ticketId: string, usageLeft: number }): Promise<Quota> => {
     const res = await axios({
         method: 'POST',
         url: `${import.meta.env.VITE_API_BASE_URL}/quota/create`,
@@ -33,10 +33,10 @@ export const createOne = async (data: {quotaTypeId:string, ticketId:string, usag
 }
 
 
-export const createMany = async (quotas: {quotaTypeId:string, ticketId:string, usageLeft:number}[]) => await Promise.all(quotas.map((quota) => createOne(quota)))
+export const createMany = async (quotas: { quotaTypeId: string, ticketId: string, usageLeft: number }[]) => await Promise.all(quotas.map((quota) => createOne(quota)))
 
 
-export const updateOne = async (data: {UUID: string, quotaTypeId: string, usageLeft: number}): Promise<boolean> => {
+export const updateOne = async (data: { UUID: string, quotaTypeId: string, usageLeft: number }): Promise<boolean> => {
     try {
         const res = await axios({
             method: 'PATCH',
@@ -79,5 +79,5 @@ export const deleteOne = async (UUID: string): Promise<boolean> => {
 
 
 export const deleteMany = async (UUIDs: string[]): Promise<boolean> => {
-    return (await Promise.all(UUIDs.map((UUID) => deleteOne(UUID)))).reduce((prv,cr) => prv && cr, true)
+    return (await Promise.all(UUIDs.map((UUID) => deleteOne(UUID)))).reduce((prv, cr) => prv && cr, true)
 }

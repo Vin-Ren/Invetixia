@@ -49,7 +49,7 @@ export const SendEmailDialogAction = (): CellDialogAction<Ticket> => {
                 Send ticket email
             </>
         ),
-        actionHandler: async ({row}) => await sendTicket({UUID: row.original.UUID}),
+        actionHandler: async ({ row }) => await sendTicket({ UUID: row.original.UUID }),
         dialogOptions: {
             title: "Confirm action",
             description: ({ row }) => `Are you sure you would like to send an email to the owner of this ticket(email: ${row.original.ownerContacts.email})?`,
@@ -69,7 +69,7 @@ export const SendEmailDialogAction = (): CellDialogAction<Ticket> => {
 }
 
 
-export const TicketEditAction = (): CellDialogAction<Ticket, {ownerName?:string, ownerContacts?: {email:string, phone_number:string}}> => ({
+export const TicketEditAction = (): CellDialogAction<Ticket, { ownerName?: string, ownerContacts?: { email: string, phone_number: string } }> => ({
     actionType: "dialog",
     actionId: "quick-edit-item",
     triggerNode: (
@@ -79,7 +79,7 @@ export const TicketEditAction = (): CellDialogAction<Ticket, {ownerName?:string,
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {
-        return await updateOne({UUID: row.original.UUID, ownerName: "", ownerContacts: {email: "", phone_number: ""}, ...(getDialogData?.() || {})})
+        return await updateOne({ UUID: row.original.UUID, ownerName: "", ownerContacts: { email: "", phone_number: "" }, ...(getDialogData?.() || {}) })
     },
     initializeDialogData: ({ row, setDialogData }) => { setDialogData({ ownerName: row.original.ownerName, ownerContacts: row.original.ownerContacts }) },
     queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
@@ -102,12 +102,12 @@ export const TicketEditAction = (): CellDialogAction<Ticket, {ownerName?:string,
                         <Input className="col-span-3"
                             value={getDialogData?.().ownerContacts?.email || ""}
                             placeholder="example@mail.com"
-                            onChange={(e) => setDialogData((data) => ({ ...data, ownerContacts: { email: e.target.value, phone_number: data?.ownerContacts?.phone_number || ""} }))}></Input>
+                            onChange={(e) => setDialogData((data) => ({ ...data, ownerContacts: { email: e.target.value, phone_number: data?.ownerContacts?.phone_number || "" } }))}></Input>
                         <Label>Phone Number</Label>
                         <Input className="col-span-3"
                             value={getDialogData?.().ownerContacts?.phone_number || ""}
                             placeholder="628xxxxxxxxxx"
-                            onChange={(e) => setDialogData((data) => ({ ...data, ownerContacts: { phone_number: e.target.value, email: data?.ownerContacts?.email || ""} }))}></Input>
+                            onChange={(e) => setDialogData((data) => ({ ...data, ownerContacts: { phone_number: e.target.value, email: data?.ownerContacts?.email || "" } }))}></Input>
                     </div>
                 </div>
                 <DialogFooter>
@@ -135,9 +135,9 @@ export const TicketDeleteAction = () => DeleteDialogAction<Ticket>({
 });
 
 export const TicketHeaderDeleteAction = () => HeaderDeleteDialogAction<Ticket>({
-    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
     queriesInvalidator: (rows) => ([queryClient, [getAll, ...(rows.map((row) => [
         getOne(row.original.UUID), invitationGetOne(row.original.invitationId)
-        ]).flatMap((e)=>e))
+    ]).flatMap((e) => e))
     ]])
 })

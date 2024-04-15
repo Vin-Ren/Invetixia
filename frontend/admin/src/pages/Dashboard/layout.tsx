@@ -37,7 +37,7 @@ export const Dashboard = () => {
                                     <NavItem to={'/dashboard/profile'}> {sidebarOpen ? 'Profile' : <CircleUserRound />} </NavItem>
                                     <NavItem to={'/dashboard/overview'}> {sidebarOpen ? 'Overview' : <AreaChart />} </NavItem>
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/config'}> {sidebarOpen ? 'Config' : <Settings />} </NavItem>}
-                                    {(user.role || 0) < 4 || <NavItem to={'/dashboard/scanner'}> {sidebarOpen ? 'Scanner' : <ScanBarcode />} </NavItem>}
+                                    {(user.role || 0) < 2 || <NavItem to={'/dashboard/scanner'}> {sidebarOpen ? 'Scanner' : <ScanBarcode />} </NavItem>}
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/user'}> {sidebarOpen ? 'User' : <User />} </NavItem>}
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/organisation'}> {sidebarOpen ? 'Organisation' : <Building />} </NavItem>}
                                     {(user.role || 0) < 4 || <NavItem to={'/dashboard/invitation'}> {sidebarOpen ? 'Invitation' : <TicketSlash />} </NavItem>}
@@ -51,17 +51,17 @@ export const Dashboard = () => {
                     <Separator orientation="vertical" className="ml-4 my-4 place-self-end self-center max-md:hidden" />
                     <Separator orientation="horizontal" className="mx-4 my-2 place-self-end self-center md:hidden" />
                 </div>
-                
+
                 {
-                    window.innerWidth < 768 
-                    ? <Outlet />
-                    : (
-                        <ScrollArea className="flex-1 max-h-[90vh] max-w-full">
-                            <Outlet />
-                            <ScrollBar orientation="vertical" />
-                            <ScrollBar orientation="horizontal" />
-                        </ScrollArea>
-                    )
+                    window.innerWidth < 768
+                        ? <Outlet />
+                        : (
+                            <ScrollArea className="flex-1 max-h-[90vh] max-w-full">
+                                <Outlet />
+                                <ScrollBar orientation="vertical" />
+                                <ScrollBar orientation="horizontal" />
+                            </ScrollArea>
+                        )
                 }
             </div>
         </ProtectedRoute>

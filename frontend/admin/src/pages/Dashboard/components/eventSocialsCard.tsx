@@ -26,7 +26,7 @@ export const EventSocialsCard = () => {
     const { data: event_socials } = useQuery(getEventSocials, queryClient)
     const form = useForm<z.infer<typeof EventSocialsSchema>>({
         resolver: zodResolver(EventSocialsSchema),
-        defaultValues: { mainWebsite: "", instagram: "", youtube: "", x_twitter: "", email: "", ...event_socials},
+        defaultValues: { mainWebsite: "", instagram: "", youtube: "", x_twitter: "", email: "", ...event_socials },
     })
 
     const onSubmit = async (values: z.infer<typeof EventSocialsSchema>) => {
@@ -46,7 +46,7 @@ export const EventSocialsCard = () => {
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         form.setValue('mainWebsite', event_socials?.mainWebsite || '')
         form.setValue('instagram', event_socials?.instagram || '')
         form.setValue('youtube', event_socials?.youtube || '')

@@ -15,7 +15,7 @@ export const getAll = {
     queryFn: apiGetAll
 }
 
-export const getOne = (UUID:string) => ({
+export const getOne = (UUID: string) => ({
     queryKey: ['user', 'info', UUID],
     queryFn: () => apiGetOne(UUID)
 })

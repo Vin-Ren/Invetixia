@@ -28,7 +28,7 @@ export const InvitationViewOrganisationAction = () => GenericNavigatorButtonActi
 });
 
 
-export const InvitationSendEmailAction = (): CellDialogAction<Invitation, { to: {recipient: string, idx:number}[] }> => ({
+export const InvitationSendEmailAction = (): CellDialogAction<Invitation, { to: { recipient: string, idx: number }[] }> => ({
     actionType: "dialog",
     actionId: "quick-email-item",
     triggerNode: (
@@ -38,10 +38,10 @@ export const InvitationSendEmailAction = (): CellDialogAction<Invitation, { to: 
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {
-        return await sendInvitation({UUID: row.original.UUID, to: (getDialogData?.().to.map((e)=>(e.recipient))?.flatMap((e)=>e).filter((e) => e.includes('@')))||[] })
+        return await sendInvitation({ UUID: row.original.UUID, to: (getDialogData?.().to.map((e) => (e.recipient))?.flatMap((e) => e).filter((e) => e.includes('@'))) || [] })
     },
     initializeDialogData: ({ setDialogData }) => { setDialogData({ to: [] }) },
-    queriesInvalidator: () => {},
+    queriesInvalidator: () => { },
     dialogContent: ({ row, internalActionHandler, getDialogData, setDialogData }) => {
         return (
             <DialogContent className="sm:max-w-[625px]">
@@ -55,24 +55,24 @@ export const InvitationSendEmailAction = (): CellDialogAction<Invitation, { to: 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label>Recipients</Label>
                         <div className="col-span-3 grid grid-flow-row gap-2">
-                        {
-                            getDialogData?.().to?.map((toe) => (
-                                <Input className="col-span-3"
-                                value={toe.recipient}
-                                onChange={(e) => setDialogData((data) => ({ 
-                                    ...data, to: [...(data?.to?.filter((e)=>e.idx<toe.idx) || []), 
-                                    {idx:toe.idx, recipient: e.target.value}, 
-                                    ...(data?.to?.filter((e)=>e.idx>toe.idx) || [])] 
-                                }))}></Input>
-                            )
-                        )
-                        }
-                        <Button variant={'secondary'} className="w-full" onClick={() => setDialogData((data) => {
-                            return {...data, to: [...(data?.to || []), {idx: data?.to?.length || 0, recipient: ""}]}
-                        })}>
-                            <Plus />
-                            Add Recipient
-                        </Button>
+                            {
+                                getDialogData?.().to?.map((toe) => (
+                                    <Input className="col-span-3"
+                                        value={toe.recipient}
+                                        onChange={(e) => setDialogData((data) => ({
+                                            ...data, to: [...(data?.to?.filter((e) => e.idx < toe.idx) || []),
+                                            { idx: toe.idx, recipient: e.target.value },
+                                            ...(data?.to?.filter((e) => e.idx > toe.idx) || [])]
+                                        }))}></Input>
+                                )
+                                )
+                            }
+                            <Button variant={'secondary'} className="w-full" onClick={() => setDialogData((data) => {
+                                return { ...data, to: [...(data?.to || []), { idx: data?.to?.length || 0, recipient: "" }] }
+                            })}>
+                                <Plus />
+                                Add Recipient
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ export const InvitationEditAction = (): CellDialogAction<Invitation, { name?: st
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {
-        return await updateOne({UUID: row.original.UUID, name: "", organisationId: "", usageQuota: 0, ...(getDialogData?.() || {})})
+        return await updateOne({ UUID: row.original.UUID, name: "", organisationId: "", usageQuota: 0, ...(getDialogData?.() || {}) })
     },
     initializeDialogData: ({ row, setDialogData }) => { setDialogData({ name: row.original.name, organisationId: row.original.organisationId, usageQuota: (row.original.usageQuota || 0) }) },
     queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID)]]),
@@ -160,6 +160,6 @@ export const InvitationDeleteAction = () => DeleteDialogAction<Invitation>({
 });
 
 export const InvitationHeaderDeleteAction = () => HeaderDeleteDialogAction<Invitation>({
-    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
     queriesInvalidator: (rows) => ([queryClient, [getAll, ...rows.map((row) => getOne(row.original.UUID))]])
 })

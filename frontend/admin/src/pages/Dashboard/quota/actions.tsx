@@ -53,7 +53,7 @@ export const QuotaEditAction = (): CellDialogAction<Quota, { quotaTypeId?: strin
         </>
     ),
     actionHandler: async ({ row, getDialogData }) => {
-        return await updateOne({UUID: row.original.UUID, quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: 0, ...(getDialogData?.() || {})})
+        return await updateOne({ UUID: row.original.UUID, quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: 0, ...(getDialogData?.() || {}) })
     },
     initializeDialogData: ({ row, setDialogData }) => { setDialogData({ quotaTypeId: row.original.quotaType?.UUID as string, usageLeft: (row.original.usageLeft || 0) }) },
     queriesInvalidator: (row) => ([queryClient, [getAll, getOne(row.original.UUID), ticketGetOne(row.original.ticketId), quotaTypeGetOne(row.original.quotaTypeId)]]),
@@ -103,9 +103,9 @@ export const QuotaDeleteAction = () => DeleteDialogAction<Quota>({
 });
 
 export const QuotaHeaderDeleteAction = () => HeaderDeleteDialogAction<Quota>({
-    deleteHandler: async ({rows}) => await deleteMany(rows.map((row) => row.original.UUID)),
+    deleteHandler: async ({ rows }) => await deleteMany(rows.map((row) => row.original.UUID)),
     queriesInvalidator: (rows) => ([queryClient, [getAll, ...(rows.map((row) => [
         getOne(row.original.UUID), ticketGetOne(row.original.ticketId), quotaTypeGetOne(row.original.quotaTypeId)
-        ]).flatMap((e)=>e))
+    ]).flatMap((e) => e))
     ]])
 })

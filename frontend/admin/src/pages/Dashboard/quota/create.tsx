@@ -41,7 +41,7 @@ function QuotaCreate() {
 
     const onSubmit = async (values: z.infer<typeof QuotaCreateSchema>) => {
         try {
-            const quota = await createOne({...values, usageLeft: parseInt(values.usageLeft)})
+            const quota = await createOne({ ...values, usageLeft: parseInt(values.usageLeft) })
             toast({
                 title: "Successfully created an quota!",
                 description: "Redirecting in a second."
@@ -115,9 +115,9 @@ function QuotaCreateMany() {
     const onSubmit = async (values: z.infer<typeof QuotaCreateManySchema>) => {
         // console.log(values)
         const quotalist = values.data_csv.trim().split(';')
-        const createQuotasData: {quotaTypeId: string, ticketId: string, usageLeft: number}[] = quotalist.map((e) => {
+        const createQuotasData: { quotaTypeId: string, ticketId: string, usageLeft: number }[] = quotalist.map((e) => {
             const splitres = e.split(',')
-            return {quotaTypeId: splitres[0].trim(), ticketId: splitres[1].trim(), usageLeft: parseInt(splitres[2])}
+            return { quotaTypeId: splitres[0].trim(), ticketId: splitres[1].trim(), usageLeft: parseInt(splitres[2]) }
         })
         try {
             const quotas = await createMany(createQuotasData)

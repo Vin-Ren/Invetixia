@@ -111,10 +111,10 @@ export function DataTableActionsCell<
     const [targetActionDialog, setTargetActionDialog] = useState(() => ((actions.length > 0) ? actions[0].actionId : "delete"));
 
     const actionMapping = useMemo(() => {
-        
+
         // For duplicate actionId check
         const actionIdSet = new Set<string>()
-        
+
         // Initializing ds
         actions.forEach((action) => {
             if (actionIdSet.has(action.actionId)) {
@@ -128,8 +128,8 @@ export function DataTableActionsCell<
 
         // Actually converting actions to records
         return arrayToKeyObject(actions, 'actionId');
-        
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [actions]);
 
 

@@ -148,7 +148,7 @@ export function DataTable<TData, TValue>({
                         </TableBody>
                     </Table>
                 </div>
-                { options.enablePagination ? <DataTablePagination table={table} /> : null}
+                {options.enablePagination ? <DataTablePagination table={table} /> : null}
             </div>
         </div>
     )
@@ -186,7 +186,7 @@ export function DataTableFilter<TData>({
             </Select>
             <Input
                 placeholder={`Filter ${filteredColumn}...`}
-                value={(filteredColumn ? table.getColumn(filteredColumn)?.getFilterValue() as string: '')}
+                value={(filteredColumn ? table.getColumn(filteredColumn)?.getFilterValue() as string : '')}
                 onChange={(event) => table.getColumn(filteredColumn)?.setFilterValue(event.target.value)}
                 disabled={!(filteredColumn.length > 0)}
                 className="max-w-sm"

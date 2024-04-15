@@ -4,7 +4,7 @@ export interface Ticket {
     UUID: string,
     ownerName: string,
     ownerContacts: {
-        email: string, 
+        email: string,
         phone_number: string
     },
     ownerAffiliation?: Organisation,
@@ -25,7 +25,7 @@ export interface Quota {
 }
 
 export interface QuotaWithTicketOrganisationInfo extends Quota {
-    ticket?: Ticket & {ownerAffiliation: {UUID: string, name: string}};
+    ticket?: Ticket & { ownerAffiliation: { UUID: string, name: string } };
 }
 
 export interface QuotaType {

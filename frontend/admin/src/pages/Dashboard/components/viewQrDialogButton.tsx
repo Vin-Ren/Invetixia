@@ -4,7 +4,7 @@ import { QrCode } from "lucide-react"
 import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 
-export function ViewQRDialogButton({QrLink, QrImgSource} : {QrLink:string, QrImgSource: string}) {
+export function ViewQRDialogButton({ QrLink, QrImgSource }: { QrLink: string, QrImgSource: string }) {
     return DialogButton({
         triggerNode: (
             <Button variant={'outline'}>
@@ -13,7 +13,7 @@ export function ViewQRDialogButton({QrLink, QrImgSource} : {QrLink:string, QrImg
             </Button>
         ),
         actionHandler: () => true,
-        queriesInvalidator: () => {},
+        queriesInvalidator: () => { },
         dialogContent: () => {
             return (
                 <DialogContent className="sm:max-w-[412px]">

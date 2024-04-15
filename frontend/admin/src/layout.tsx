@@ -10,7 +10,7 @@ import { getUserSelf } from "./lib/queries/user";
 import { createLoader } from "./lib/queries/_loader";
 
 
-export const loader = createLoader({queries:[getUserSelf]}) 
+export const loader = createLoader({ queries: [getUserSelf] })
 
 
 export default function Layout() {
@@ -24,7 +24,7 @@ export default function Layout() {
 
           <div>
             <Toaster />
-            <Separator className="mt-0"/>
+            <Separator className="mt-0" />
             <footer className="px-4 py-2 w-full bottom-0 grid grid-cols-2 text-sm items-center">
               <ModeToggle />
               <aside className="place-self-center justify-self-end items-center grid-flow-col grid gap-2 py-2">

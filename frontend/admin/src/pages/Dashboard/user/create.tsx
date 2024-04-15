@@ -35,8 +35,8 @@ export const UserCreateSchema = z.object({
         .min(2, { message: 'username is too short' })
         .max(50, { message: 'username is too long' }),
     password: z.string()
-        .min(8, {message: "Password requires atleast 8 characters"})
-        .max(50, {message: "Password can only be at most 50 characters"}),
+        .min(8, { message: "Password requires atleast 8 characters" })
+        .max(50, { message: "Password can only be at most 50 characters" }),
     role: z.number(),
     organisationName: z.string()
 })
@@ -97,10 +97,10 @@ function UserCreate() {
                             control={form.control}
                             name="role"
                             label="User Role"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <Select>
                                     <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Role"/>
+                                        <SelectValue placeholder="Role" />
                                     </SelectTrigger>
                                     <SelectContent {...field}>
                                         <SelectItem value={"4"}>ADMIN</SelectItem>
@@ -145,9 +145,9 @@ function UserCreateMany() {
     const onSubmit = async (values: z.infer<typeof UserCreateManySchema>) => {
         // console.log(values)
         const userlist = values.data_csv.trim().split(';')
-        const createUsersData: {username:string, password:string, role:number, organisationName:string}[] = userlist.map((e) => {
+        const createUsersData: { username: string, password: string, role: number, organisationName: string }[] = userlist.map((e) => {
             const splitres = e.split(',')
-            return {username: splitres[0].trim(), password: splitres[1].trim(), role: parseInt(splitres[2].trim()), organisationName: splitres[3].trim()}
+            return { username: splitres[0].trim(), password: splitres[1].trim(), role: parseInt(splitres[2].trim()), organisationName: splitres[3].trim() }
         })
         try {
             const users = await createMany(createUsersData)
