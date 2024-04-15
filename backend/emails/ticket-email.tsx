@@ -125,6 +125,9 @@ export const TicketEmail = ({
                                 <Text style={{ ...paragraph, marginTop: -5 }}>
                                     You can also view your ticket by clicking the button below.
                                 </Text>
+                                <Text style={{ ...paragraph, marginTop: -5 }}>
+                                    If clicking the button does not work, try copying this link into your browser: {ticketLink}
+                                </Text>
                             </Column>
                         </Row>
                         <Row style={{ ...boxInfos, paddingTop: "0" }}>
