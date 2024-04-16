@@ -11,7 +11,7 @@ const nameValidator = z.string()
     .max(50, { message: 'Name must be at most 50 characters' })
 const contactsValidator = z.object({
     email: z.string().email({ message: 'Invalid email' }).nullable(),
-    phone_number: z.string().regex(/\d{11,13}$/, { message: 'Invalid phone number' }).nullable()
+    phone_number: z.string().regex(/\d{10,15}$/, { message: 'Invalid phone number' }).nullable()
 })
 
 
