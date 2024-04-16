@@ -58,7 +58,8 @@ export const sendInvitation = async (req: Request, res: Response) => {
                 bgUrl: PUBLIC_FRONTEND_BACKGROUND_URL,
                 logoUrl: PUBLIC_FRONTEND_LOGO_URL,
                 invitationLink: `${PUBLIC_FRONTEND_BASE_INVITATION_URL}/${UUID}`,
-                qrImgUrl: `${BACKEND_BASE_RENDER_URL}/invitation/${UUID}`
+                qrImgUrl: `${BACKEND_BASE_RENDER_URL}/invitation/${UUID}`,
+                invitationId: UUID
             })
         })
 

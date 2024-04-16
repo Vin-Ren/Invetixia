@@ -23,6 +23,7 @@ interface InvitationEmailProps {
     logoUrl?: string;
     qrImgUrl?: string;
     invitationLink?: string;
+    invitationId?: string;
 }
 
 export const InvitationEmail = ({
@@ -30,7 +31,8 @@ export const InvitationEmail = ({
     bgUrl,
     logoUrl,
     qrImgUrl,
-    invitationLink = ''
+    invitationLink = '',
+    invitationId,
 }: InvitationEmailProps) => {
     return (
         <Html>
@@ -84,6 +86,15 @@ export const InvitationEmail = ({
                                     width={470}
                                     src={`${qrImgUrl}`}
                                 />
+                                <Text
+                                    style={{
+                                        color: "rgb(0,0,0, 0.5)",
+                                        fontSize: 14,
+                                        marginTop: -5,
+                                    }}
+                                >
+                                    *Invitation Id: {invitationId}
+                                </Text>
                                 <Text style={{ ...paragraph, marginTop: -5 }}>
                                     You can also register by clicking the button below.
                                 </Text>
