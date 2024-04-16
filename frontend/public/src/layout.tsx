@@ -6,8 +6,9 @@ import { TbWorldWww } from "react-icons/tb";
 import { FaSlackHash, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
-import { eventQuery } from "./queries";
+import { eventQuery, posterImageQuery } from "./queries";
 import { Helmet } from "react-helmet-async";
+import { getBase64FromBlurhash } from "./lib/utils";
 
 export const loader = (queryClient: QueryClient) => {
     return async () => {
@@ -21,10 +22,12 @@ export const loader = (queryClient: QueryClient) => {
 
 export default function Layout() {
     const { data: { event: { name, socials = null } } } = useQuery(eventQuery)
+    const { data: posterImage = '' } = useQuery(posterImageQuery)
+    const blurhashImg = getBase64FromBlurhash(import.meta.env.VITE_EVENT_POSTER_IMAGE_BLURHASH, window.innerWidth, window.innerHeight)
     const iconSize = 24
 
     return (
-        <div className="min-h-screen bg-no-repeat bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url('/${import.meta.env.VITE_EVENT_POSTER_IMAGE}')` }}>
+        <div className="min-h-screen bg-no-repeat bg-cover bg-center overflow-hidden" style={{ backgroundImage: posterImage ? `url('${posterImage}')` : `url('${blurhashImg}')` }}>
             <Helmet>
                 <title>{name}</title>
             </Helmet>

@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
-import { eventQuery } from "../queries"
+import { eventQuery, posterImageQuery } from "../queries"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { useState } from "react";
+import { getBase64FromBlurhash } from "../lib/utils";
 
 
 export default function Index() {
@@ -10,6 +11,8 @@ export default function Index() {
     const [status, setStatus] = useState<'idle' | 'loading'>('idle')
     const [invitationId, setInvitationId] = useState('')
     const { data: { event = null } } = useQuery(eventQuery)
+    const { data: posterImage = '' } = useQuery(posterImageQuery)
+    const blurhashImg = getBase64FromBlurhash(import.meta.env.VITE_EVENT_POSTER_IMAGE_BLURHASH, Math.floor(window.innerWidth/10), Math.floor(window.innerHeight/10))
     const navigate = useNavigate()
 
     const handleSubmit = async () => {
@@ -30,11 +33,10 @@ export default function Index() {
         setStatus('idle')
     }
 
-
     return (
         <div className="hero min-h-screen bg-base-200 bg-opacity-50">
             <div className="hero-content items-start flex flex-col lg:flex-row bg-base-200 p-6 rounded-xl bg-opacity-75 backdrop-blur-sm m-4">
-                <img src={import.meta.env.VITE_EVENT_POSTER_IMAGE} alt="Event Poster Background" className="max-w-sm rounded-lg shadow-2xl h-auto w-[98%]" />
+                <img src={`${posterImage ? posterImage : blurhashImg}`} alt="Event Poster Background" className="max-w-sm rounded-lg shadow-2xl h-auto w-[98%]" />
                 <div className="flex-1 w-full flex flex-col">
                     {event?.name ? <h1 className="text-5xl font-bold">{event.name}</h1> : null}
                     {event?.description ? <p className="max-md:pb-2 md:pb-6 md:pt-2 font-medium pl-[3px]">{event.description}</p> : null}
