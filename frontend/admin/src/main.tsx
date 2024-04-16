@@ -196,6 +196,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
         <RouterProvider router={router} />
+        <div dangerouslySetInnerHTML={{ __html: import.meta.env.VITE_INJECT_HTML }}></div>
       </HelmetProvider>
     </QueryClientProvider>
   </React.StrictMode>,
