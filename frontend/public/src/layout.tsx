@@ -4,7 +4,7 @@ import { OptionalSocialLink } from "./components/socials";
 
 import { TbWorldWww } from "react-icons/tb";
 import { FaSlackHash, FaInstagram, FaYoutube } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaTiktok, FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
 import { eventQuery, posterImageQuery } from "./queries";
 import { Helmet } from "react-helmet-async";
@@ -42,6 +42,7 @@ export default function Layout() {
                         <OptionalSocialLink icon={<FaInstagram size={iconSize} />} url={socials?.instagram} tooltip="Instagram" />
                         <OptionalSocialLink icon={<FaYoutube size={iconSize} />} url={socials?.youtube} tooltip="Youtube" />
                         <OptionalSocialLink icon={<FaXTwitter size={iconSize} />} url={socials?.x_twitter} tooltip="X (Twitter)" />
+                        <OptionalSocialLink icon={<FaTiktok size={iconSize} />} url={socials?.tiktok} tooltip="Tiktok" />
                     </div>
                 </nav>
                 <aside className="place-self-center justify-self-end items-center grid-flow-col">

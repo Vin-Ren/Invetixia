@@ -23,6 +23,7 @@ dist-ssr
 *.local
 *.production
 *.testing
+D2.png
 
 # Editor directories and files
 .vscode/*
