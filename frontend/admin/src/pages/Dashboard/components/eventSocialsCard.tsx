@@ -19,6 +19,7 @@ export const EventSocialsSchema = z.object({
     instagram: z.string(),
     youtube: z.string(),
     x_twitter: z.string(),
+    tiktok: z.string(),
     email: z.string()
 })
 
@@ -26,7 +27,7 @@ export const EventSocialsCard = () => {
     const { data: event_socials } = useQuery(getEventSocials, queryClient)
     const form = useForm<z.infer<typeof EventSocialsSchema>>({
         resolver: zodResolver(EventSocialsSchema),
-        defaultValues: { mainWebsite: "", instagram: "", youtube: "", x_twitter: "", email: "", ...event_socials },
+        defaultValues: { mainWebsite: "", instagram: "", youtube: "", x_twitter: "", tiktok: "", email: "", ...event_socials },
     })
 
     const onSubmit = async (values: z.infer<typeof EventSocialsSchema>) => {
@@ -51,6 +52,7 @@ export const EventSocialsCard = () => {
         form.setValue('instagram', event_socials?.instagram || '')
         form.setValue('youtube', event_socials?.youtube || '')
         form.setValue('x_twitter', event_socials?.x_twitter || '')
+        form.setValue('tiktok', event_socials?.tiktok || '')
         form.setValue('email', event_socials?.email || '')
     }, [event_socials])
 
@@ -88,6 +90,12 @@ export const EventSocialsCard = () => {
                             name="x_twitter"
                             label="X (Formerly Twitter)"
                             inputProps={{ placeholder: "https://x.com" }}
+                        />
+                        <CustomizedFormField
+                            control={form.control}
+                            name="tiktok"
+                            label="Tiktok"
+                            inputProps={{ placeholder: "https://tiktok.com" }}
                         />
                         <CustomizedFormField
                             control={form.control}

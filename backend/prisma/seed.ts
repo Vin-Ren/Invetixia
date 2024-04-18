@@ -32,7 +32,8 @@ function initialize() {
                     mainWebsite: "https://example.com",
                     instagram: "https://instagram.com/instagram",
                     youtube: "https://youtube.com/youtube",
-                    x_twitter: "https://x.com/",
+                    x_twitter: "https://x.com",
+                    tiktok: "https://tiktok.com",
                     email: "example@mail.com"
                 }
             }

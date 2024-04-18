@@ -1,4 +1,16 @@
 import axios from "axios"
+import { Buffer } from "buffer";
+
+
+export const getPosterImage = async () => {
+    const res = await axios.request({
+        method: 'GET',
+        url: `/${import.meta.env.VITE_EVENT_POSTER_IMAGE}`,
+        responseType: 'arraybuffer'
+    })
+    const base64Image = `data:${res.headers['content-type']};base64,` + Buffer.from(res.data).toString('base64');
+    return base64Image
+}
 
 
 export const getEvent = async () => {
@@ -32,6 +44,12 @@ export const getTicket = async (UUID: string) => {
         url: `${import.meta.env.VITE_API_BASE_URL}/ticket/public/${UUID}`
     })
     return res.data
+}
+
+
+export const posterImageQuery = {
+    queryKey: ['posterImage'],
+    queryFn: () => getPosterImage(),
 }
 
 

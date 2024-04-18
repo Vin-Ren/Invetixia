@@ -4,10 +4,11 @@ import { OptionalSocialLink } from "./components/socials";
 
 import { TbWorldWww } from "react-icons/tb";
 import { FaSlackHash, FaInstagram, FaYoutube } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaTiktok, FaXTwitter } from "react-icons/fa6";
 import { MdEmail } from "react-icons/md";
-import { eventQuery } from "./queries";
+import { eventQuery, posterImageQuery } from "./queries";
 import { Helmet } from "react-helmet-async";
+import { getBase64FromBlurhash } from "./lib/utils";
 
 export const loader = (queryClient: QueryClient) => {
     return async () => {
@@ -21,10 +22,12 @@ export const loader = (queryClient: QueryClient) => {
 
 export default function Layout() {
     const { data: { event: { name, socials = null } } } = useQuery(eventQuery)
+    const { data: posterImage = '' } = useQuery(posterImageQuery)
+    const blurhashImg = getBase64FromBlurhash(import.meta.env.VITE_EVENT_POSTER_IMAGE_BLURHASH, window.innerWidth, window.innerHeight)
     const iconSize = 24
 
     return (
-        <div className="min-h-screen bg-no-repeat bg-cover bg-center overflow-hidden" style={{ backgroundImage: `url('/${import.meta.env.VITE_EVENT_POSTER_IMAGE}')` }}>
+        <div className="min-h-screen bg-no-repeat bg-cover bg-center overflow-hidden" style={{ backgroundImage: posterImage ? `url('${posterImage}')` : `url('${blurhashImg}')` }}>
             <Helmet>
                 <title>{name}</title>
             </Helmet>
@@ -39,6 +42,7 @@ export default function Layout() {
                         <OptionalSocialLink icon={<FaInstagram size={iconSize} />} url={socials?.instagram} tooltip="Instagram" />
                         <OptionalSocialLink icon={<FaYoutube size={iconSize} />} url={socials?.youtube} tooltip="Youtube" />
                         <OptionalSocialLink icon={<FaXTwitter size={iconSize} />} url={socials?.x_twitter} tooltip="X (Twitter)" />
+                        <OptionalSocialLink icon={<FaTiktok size={iconSize} />} url={socials?.tiktok} tooltip="Tiktok" />
                     </div>
                 </nav>
                 <aside className="place-self-center justify-self-end items-center grid-flow-col">

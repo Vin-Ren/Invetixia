@@ -106,5 +106,6 @@ export interface EventSocials {
     instagram: string,
     youtube: string,
     x_twitter: string,
+    tiktok: string,
     email: string
 }
