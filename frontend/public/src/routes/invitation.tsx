@@ -84,7 +84,13 @@ export default function Invitation() {
                     validateStatus: () => true
                 })
                 
-                navigate(`/ticket/${res.data.ticket.UUID}`, {replace: true})
+                if (res.status<400) {
+                    navigate(`/ticket/${res.data.ticket.UUID}`, {replace: true})
+                } else {
+                    if (res.status===400) {
+                        await setErrors(res?.data.errors)
+                    }
+                }
             } catch (e) {
                 console.log("Error", e)
             }
