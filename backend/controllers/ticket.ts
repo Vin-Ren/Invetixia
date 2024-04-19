@@ -153,7 +153,8 @@ export const create = async (req: Request, res: Response) => {
         return res.json({ ticket })
     } catch (e) {
         if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
-            return res.sendStatus(500)
+            errors['name'] = "Please enter your full name."
+            return res.status(400).json({errors})
         }
         console.log(e)
     }
