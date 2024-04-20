@@ -11,7 +11,7 @@ export const UserContext = createContext<UserContextType>({ user: { authenticate
 
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const { data: user = { authenticated: false } } = useQuery(getUserSelf, queryClient)
+  const { data: user = { authenticated: !!(localStorage.getItem('accessToken')) } } = useQuery(getUserSelf, queryClient)
 
   const value = useMemo(() => ({ user, login, logout }), [user])
 
