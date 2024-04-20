@@ -109,7 +109,7 @@ export const sendTickets = async (req: Request, res: Response) => {
         }))
 
         const deliveredList: any[] = []
-        for (let i = 0; i < Math.min(limit, 100); i++) {
+        for (let i = 0; i < Math.min(tickets.length, Math.min(limit, 100)); i++) {
             if (data?.data?.data[i].id) deliveredList.push({ UUID: tickets[i].UUID, sentMail: data.data.data[i].id });
         }
 
