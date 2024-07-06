@@ -1,5 +1,12 @@
 # Invetixia
+
+![Invetixia Logo](./Invetixia-logo.png)
+
 Invetixia is an event management system. It aims to ease the process of managing administration from creating invitations with a lot of flexibility, sending it to a list of invitee, managing invitee's tickets which have a list of quotas based on the invitation or can be custom for each people.
+
+> [!IMPORTANT]  
+> Invetixia is no longer under development and will be archived.
+
 
 ## Sections
 1. [Installation](#installation)
